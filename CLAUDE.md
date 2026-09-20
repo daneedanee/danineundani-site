@@ -9,7 +9,10 @@
 - 상담 신청 양식은 **Supabase에 저장된다** (2026-09-20 연결). 표는 `supabase/01-inquiries.sql`의 `cab_inquiries`, 연결 코드는 `src/lib/supabase.ts`다. 방문자는 추가만 할 수 있고 저장된 신청을 읽거나 지울 수 없다. 쌓인 신청은 Supabase 대시보드에서 본다.
 - **Supabase 프로젝트는 두 개가 있다. 쓰는 것은 `ykwhdegzqcgtwynedxqv` 하나뿐이다.** 대시보드에서 신청 내용을 볼 때는 주소창의 프로젝트 번호가 이것과 같은지 먼저 확인한다. 다른 프로젝트를 열면 표가 비어 보인다. 기준은 언제나 `.env.local`의 `NEXT_PUBLIC_SUPABASE_URL`이다.
 - 주소와 키는 `.env.local`에 있고 git에 올리지 않는다. 배포할 때는 배포 서비스의 환경 변수에 같은 두 값을 넣어야 한다.
-- 배포 결정 전까지 `layout.tsx`의 `robots: noindex`를 유지한다.
+- **배포됨 (2026-09-20)**: <https://danineundani-site.vercel.app> · 저장소 <https://github.com/daneedanee/danineundani-site>
+- 고친 내용을 반영하려면 이 폴더에서 `vercel --prod`를 실행한다. Vercel과 GitHub이 아직 연결되지 않아 `git push`만으로는 반영되지 않는다.
+- 검색 노출은 계속 차단한다. `layout.tsx`의 `robots: noindex`는 대표가 풀라고 할 때까지 유지한다.
+- `docs/` 폴더는 저장소에 올리지 않는다 (내부 문서). 작업 기록은 `docs/2주차-완료.md`를 본다.
 
 ## 실행 방법
 
