@@ -27,8 +27,8 @@ function validate(fields: Fields): Errors {
   else if (!emailPattern.test(email)) errors.email = "이메일 형식을 확인해 주세요.";
   else if (email.length > 254) errors.email = "이메일이 너무 깁니다.";
 
+  // 최소 글자 수 제한은 두지 않는다 (2026-09-20 대표 결정). 비어 있는 것만 막는다.
   if (!message) errors.message = "상담 내용을 입력해 주세요.";
-  else if (message.length < 10) errors.message = "상담 내용을 10자 이상 적어 주세요.";
   else if (message.length > 1000) errors.message = "상담 내용은 1000자까지 넣을 수 있습니다.";
 
   return errors;
