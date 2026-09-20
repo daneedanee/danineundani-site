@@ -212,3 +212,5 @@ Each script regenerates the platform-specific copies automatically. Agents that 
 MIT
 
 <sub>Translations: <a href="README.ja.md">日本語</a> · <a href="README.zh-CN.md">Simplified Chinese</a></sub>
+
+<!-- 자동 배포 연결 확인 2026-09-20 -->
