@@ -47,6 +47,7 @@ export function ConsultSection() {
   const [fields, setFields] = useState<Fields>({ name: "", email: "", message: "" });
   const [errors, setErrors] = useState<Errors>({});
   const [status, setStatus] = useState<Status>("idle");
+  const [reason, setReason] = useState("");
 
   function update(key: keyof Fields, value: string) {
     setFields((prev) => ({ ...prev, [key]: value }));
@@ -71,7 +72,9 @@ export function ConsultSection() {
     });
 
     if (error) {
+      // 무엇 때문에 실패했는지 화면에도 짧게 남긴다. 원인을 묻고 답하느라 시간을 버리지 않기 위해서다.
       console.error("상담 신청 저장 실패", error);
+      setReason(error.message || "알 수 없는 오류");
       setStatus("failed");
       return;
     }
@@ -141,6 +144,10 @@ export function ConsultSection() {
             {status === "done" && "상담 신청이 접수되었습니다. 확인 후 이메일로 연락드리겠습니다."}
             {status === "failed" && "신청을 보내지 못했습니다. 잠시 후 다시 시도하시거나 카카오톡으로 문의해 주세요."}
           </p>
+
+          {status === "failed" && reason && (
+            <p className="mt-1 text-center text-[12px] break-all text-[#5f6368]">사유: {reason}</p>
+          )}
         </form>
 
         <p className="mt-6 text-center">
