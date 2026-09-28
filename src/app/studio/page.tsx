@@ -8,6 +8,7 @@ export default function StudioPage() {
       fonts={{
         display: { family: displayFont.style.fontFamily, weight: 400 },
         body: { family: bodyFont.style.fontFamily, weight: 900 },
+        plain: { family: bodyFont.style.fontFamily, weight: 500 },
       }}
     />
   );

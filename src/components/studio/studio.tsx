@@ -48,7 +48,7 @@ function loadSaved(file: File): Saved | null {
   }
 }
 
-function makeClip(h: Highlight, cues: Cue[]): Clip {
+function makeClip(h: Highlight, cues: Cue[], bottom: string): Clip {
   return {
     id: newId(),
     start: round(h.start),
@@ -56,7 +56,7 @@ function makeClip(h: Highlight, cues: Cue[]): Clip {
     score: h.score,
     peak: h.peak,
     title: "",
-    bottom: "",
+    bottom,
     zoom: 1,
     focusX: 0.5,
     subtitles: cuesForClip(cues, h.start, h.end),
@@ -133,6 +133,7 @@ export function Studio({ fonts }: { fonts: FontFamilies }) {
     Promise.all([
       document.fonts.load(`${fonts.display.weight} 64px ${fonts.display.family}`, sample),
       document.fonts.load(`${fonts.body.weight} 64px ${fonts.body.family}`, sample),
+      document.fonts.load(`${fonts.plain.weight} 64px ${fonts.plain.family}`, sample),
     ])
       .catch(() => undefined)
       .finally(() => setFontsReady(true));
@@ -214,7 +215,7 @@ export function Studio({ fonts }: { fonts: FontFamilies }) {
     try {
       const env = await analyzeAudio(file, setProgress, controller.signal);
       const found = findHighlights(env, { length: clipLength, count: clipCount });
-      const next = found.map((h) => makeClip(h, cues));
+      const next = found.map((h) => makeClip(h, cues, template.defaultBottom ?? ""));
       if (!next.length) setError("뚜렷하게 터지는 구간을 찾지 못했어요. 위 그래프에서 위치를 고른 뒤 '지금 위치에 추가'로 직접 만들어 주세요.");
       setEnvelope(env);
       setClips(next);
@@ -244,7 +245,7 @@ export function Studio({ fonts }: { fonts: FontFamilies }) {
       score: null,
       peak: null,
       title: "",
-      bottom: "",
+      bottom: template.defaultBottom ?? "",
       zoom: 1,
       focusX: 0.5,
       subtitles: cuesForClip(cues, start, start + clipLength),

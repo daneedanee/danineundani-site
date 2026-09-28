@@ -2,4 +2,4 @@
 import { Black_Han_Sans, Noto_Sans_KR } from "next/font/google";
 
 export const displayFont = Black_Han_Sans({ weight: "400", subsets: ["latin"], preload: false, display: "block" });
-export const bodyFont = Noto_Sans_KR({ weight: "900", subsets: ["latin"], preload: false, display: "block" });
+export const bodyFont = Noto_Sans_KR({ weight: ["500", "900"], subsets: ["latin"], preload: false, display: "block" });
