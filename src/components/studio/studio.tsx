@@ -520,7 +520,7 @@ export function Studio({ fonts }: { fonts: FontFamilies }) {
                 <div>
                   <p className="text-[14px] font-bold">② 받은 답 붙여 넣기</p>
                   <p className="mt-1 text-[13px] leading-6 text-white/50">
-                    답 전체를 그대로 붙여 넣으면 돼요. "쇼츠 1" 줄 아래에 적힌 시각 줄들은 컷으로 이어붙여 클립 하나로 만들어요. 한 구간만 쓸 때는 한 줄에 하나씩 <code className="text-white/70">3:21 ~ 4:05 | 후킹 | 첫 줄 / 둘째 줄</code>
+                    답 전체를 그대로 붙여 넣으면 돼요. “쇼츠 1” 줄 아래에 적힌 시각 줄들은 컷으로 이어붙여 클립 하나로 만들어요. 한 구간만 쓸 때는 한 줄에 하나씩 <code className="text-white/70">3:21 ~ 4:05 | 후킹 | 첫 줄 / 둘째 줄</code>
                   </p>
                   <textarea
                     rows={6}
