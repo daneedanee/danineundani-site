@@ -4,12 +4,12 @@
 import { Pause, Play, SkipBack } from "lucide-react";
 import { useEffect, useRef } from "react";
 
-import { activeSubtitle, drawFrame, drawText, subtitleStyle } from "@/lib/studio/render";
+import { drawFrame } from "@/lib/studio/render";
 import type { FontFamilies } from "@/lib/studio/render";
 import { clipDuration } from "@/lib/studio/segments";
 import { formatTime } from "@/lib/studio/subtitles";
 import { CANVAS_HEIGHT, CANVAS_WIDTH } from "@/lib/studio/templates";
-import type { Template, TextStyle } from "@/lib/studio/templates";
+import type { Template } from "@/lib/studio/templates";
 import type { Clip } from "@/lib/studio/types";
 
 import type { Player } from "./use-player";
@@ -23,11 +23,6 @@ type Props = {
   player: Player;
 };
 
-/** 비어 있는 문구 자리를 흐리게 보여준다. (미리보기에만 나오고 저장되는 영상에는 없다) */
-function guideStyle(style: TextStyle): TextStyle {
-  return { ...style, color: "rgba(160,160,160,0.45)", accent: "rgba(160,160,160,0.45)", stroke: undefined, box: undefined };
-}
-
 export function Preview({ video, clip, template, fonts, fontsReady, player }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const rel = player.rel;
@@ -36,12 +31,7 @@ export function Preview({ video, clip, template, fonts, fontsReady, player }: Pr
   useEffect(() => {
     const ctx = canvasRef.current?.getContext("2d");
     if (!ctx) return;
-    const videoBottom = drawFrame(ctx, video, template, clip, rel, fonts);
-    if (!activeSubtitle(clip.subtitles, rel)) {
-      drawText(ctx, "자막 자리", guideStyle(subtitleStyle(template, clip, videoBottom)), fonts);
-    }
-    if (!clip.title.trim()) drawText(ctx, "헤드 문구 자리", guideStyle(template.header), fonts);
-    if (!clip.bottom.trim()) drawText(ctx, "바닥 문구 자리", guideStyle(template.bottom), fonts);
+    drawFrame(ctx, video, template, clip, rel, fonts);
   }, [video, clip, template, fonts, fontsReady, rel, player.frame]);
 
   return (

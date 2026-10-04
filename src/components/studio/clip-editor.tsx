@@ -20,7 +20,7 @@ type Props = {
   clip: Clip;
   template: Template;
   /** 화면 설정(확대·위치·아래 자르기·자막 위치)을 모든 클립에 똑같이 적용 */
-  onApplyAll: (patch: Pick<Clip, "zoom" | "focusX" | "cropBottom" | "subtitleY">) => void;
+  onApplyAll: (patch: Pick<Clip, "zoom" | "focusX" | "cropBottom">) => void;
   sourceDuration: number;
   cues: Cue[];
   player: Player;
@@ -193,9 +193,9 @@ export function ClipEditor({ clip, template, onApplyAll, sourceDuration, cues, p
           <Button
             size="sm"
             onClick={() =>
-              onApplyAll({ zoom: clip.zoom, focusX: clip.focusX, cropBottom: clip.cropBottom, subtitleY: clip.subtitleY })
+              onApplyAll({ zoom: clip.zoom, focusX: clip.focusX, cropBottom: clip.cropBottom })
             }
-            title="확대·보이는 위치·아래 자르기·자막 위치를 모든 클립에 똑같이 적용해요"
+            title="확대·보이는 위치·아래 자르기를 모든 클립에 똑같이 적용해요"
           >
             모든 클립에 적용
           </Button>
@@ -230,15 +230,6 @@ export function ClipEditor({ clip, template, onApplyAll, sourceDuration, cues, p
             step={0.01}
             onChange={(cropBottom) => onChange({ cropBottom })}
             format={(v) => (v < 0.005 ? "안 자름" : `${Math.round(v * 100)}%`)}
-          />
-          <Slider
-            label="자막 위치 (위 ↔ 아래)"
-            value={clip.subtitleY ?? 0}
-            min={-700}
-            max={500}
-            step={5}
-            onChange={(subtitleY) => onChange({ subtitleY })}
-            format={(v) => (v === 0 ? "기본" : v < 0 ? `${-v}px 위로` : `${v}px 아래로`)}
           />
         </div>
       </Section>

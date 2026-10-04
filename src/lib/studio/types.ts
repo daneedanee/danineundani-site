@@ -45,8 +45,6 @@ export type Clip = {
   focusX: number;
   /** 영상 아래쪽을 잘라 낼 비율 (0~0.4). 화면에 박힌 자막을 가릴 때 쓴다. 없으면 양식 기본값 */
   cropBottom?: number;
-  /** 자막을 양식 기본 위치에서 위(-)·아래(+)로 옮길 거리(px). 없으면 0 */
-  subtitleY?: number;
   subtitles: Subtitle[];
   sfx: SfxCue[];
 };

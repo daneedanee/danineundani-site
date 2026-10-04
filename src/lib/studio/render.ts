@@ -165,11 +165,10 @@ export function drawVideo(ctx: CanvasRenderingContext2D, video: HTMLVideoElement
   return visibleBottom;
 }
 
-/** 클립별 자막 위치 조정과 "영상 아랫변 기준"을 반영한 자막 모양 */
-export function subtitleStyle(template: Template, clip: Clip, videoBottom: number): TextStyle {
+/** "영상 아랫변 기준" 자막이면 보이는 영상 아랫변에 맞춘 자막 모양 */
+export function subtitleStyle(template: Template, videoBottom: number): TextStyle {
   const style = template.subtitle;
-  const base = style.from === "videoBottom" ? videoBottom : 0;
-  return { ...style, y: base + style.y + (clip.subtitleY ?? 0) };
+  return style.from === "videoBottom" ? { ...style, y: videoBottom + style.y } : style;
 }
 
 /** time: 클립 시작점부터 흐른 시간(초). 보이는 영상의 아랫변 y를 돌려준다. */
@@ -196,6 +195,6 @@ export function drawFrame(
   drawText(ctx, clip.title, template.header, fonts);
   drawText(ctx, clip.bottom, template.bottom, fonts);
   const subtitle = activeSubtitle(clip.subtitles, time);
-  if (subtitle) drawText(ctx, subtitle.text, subtitleStyle(template, clip, videoBottom), fonts);
+  if (subtitle) drawText(ctx, subtitle.text, subtitleStyle(template, videoBottom), fonts);
   return videoBottom;
 }
