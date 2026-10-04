@@ -1,25 +1,7 @@
 // 자막 도우미.
-import type { Subtitle } from "./types";
+import type { Segment, Subtitle } from "./types";
 
 export const newId = () => (typeof crypto !== "undefined" && crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2));
-
-/** 여러 줄 글을 클립 길이에 맞춰 나눠 배치한다. 글자가 많은 줄은 더 오래 보여준다. */
-export function distributeLines(text: string, duration: number): Subtitle[] {
-  const lines = text
-    .split("\n")
-    .map((l) => l.trim())
-    .filter(Boolean);
-  if (!lines.length) return [];
-  const weights = lines.map((l) => Math.max(4, l.replace(/\*/g, "").length));
-  const total = weights.reduce((a, b) => a + b, 0);
-  let t = 0;
-  return lines.map((line, i) => {
-    const length = (weights[i] / total) * duration;
-    const sub = { id: newId(), start: round(t), end: round(t + length), text: line };
-    t += length;
-    return sub;
-  });
-}
 
 export function round(value: number) {
   return Math.round(value * 10) / 10;
@@ -55,17 +37,29 @@ export function parseSubtitleFile(content: string): Cue[] {
   return cues.sort((a, b) => a.start - b.start);
 }
 
-/** 원본 전체 자막 중 클립 구간에 걸치는 것만 클립 기준 시간으로 바꿔 가져온다. */
+/** 원본 전체 자막 중 각 컷에 걸치는 것만, 컷을 이어붙인 뒤의 시간으로 바꿔 가져온다. */
+export function cuesForSegments(cues: Cue[], segments: Segment[]): Subtitle[] {
+  const out: Subtitle[] = [];
+  let offset = 0;
+  for (const seg of segments) {
+    const length = seg.end - seg.start;
+    for (const c of cues) {
+      if (c.end <= seg.start || c.start >= seg.end) continue;
+      out.push({
+        id: newId(),
+        start: round(offset + Math.max(0, c.start - seg.start)),
+        end: round(offset + Math.min(length, c.end - seg.start)),
+        text: c.text,
+      });
+    }
+    offset += length;
+  }
+  return out;
+}
+
+/** 한 컷짜리 클립용 */
 export function cuesForClip(cues: Cue[], clipStart: number, clipEnd: number): Subtitle[] {
-  const length = clipEnd - clipStart;
-  return cues
-    .filter((c) => c.end > clipStart && c.start < clipEnd)
-    .map((c) => ({
-      id: newId(),
-      start: round(Math.max(0, c.start - clipStart)),
-      end: round(Math.min(length, c.end - clipStart)),
-      text: c.text,
-    }));
+  return cuesForSegments(cues, [{ start: clipStart, end: clipEnd }]);
 }
 
 export function formatTime(seconds: number, withTenths = false) {

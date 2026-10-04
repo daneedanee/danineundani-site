@@ -14,7 +14,8 @@ import { exportClip, fileExtension, pickMimeType } from "@/lib/studio/export";
 import { findHighlights } from "@/lib/studio/highlights";
 import type { Highlight } from "@/lib/studio/highlights";
 import type { FontFamilies } from "@/lib/studio/render";
-import { cuesForClip, formatTime, newId, parseSubtitleFile, round } from "@/lib/studio/subtitles";
+import { clipDuration, segmentsPatch } from "@/lib/studio/segments";
+import { cuesForClip, cuesForSegments, formatTime, newId, parseSubtitleFile, round } from "@/lib/studio/subtitles";
 import type { Cue } from "@/lib/studio/subtitles";
 import { findTemplate, templates } from "@/lib/studio/templates";
 import type { Clip, Envelope } from "@/lib/studio/types";
@@ -69,10 +70,13 @@ function makeClip(h: Highlight, cues: Cue[], bottom: string): Clip {
 }
 
 function makeClipFromPick(p: AiPick, cues: Cue[], bottom: string): Clip {
+  const segments = (p.segments?.length ? p.segments : [{ start: p.start, end: p.end }]).map((s) => ({
+    start: round(s.start),
+    end: round(s.end),
+  }));
   return {
     id: newId(),
-    start: round(p.start),
-    end: round(p.end),
+    ...segmentsPatch(segments),
     score: null,
     peak: null,
     kind: p.kind,
@@ -81,7 +85,7 @@ function makeClipFromPick(p: AiPick, cues: Cue[], bottom: string): Clip {
     bottom,
     zoom: 1,
     focusX: 0.5,
-    subtitles: cuesForClip(cues, p.start, p.end),
+    subtitles: cuesForSegments(cues, segments),
     sfx: [],
   };
 }
@@ -273,9 +277,16 @@ export function Studio({ fonts }: { fonts: FontFamilies }) {
       const env = await analyzeAudio(file, setProgress, controller.signal);
       let next: Clip[];
       if (pickMode === "chat") {
+        // 영상 길이를 벗어난 컷은 빼고, 끝이 넘치는 컷은 영상 끝에서 자른다.
         next = pastedPicks
-          .filter((p) => p.start < env.duration - 1)
-          .map((p) => makeClipFromPick({ ...p, end: Math.min(p.end, env.duration) }, cues, template.defaultBottom ?? ""));
+          .map((p) => ({
+            ...p,
+            segments: (p.segments ?? [{ start: p.start, end: p.end }])
+              .filter((s) => s.start < env.duration - 0.5)
+              .map((s) => ({ start: s.start, end: Math.min(s.end, env.duration) })),
+          }))
+          .filter((p) => p.segments.length > 0)
+          .map((p) => makeClipFromPick(p, cues, template.defaultBottom ?? ""));
         if (!next.length) setError("붙여 넣은 구간이 영상 길이를 벗어나요. 시각을 확인해 주세요.");
       } else if (byScript) {
         setAnalyzeStep("script");
@@ -509,7 +520,7 @@ export function Studio({ fonts }: { fonts: FontFamilies }) {
                 <div>
                   <p className="text-[14px] font-bold">② 받은 답 붙여 넣기</p>
                   <p className="mt-1 text-[13px] leading-6 text-white/50">
-                    답 전체를 그대로 붙여 넣으면 돼요. 직접 쓸 때는 한 줄에 하나씩 <code className="text-white/70">3:21 ~ 4:05 | 후킹 | 첫 줄 / 둘째 줄</code>
+                    답 전체를 그대로 붙여 넣으면 돼요. “쇼츠 1” 줄 아래에 적힌 시각 줄들은 컷으로 이어붙여 클립 하나로 만들어요. 한 구간만 쓸 때는 한 줄에 하나씩 <code className="text-white/70">3:21 ~ 4:05 | 후킹 | 첫 줄 / 둘째 줄</code>
                   </p>
                   <textarea
                     rows={6}
@@ -519,7 +530,9 @@ export function Studio({ fonts }: { fonts: FontFamilies }) {
                     className="mt-2 w-full resize-y rounded-[8px] border border-white/15 bg-black/40 px-3 py-2 text-[13px] text-white placeholder:text-white/25 outline-none focus-visible:border-coral"
                   />
                   <p className="mt-1 text-[12px] text-white/50">
-                    {pasted.trim() ? `알아본 구간 ${pastedPicks.length}개` : "아직 붙여 넣은 내용이 없어요"}
+                    {pasted.trim()
+                      ? `알아본 쇼츠 ${pastedPicks.length}개 (컷 ${pastedPicks.reduce((n, p) => n + (p.segments?.length ?? 1), 0)}개)`
+                      : "아직 붙여 넣은 내용이 없어요"}
                   </p>
                 </div>
               </div>
@@ -603,10 +616,12 @@ export function Studio({ fonts }: { fonts: FontFamilies }) {
                           )}
                         </span>
                         <span className="mt-0.5 block text-[12px] tabular-nums text-white/50">
-                          {formatTime(c.start)} ~ {formatTime(c.end)} · {Math.round(c.end - c.start)}초
+                          {c.segments && c.segments.length > 1
+                            ? `컷 ${c.segments.length}개 이어붙이기 · ${Math.round(clipDuration(c))}초`
+                            : `${formatTime(c.start)} ~ ${formatTime(c.end)} · ${Math.round(clipDuration(c))}초`}
                         </span>
                         {c.title && <span className="mt-0.5 block truncate text-[12px] text-white/70">{c.title.replace(/\*/g, "").replace(/\n/g, " ")}</span>}
-                        {c.note && <span className="mt-0.5 block text-[11px] leading-4 text-white/40">{c.note}</span>}
+                        {c.note && <span className="mt-0.5 line-clamp-2 text-[11px] leading-4 text-white/40">{c.note}</span>}
                       </button>
                       <button
                         type="button"

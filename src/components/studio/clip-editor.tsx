@@ -1,15 +1,16 @@
 "use client";
 
 // 선택한 클립의 구간·문구·화면·자막·효과음을 고치는 곳.
-import { Minus, Play, Plus, Trash2 } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { Play, Plus, Trash2 } from "lucide-react";
+import { useState } from "react";
 
 import { activeSubtitle } from "@/lib/studio/render";
+import { clipDuration, clipSegments, segmentOffsets, segmentsPatch } from "@/lib/studio/segments";
 import { sfxLabel, sfxList } from "@/lib/studio/sfx";
-import { cuesForClip, distributeLines, formatTime, newId, round } from "@/lib/studio/subtitles";
+import { cuesForSegments, formatTime, newId, round } from "@/lib/studio/subtitles";
 import type { Cue } from "@/lib/studio/subtitles";
 import type { Template } from "@/lib/studio/templates";
-import type { Clip, SfxCue, Subtitle } from "@/lib/studio/types";
+import type { Clip, Segment, SfxCue, Subtitle } from "@/lib/studio/types";
 import { cn } from "@/lib/utils";
 
 import { Button, inputClass, Section, Slider } from "./ui";
@@ -46,91 +47,52 @@ function TimeInput({ value, onChange, label }: { value: number; onChange: (v: nu
   );
 }
 
-function Nudge({ onClick, children, label }: { onClick: () => void; children: React.ReactNode; label: string }) {
+/** "분:초" 또는 초로 적는 시각 칸. 칸을 벗어나거나 Enter를 누르면 반영된다. */
+function ClockInput({ value, onChange, label }: { value: number; onChange: (v: number) => void; label: string }) {
+  function commit(text: string) {
+    const parts = text.trim().replace(",", ".").split(":").map(Number);
+    if (!parts.length || parts.some((n) => !Number.isFinite(n))) return;
+    onChange(parts.reduce((total, part) => total * 60 + part, 0));
+  }
   return (
-    <button
-      type="button"
-      onClick={onClick}
+    <input
+      key={value}
+      defaultValue={formatTime(value, true)}
+      onBlur={(e) => commit(e.target.value)}
+      onKeyDown={(e) => {
+        if (e.key === "Enter") commit(e.currentTarget.value);
+      }}
+      className="w-[72px] rounded-[6px] border border-white/15 bg-black/40 px-1.5 py-1 text-center text-[12px] tabular-nums text-white outline-none focus-visible:border-coral"
       aria-label={label}
-      className="grid size-7 place-items-center rounded-[6px] border border-white/15 text-white/70 hover:bg-white/10"
-    >
-      {children}
-    </button>
+    />
   );
 }
 
 export function ClipEditor({ clip, template, onApplyAll, sourceDuration, cues, player, onChange }: Props) {
-  const length = clip.end - clip.start;
-  const [bulk, setBulk] = useState("");
-  const [syncIndex, setSyncIndex] = useState<number | null>(null);
-  const syncRef = useRef<{ subs: Subtitle[]; index: number } | null>(null);
-  const relRef = useRef(player.rel);
+  const length = clipDuration(clip);
+  const segments = clipSegments(clip);
+  const offsets = segmentOffsets(segments);
+  const [selectedSeg, setSelectedSeg] = useState(0);
+  const activeSeg = Math.min(selectedSeg, segments.length - 1);
 
-  useEffect(() => {
-    relRef.current = player.rel;
-  }, [player.rel]);
+  /** 컷 목록을 바꾸고, 자막 파일이 있으면 자막도 새 컷에 맞춰 다시 가져온다. */
+  function setSegments(next: Segment[]) {
+    const cleaned = next.map((seg) => {
+      const start = round(Math.max(0, Math.min(seg.start, sourceDuration - 0.5)));
+      const end = round(Math.max(start + 0.5, Math.min(seg.end, sourceDuration)));
+      return { start, end };
+    });
+    onChange({ ...segmentsPatch(cleaned), ...(cues.length ? { subtitles: cuesForSegments(cues, cleaned) } : {}) });
+  }
 
-  function setRange(start: number, end: number) {
-    const s = Math.max(0, Math.min(start, sourceDuration - 1));
-    const e = Math.max(s + 1, Math.min(end, sourceDuration));
-    onChange({ start: round(s), end: round(e) });
+  function updateSegment(index: number, patch: Partial<Segment>) {
+    setSegments(segments.map((seg, i) => (i === index ? { ...seg, ...patch } : seg)));
   }
 
   // ── 자막 ──
   function updateSubtitle(id: string, patch: Partial<Subtitle>) {
     onChange({ subtitles: clip.subtitles.map((s) => (s.id === id ? { ...s, ...patch } : s)) });
   }
-
-  function bulkLines() {
-    const lines = bulk
-      .split("\n")
-      .map((l) => l.trim())
-      .filter(Boolean);
-    return lines.length ? lines : clip.subtitles.map((s) => s.text);
-  }
-
-  function startSync() {
-    const lines = bulkLines();
-    if (!lines.length) return;
-    const subs = lines.map((text) => ({ id: newId(), start: length, end: length, text }));
-    syncRef.current = { subs, index: 0 };
-    onChange({ subtitles: subs });
-    setSyncIndex(0);
-    player.play(0);
-  }
-
-  // 맞추는 중: 스페이스바를 누를 때마다 다음 자막이 시작된다. 마지막 자막 뒤에 한 번 더 누르면 마지막 자막이 끝난다.
-  useEffect(() => {
-    if (syncIndex === null) return;
-    function onKey(e: KeyboardEvent) {
-      if (e.code !== "Space") return;
-      e.preventDefault();
-      e.stopImmediatePropagation();
-      const state = syncRef.current;
-      if (!state) return;
-      const t = round(Math.max(0, relRef.current));
-      const subs = [...state.subs];
-      if (state.index > 0) subs[state.index - 1] = { ...subs[state.index - 1], end: t };
-      if (state.index < subs.length) subs[state.index] = { ...subs[state.index], start: t, end: length };
-      state.subs = subs;
-      state.index += 1;
-      onChange({ subtitles: subs });
-      if (state.index > subs.length) {
-        setSyncIndex(null);
-        player.pause();
-      } else setSyncIndex(state.index);
-    }
-    window.addEventListener("keydown", onKey, true);
-    return () => window.removeEventListener("keydown", onKey, true);
-  }, [syncIndex, length, onChange, player]);
-
-  // 맞추다가 재생이 끝나면 맞추기도 끝낸다.
-  useEffect(() => {
-    if (syncIndex !== null && !player.playing) {
-      const id = setTimeout(() => setSyncIndex(null), 300);
-      return () => clearTimeout(id);
-    }
-  }, [player.playing, syncIndex]);
 
   const activeSubtitleId = activeSubtitle(clip.subtitles, player.rel)?.id;
 
@@ -143,34 +105,62 @@ export function ClipEditor({ clip, template, onApplyAll, sourceDuration, cues, p
 
   return (
     <div>
-      <Section title="구간" hint={`길이 ${round(length)}초 · 원본 ${formatTime(clip.start, true)} ~ ${formatTime(clip.end, true)}`}>
-        <div className="grid gap-2 text-[13px] text-white/70">
-          {(
-            [
-              ["시작", clip.start, (v: number) => setRange(v, clip.end)],
-              ["끝", clip.end, (v: number) => setRange(clip.start, v)],
-            ] as const
-          ).map(([label, value, set]) => (
-            <div key={label} className="flex items-center gap-1.5">
-              <span className="w-8">{label}</span>
-              <Nudge label={`${label} 1초 앞으로`} onClick={() => set(value - 1)}>
-                <Minus className="size-3.5" />
-              </Nudge>
-              <TimeInput value={value} onChange={set} label={`${label} (초)`} />
-              <Nudge label={`${label} 1초 뒤로`} onClick={() => set(value + 1)}>
-                <Plus className="size-3.5" />
-              </Nudge>
-              <span className="ml-1 tabular-nums text-white/40">{formatTime(value, true)}</span>
-            </div>
+      <Section
+        title={segments.length > 1 ? `구간 · 컷 ${segments.length}개 이어붙이기` : "구간"}
+        hint={`총 ${round(length)}초. 컷을 여러 개 넣으면 위에서부터 차례로 이어붙여요. 시각은 0:36 처럼 적어요.`}
+      >
+        <ul className="grid gap-1.5">
+          {segments.map((seg, i) => (
+            <li
+              key={i}
+              onClick={() => setSelectedSeg(i)}
+              className={cn(
+                "flex items-center gap-1.5 rounded-[8px] border px-2 py-1.5 text-[12px] text-white/70",
+                i === activeSeg ? "border-coral/60 bg-coral/10" : "border-white/10",
+              )}
+            >
+              <span className="w-9 shrink-0 font-bold text-white">컷 {i + 1}</span>
+              <ClockInput value={seg.start} onChange={(v) => updateSegment(i, { start: v })} label={`컷 ${i + 1} 시작`} />
+              <span>~</span>
+              <ClockInput value={seg.end} onChange={(v) => updateSegment(i, { end: v })} label={`컷 ${i + 1} 끝`} />
+              <span className="w-10 text-right tabular-nums text-white/40">{round(seg.end - seg.start)}초</span>
+              <button
+                type="button"
+                onClick={() => player.seekRel(offsets[i])}
+                className="ml-auto grid size-7 place-items-center rounded-[6px] text-white/60 hover:text-coral"
+                aria-label={`컷 ${i + 1} 처음으로 이동`}
+              >
+                <Play className="size-3.5" />
+              </button>
+              {segments.length > 1 && (
+                <button
+                  type="button"
+                  onClick={() => setSegments(segments.filter((_, k) => k !== i))}
+                  className="grid size-7 place-items-center rounded-[6px] text-white/40 hover:text-[#ff8a77]"
+                  aria-label={`컷 ${i + 1} 지우기`}
+                >
+                  <Trash2 className="size-3.5" />
+                </button>
+              )}
+            </li>
           ))}
-          <div className="mt-1 flex flex-wrap gap-1.5">
-            <Button size="sm" onClick={() => setRange(player.sourceTime, clip.end)}>
-              지금 위치를 시작으로
-            </Button>
-            <Button size="sm" onClick={() => setRange(clip.start, player.sourceTime)}>
-              지금 위치를 끝으로
-            </Button>
-          </div>
+        </ul>
+        <div className="mt-2 flex flex-wrap gap-1.5">
+          <Button size="sm" onClick={() => updateSegment(activeSeg, { start: player.sourceTime })}>
+            지금 위치를 컷 {activeSeg + 1} 시작으로
+          </Button>
+          <Button size="sm" onClick={() => updateSegment(activeSeg, { end: player.sourceTime })}>
+            지금 위치를 컷 {activeSeg + 1} 끝으로
+          </Button>
+          <Button
+            size="sm"
+            onClick={() => {
+              setSegments([...segments, { start: player.sourceTime, end: player.sourceTime + 5 }]);
+              setSelectedSeg(segments.length);
+            }}
+          >
+            <Plus className="size-3.5" />컷 추가
+          </Button>
         </div>
       </Section>
 
@@ -255,25 +245,12 @@ export function ClipEditor({ clip, template, onApplyAll, sourceDuration, cues, p
 
       <Section
         title={`자막 (${clip.subtitles.length})`}
-        hint="한 줄에 자막 하나씩 붙여 넣고, 고르게 배치하거나 재생하면서 스페이스바로 넘기며 타이밍을 맞춰요."
+        hint="자막 파일(SRT)에서 클립 구간만큼 자동으로 들어가요. 틀린 글자나 시간만 아래에서 고치면 돼요."
       >
-        <textarea
-          rows={4}
-          value={bulk}
-          onChange={(e) => setBulk(e.target.value)}
-          placeholder={"자막을 한 줄에 하나씩\n여기에 붙여 넣으세요"}
-          className={cn(inputClass, "resize-y")}
-        />
-        <div className="mt-2 flex flex-wrap gap-1.5">
-          <Button size="sm" disabled={!bulkLines().length} onClick={() => onChange({ subtitles: distributeLines(bulkLines().join("\n"), length) })}>
-            고르게 배치
-          </Button>
-          <Button size="sm" tone={syncIndex !== null ? "primary" : "ghost"} disabled={!bulkLines().length || syncIndex !== null} onClick={startSync}>
-            {syncIndex !== null ? `스페이스바로 넘기는 중 (${Math.min(syncIndex, clip.subtitles.length)}/${clip.subtitles.length})` : "재생하며 맞추기"}
-          </Button>
+        <div className="flex flex-wrap gap-1.5">
           {cues.length > 0 && (
-            <Button size="sm" onClick={() => onChange({ subtitles: cuesForClip(cues, clip.start, clip.end) })}>
-              자막 파일에서 가져오기
+            <Button size="sm" onClick={() => onChange({ subtitles: cuesForSegments(cues, segments) })}>
+              자막 파일에서 다시 가져오기
             </Button>
           )}
           {clip.subtitles.length > 0 && (
@@ -282,10 +259,8 @@ export function ClipEditor({ clip, template, onApplyAll, sourceDuration, cues, p
             </Button>
           )}
         </div>
-        {syncIndex !== null && (
-          <p className="mt-2 rounded-[8px] bg-coral/15 px-3 py-2 text-[12px] leading-5 text-[#ffb3a6]">
-            자막이 시작될 때마다 스페이스바를 누르세요. 마지막 자막이 끝날 때 한 번 더 누르면 끝나요.
-          </p>
+        {!clip.subtitles.length && !cues.length && (
+          <p className="text-[12px] leading-5 text-white/40">자막 파일을 넣지 않아서 자막이 없어요. 처음 화면에서 SRT 파일을 함께 넣어 주세요.</p>
         )}
 
         {clip.subtitles.length > 0 && (
