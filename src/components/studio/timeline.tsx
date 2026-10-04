@@ -3,6 +3,7 @@
 // 원본 전체의 소리 크기 그래프. 고른 구간이 코랄색으로 표시된다. 누르면 그 위치로 이동한다.
 import { useEffect, useMemo, useRef, useState } from "react";
 
+import { clipSegments } from "@/lib/studio/segments";
 import { formatTime } from "@/lib/studio/subtitles";
 import type { Clip, Envelope } from "@/lib/studio/types";
 
@@ -66,15 +67,18 @@ export function Timeline({ envelope, clips, selectedId, playhead, onSeek }: Prop
     const toX = (t: number) => (t / envelope.duration) * width;
 
     clips.forEach((clip, index) => {
-      const x = toX(clip.start);
-      const w = Math.max(2, toX(clip.end) - x);
       const selected = clip.id === selectedId;
-      ctx.fillStyle = selected ? "rgba(253,113,91,0.35)" : "rgba(253,113,91,0.15)";
-      ctx.fillRect(x, 0, w, HEIGHT);
-      ctx.fillStyle = selected ? "#fd715b" : "rgba(253,113,91,0.7)";
-      ctx.fillRect(x, 0, w, 3);
-      ctx.font = "bold 11px sans-serif";
-      ctx.fillText(String(index + 1), x + 3, 15);
+      // 컷이 여러 개인 클립은 컷마다 칸을 그린다.
+      clipSegments(clip).forEach((seg, segIndex) => {
+        const x = toX(seg.start);
+        const w = Math.max(2, toX(seg.end) - x);
+        ctx.fillStyle = selected ? "rgba(253,113,91,0.35)" : "rgba(253,113,91,0.15)";
+        ctx.fillRect(x, 0, w, HEIGHT);
+        ctx.fillStyle = selected ? "#fd715b" : "rgba(253,113,91,0.7)";
+        ctx.fillRect(x, 0, w, 3);
+        ctx.font = "bold 11px sans-serif";
+        ctx.fillText(segIndex === 0 ? String(index + 1) : `${index + 1}-${segIndex + 1}`, x + 3, 15);
+      });
     });
 
     ctx.fillStyle = "rgba(255,255,255,0.55)";

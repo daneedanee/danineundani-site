@@ -3,6 +3,7 @@
 // 미리보기 재생 조작. 원본 <video>를 클립 구간 안에서만 재생하고, 효과음을 맞춰 튼다.
 import { useCallback, useEffect, useRef, useState } from "react";
 
+import { clipDuration, clipSegments, relToSource, segmentOffsets, sourceToRel } from "@/lib/studio/segments";
 import { scheduleSfx } from "@/lib/studio/sfx";
 import type { Clip, SfxKind } from "@/lib/studio/types";
 
@@ -33,6 +34,8 @@ export function usePlayer(video: HTMLVideoElement | null, clip: Clip | null): Pl
   const audioRef = useRef<AudioContext | null>(null);
   const sfxBusRef = useRef<GainNode | null>(null);
   const clipRef = useRef(clip);
+  /** 지금 재생 중인 컷 번호 */
+  const segmentRef = useRef(0);
 
   useEffect(() => {
     clipRef.current = clip;
@@ -55,27 +58,46 @@ export function usePlayer(video: HTMLVideoElement | null, clip: Clip | null): Pl
     setPlaying(false);
   }, [video, stopSfx]);
 
+  /** 클립 시간 fromRel부터 index번 컷이 끝날 때까지 들어 있는 효과음을 예약한다. (컷을 넘어갈 때마다 다시 부른다) */
+  const scheduleSegmentSfx = useCallback(
+    (fromRel: number, index: number) => {
+      const current = clipRef.current;
+      if (!current) return;
+      const ctx = audio();
+      if (!sfxBusRef.current) {
+        const bus = ctx.createGain();
+        bus.connect(ctx.destination);
+        sfxBusRef.current = bus;
+      }
+      const segments = clipSegments(current);
+      const offsets = segmentOffsets(segments);
+      const segEnd = offsets[index] + (segments[index].end - segments[index].start);
+      for (const cue of current.sfx) {
+        if (cue.at >= fromRel - 0.02 && cue.at < segEnd) {
+          scheduleSfx(ctx, cue.kind, ctx.currentTime + (cue.at - fromRel) + 0.05, sfxBusRef.current);
+        }
+      }
+    },
+    [audio],
+  );
+
   const play = useCallback(
     (fromRel?: number) => {
       const current = clipRef.current;
       if (!video || !current) return;
-      const length = current.end - current.start;
-      let t = fromRel ?? video.currentTime - current.start;
+      const length = clipDuration(current);
+      let t = fromRel ?? sourceToRel(current, video.currentTime);
       if (t < 0 || t >= length - 0.05) t = 0;
-      setVideoTime(video, current.start + t);
+      const { time, index } = relToSource(current, t);
+      segmentRef.current = index;
+      setVideoTime(video, time);
       void video.play();
       setPlaying(true);
 
       stopSfx();
-      const ctx = audio();
-      const bus = ctx.createGain();
-      bus.connect(ctx.destination);
-      sfxBusRef.current = bus;
-      for (const cue of current.sfx) {
-        if (cue.at >= t - 0.02) scheduleSfx(ctx, cue.kind, ctx.currentTime + (cue.at - t) + 0.05, bus);
-      }
+      scheduleSegmentSfx(t, index);
     },
-    [video, audio, stopSfx],
+    [video, stopSfx, scheduleSegmentSfx],
   );
 
   const seekSource = useCallback(
@@ -91,7 +113,7 @@ export function usePlayer(video: HTMLVideoElement | null, clip: Clip | null): Pl
   const seekRel = useCallback(
     (rel: number) => {
       const current = clipRef.current;
-      if (current) seekSource(current.start + rel);
+      if (current) seekSource(relToSource(current, rel).time);
     },
     [seekSource],
   );
@@ -104,22 +126,32 @@ export function usePlayer(video: HTMLVideoElement | null, clip: Clip | null): Pl
     [audio],
   );
 
-  // 재생 중에는 매 화면마다 시간을 갱신하고, 클립 끝에 닿으면 멈춘다.
+  // 재생 중에는 매 화면마다 시간을 갱신한다. 컷 끝에 닿으면 다음 컷으로 넘어가고, 마지막 컷이 끝나면 멈춘다.
   useEffect(() => {
     if (!playing || !video) return;
     let raf = 0;
     const tick = () => {
       const current = clipRef.current;
-      setSourceTime(video.currentTime);
-      if (current && (video.currentTime >= current.end || video.ended)) {
-        pause();
-        return;
+      if (current) {
+        const segments = clipSegments(current);
+        const index = Math.min(segmentRef.current, segments.length - 1);
+        if (video.currentTime >= segments[index].end || video.ended) {
+          if (index + 1 < segments.length && !video.ended) {
+            segmentRef.current = index + 1;
+            setVideoTime(video, segments[index + 1].start);
+            scheduleSegmentSfx(segmentOffsets(segments)[index + 1], index + 1);
+          } else {
+            pause();
+            return;
+          }
+        }
       }
+      setSourceTime(video.currentTime);
       raf = requestAnimationFrame(tick);
     };
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
-  }, [playing, video, pause]);
+  }, [playing, video, pause, scheduleSegmentSfx]);
 
   useEffect(() => {
     if (!video) return;
@@ -149,7 +181,8 @@ export function usePlayer(video: HTMLVideoElement | null, clip: Clip | null): Pl
     // 멈춤 상태(playing)는 위의 "pause" 이벤트에서 바뀐다.
     video.pause();
     stopSfx();
-    setVideoTime(video, current.start);
+    segmentRef.current = 0;
+    setVideoTime(video, clipSegments(current)[0].start);
     // clipId가 바뀔 때만 실행한다.
   }, [clipId, video, stopSfx]);
 
@@ -158,7 +191,7 @@ export function usePlayer(video: HTMLVideoElement | null, clip: Clip | null): Pl
   return {
     playing,
     sourceTime,
-    rel: sourceTime - (clip?.start ?? 0),
+    rel: clip ? sourceToRel(clip, sourceTime) : 0,
     frame,
     play,
     pause,

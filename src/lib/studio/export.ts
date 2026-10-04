@@ -1,7 +1,9 @@
 // 클립 하나를 세로 쇼츠 영상 파일로 저장한다.
 // 화면(캔버스)에 그리면서 동시에 녹화하는 방식이라 클립 길이만큼 시간이 걸린다. (45초 클립 → 약 45초)
+// 컷이 여러 개면 컷을 차례로 재생하며 이어서 녹화한다. 컷을 넘어가는 순간에는 녹화를 잠깐 멈춘다.
 // 녹화 중 다른 탭으로 넘어가면 브라우저가 그리기를 멈추므로, 저장이 끝날 때까지 이 탭을 띄워 둬야 한다.
 import { drawFrame } from "./render";
+import { clipDuration, clipSegments, segmentOffsets } from "./segments";
 import type { FontFamilies } from "./render";
 import { scheduleSfx } from "./sfx";
 import { CANVAS_HEIGHT, CANVAS_WIDTH } from "./templates";
@@ -60,8 +62,12 @@ export async function exportClip({ sourceUrl, clip, template, fonts, onProgress,
   audioContext.createMediaElementSource(video).connect(audioOut);
   await audioContext.resume();
 
+  const segments = clipSegments(clip);
+  const offsets = segmentOffsets(segments);
+  const total = clipDuration(clip);
+
   if (video.readyState < 1) await once(video, "loadedmetadata");
-  video.currentTime = clip.start;
+  video.currentTime = segments[0].start;
   await once(video, "seeked");
   drawFrame(ctx, video, template, clip, 0, fonts);
 
@@ -73,9 +79,7 @@ export async function exportClip({ sourceUrl, clip, template, fonts, onProgress,
   };
   const stopped = once(recorder, "stop");
 
-  const length = clip.end - clip.start;
   let finished = false;
-
   const finish = () => {
     if (finished) return;
     finished = true;
@@ -84,29 +88,52 @@ export async function exportClip({ sourceUrl, clip, template, fonts, onProgress,
   };
   signal?.addEventListener("abort", finish, { once: true });
 
-  const draw = () => {
-    if (finished) return;
-    const t = video.currentTime - clip.start;
-    drawFrame(ctx, video, template, clip, t, fonts);
-    onProgress(Math.min(1, t / length));
-    if (t >= length || video.ended) {
-      finish();
-      return;
-    }
-    if ("requestVideoFrameCallback" in video) video.requestVideoFrameCallback(draw);
-    else requestAnimationFrame(draw);
-  };
+  /** index번 컷을 끝까지 재생하며 그린다. */
+  const playSegment = (index: number) =>
+    new Promise<void>((resolve) => {
+      const seg = segments[index];
+      const offset = offsets[index];
+      const draw = () => {
+        if (finished) return resolve();
+        const t = offset + Math.max(0, video.currentTime - seg.start);
+        drawFrame(ctx, video, template, clip, t, fonts);
+        onProgress(Math.min(1, t / total));
+        if (video.currentTime >= seg.end || video.ended) return resolve();
+        if ("requestVideoFrameCallback" in video) video.requestVideoFrameCallback(draw);
+        else requestAnimationFrame(draw);
+      };
+      const onTime = () => {
+        if (video.currentTime >= seg.end) {
+          video.removeEventListener("timeupdate", onTime);
+          resolve();
+        }
+      };
+      video.addEventListener("timeupdate", onTime);
+      video.addEventListener("ended", () => resolve(), { once: true });
+      draw();
+    });
 
   recorder.start(1000);
-  await video.play();
-  // 재생이 실제로 시작된 시점을 기준으로 효과음을 예약한다.
-  const base = audioContext.currentTime - (video.currentTime - clip.start);
-  for (const cue of clip.sfx) scheduleSfx(audioContext, cue.kind, base + cue.at, audioOut);
-  draw();
-  video.addEventListener("timeupdate", () => {
-    if (video.currentTime - clip.start >= length) finish();
-  });
-  video.addEventListener("ended", finish);
+  for (let i = 0; i < segments.length && !finished; i++) {
+    if (i > 0) {
+      // 다음 컷으로 넘어가는 동안은 녹화를 잠깐 멈춰서, 멈춘 화면이 영상에 들어가지 않게 한다.
+      video.pause();
+      recorder.pause();
+      video.currentTime = segments[i].start;
+      await once(video, "seeked");
+      drawFrame(ctx, video, template, clip, offsets[i], fonts);
+      recorder.resume();
+    }
+    await video.play();
+    // 이 컷이 실제로 재생되기 시작한 시점을 기준으로, 이 컷 안의 효과음만 예약한다.
+    const base = audioContext.currentTime - (video.currentTime - segments[i].start);
+    const segEnd = offsets[i] + (segments[i].end - segments[i].start);
+    for (const cue of clip.sfx) {
+      if (cue.at >= offsets[i] && cue.at < segEnd) scheduleSfx(audioContext, cue.kind, base + (cue.at - offsets[i]), audioOut);
+    }
+    await playSegment(i);
+  }
+  finish();
 
   await stopped;
   stream.getTracks().forEach((t) => t.stop());

@@ -6,6 +6,7 @@ import { useEffect, useRef } from "react";
 
 import { activeSubtitle, drawFrame, drawText, subtitleStyle } from "@/lib/studio/render";
 import type { FontFamilies } from "@/lib/studio/render";
+import { clipDuration } from "@/lib/studio/segments";
 import { formatTime } from "@/lib/studio/subtitles";
 import { CANVAS_HEIGHT, CANVAS_WIDTH } from "@/lib/studio/templates";
 import type { Template, TextStyle } from "@/lib/studio/templates";
@@ -30,7 +31,7 @@ function guideStyle(style: TextStyle): TextStyle {
 export function Preview({ video, clip, template, fonts, fontsReady, player }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const rel = player.rel;
-  const length = clip.end - clip.start;
+  const length = clipDuration(clip);
 
   useEffect(() => {
     const ctx = canvasRef.current?.getContext("2d");

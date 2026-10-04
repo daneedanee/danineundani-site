@@ -1,14 +1,16 @@
 "use client";
 
 // 선택한 클립의 구간·문구·화면·자막·효과음을 고치는 곳.
-import { Minus, Play, Plus, Trash2 } from "lucide-react";
+import { Play, Plus, Trash2 } from "lucide-react";
+import { useState } from "react";
 
 import { activeSubtitle } from "@/lib/studio/render";
+import { clipDuration, clipSegments, segmentOffsets, segmentsPatch } from "@/lib/studio/segments";
 import { sfxLabel, sfxList } from "@/lib/studio/sfx";
-import { cuesForClip, formatTime, newId, round } from "@/lib/studio/subtitles";
+import { cuesForSegments, formatTime, newId, round } from "@/lib/studio/subtitles";
 import type { Cue } from "@/lib/studio/subtitles";
 import type { Template } from "@/lib/studio/templates";
-import type { Clip, SfxCue, Subtitle } from "@/lib/studio/types";
+import type { Clip, Segment, SfxCue, Subtitle } from "@/lib/studio/types";
 import { cn } from "@/lib/utils";
 
 import { Button, inputClass, Section, Slider } from "./ui";
@@ -45,25 +47,46 @@ function TimeInput({ value, onChange, label }: { value: number; onChange: (v: nu
   );
 }
 
-function Nudge({ onClick, children, label }: { onClick: () => void; children: React.ReactNode; label: string }) {
+/** "분:초" 또는 초로 적는 시각 칸. 칸을 벗어나거나 Enter를 누르면 반영된다. */
+function ClockInput({ value, onChange, label }: { value: number; onChange: (v: number) => void; label: string }) {
+  function commit(text: string) {
+    const parts = text.trim().replace(",", ".").split(":").map(Number);
+    if (!parts.length || parts.some((n) => !Number.isFinite(n))) return;
+    onChange(parts.reduce((total, part) => total * 60 + part, 0));
+  }
   return (
-    <button
-      type="button"
-      onClick={onClick}
+    <input
+      key={value}
+      defaultValue={formatTime(value, true)}
+      onBlur={(e) => commit(e.target.value)}
+      onKeyDown={(e) => {
+        if (e.key === "Enter") commit(e.currentTarget.value);
+      }}
+      className="w-[72px] rounded-[6px] border border-white/15 bg-black/40 px-1.5 py-1 text-center text-[12px] tabular-nums text-white outline-none focus-visible:border-coral"
       aria-label={label}
-      className="grid size-7 place-items-center rounded-[6px] border border-white/15 text-white/70 hover:bg-white/10"
-    >
-      {children}
-    </button>
+    />
   );
 }
 
 export function ClipEditor({ clip, template, onApplyAll, sourceDuration, cues, player, onChange }: Props) {
-  const length = clip.end - clip.start;
-  function setRange(start: number, end: number) {
-    const s = Math.max(0, Math.min(start, sourceDuration - 1));
-    const e = Math.max(s + 1, Math.min(end, sourceDuration));
-    onChange({ start: round(s), end: round(e) });
+  const length = clipDuration(clip);
+  const segments = clipSegments(clip);
+  const offsets = segmentOffsets(segments);
+  const [selectedSeg, setSelectedSeg] = useState(0);
+  const activeSeg = Math.min(selectedSeg, segments.length - 1);
+
+  /** 컷 목록을 바꾸고, 자막 파일이 있으면 자막도 새 컷에 맞춰 다시 가져온다. */
+  function setSegments(next: Segment[]) {
+    const cleaned = next.map((seg) => {
+      const start = round(Math.max(0, Math.min(seg.start, sourceDuration - 0.5)));
+      const end = round(Math.max(start + 0.5, Math.min(seg.end, sourceDuration)));
+      return { start, end };
+    });
+    onChange({ ...segmentsPatch(cleaned), ...(cues.length ? { subtitles: cuesForSegments(cues, cleaned) } : {}) });
+  }
+
+  function updateSegment(index: number, patch: Partial<Segment>) {
+    setSegments(segments.map((seg, i) => (i === index ? { ...seg, ...patch } : seg)));
   }
 
   // ── 자막 ──
@@ -82,34 +105,62 @@ export function ClipEditor({ clip, template, onApplyAll, sourceDuration, cues, p
 
   return (
     <div>
-      <Section title="구간" hint={`길이 ${round(length)}초 · 원본 ${formatTime(clip.start, true)} ~ ${formatTime(clip.end, true)}`}>
-        <div className="grid gap-2 text-[13px] text-white/70">
-          {(
-            [
-              ["시작", clip.start, (v: number) => setRange(v, clip.end)],
-              ["끝", clip.end, (v: number) => setRange(clip.start, v)],
-            ] as const
-          ).map(([label, value, set]) => (
-            <div key={label} className="flex items-center gap-1.5">
-              <span className="w-8">{label}</span>
-              <Nudge label={`${label} 1초 앞으로`} onClick={() => set(value - 1)}>
-                <Minus className="size-3.5" />
-              </Nudge>
-              <TimeInput value={value} onChange={set} label={`${label} (초)`} />
-              <Nudge label={`${label} 1초 뒤로`} onClick={() => set(value + 1)}>
-                <Plus className="size-3.5" />
-              </Nudge>
-              <span className="ml-1 tabular-nums text-white/40">{formatTime(value, true)}</span>
-            </div>
+      <Section
+        title={segments.length > 1 ? `구간 · 컷 ${segments.length}개 이어붙이기` : "구간"}
+        hint={`총 ${round(length)}초. 컷을 여러 개 넣으면 위에서부터 차례로 이어붙여요. 시각은 0:36 처럼 적어요.`}
+      >
+        <ul className="grid gap-1.5">
+          {segments.map((seg, i) => (
+            <li
+              key={i}
+              onClick={() => setSelectedSeg(i)}
+              className={cn(
+                "flex items-center gap-1.5 rounded-[8px] border px-2 py-1.5 text-[12px] text-white/70",
+                i === activeSeg ? "border-coral/60 bg-coral/10" : "border-white/10",
+              )}
+            >
+              <span className="w-9 shrink-0 font-bold text-white">컷 {i + 1}</span>
+              <ClockInput value={seg.start} onChange={(v) => updateSegment(i, { start: v })} label={`컷 ${i + 1} 시작`} />
+              <span>~</span>
+              <ClockInput value={seg.end} onChange={(v) => updateSegment(i, { end: v })} label={`컷 ${i + 1} 끝`} />
+              <span className="w-10 text-right tabular-nums text-white/40">{round(seg.end - seg.start)}초</span>
+              <button
+                type="button"
+                onClick={() => player.seekRel(offsets[i])}
+                className="ml-auto grid size-7 place-items-center rounded-[6px] text-white/60 hover:text-coral"
+                aria-label={`컷 ${i + 1} 처음으로 이동`}
+              >
+                <Play className="size-3.5" />
+              </button>
+              {segments.length > 1 && (
+                <button
+                  type="button"
+                  onClick={() => setSegments(segments.filter((_, k) => k !== i))}
+                  className="grid size-7 place-items-center rounded-[6px] text-white/40 hover:text-[#ff8a77]"
+                  aria-label={`컷 ${i + 1} 지우기`}
+                >
+                  <Trash2 className="size-3.5" />
+                </button>
+              )}
+            </li>
           ))}
-          <div className="mt-1 flex flex-wrap gap-1.5">
-            <Button size="sm" onClick={() => setRange(player.sourceTime, clip.end)}>
-              지금 위치를 시작으로
-            </Button>
-            <Button size="sm" onClick={() => setRange(clip.start, player.sourceTime)}>
-              지금 위치를 끝으로
-            </Button>
-          </div>
+        </ul>
+        <div className="mt-2 flex flex-wrap gap-1.5">
+          <Button size="sm" onClick={() => updateSegment(activeSeg, { start: player.sourceTime })}>
+            지금 위치를 컷 {activeSeg + 1} 시작으로
+          </Button>
+          <Button size="sm" onClick={() => updateSegment(activeSeg, { end: player.sourceTime })}>
+            지금 위치를 컷 {activeSeg + 1} 끝으로
+          </Button>
+          <Button
+            size="sm"
+            onClick={() => {
+              setSegments([...segments, { start: player.sourceTime, end: player.sourceTime + 5 }]);
+              setSelectedSeg(segments.length);
+            }}
+          >
+            <Plus className="size-3.5" />컷 추가
+          </Button>
         </div>
       </Section>
 
@@ -198,7 +249,7 @@ export function ClipEditor({ clip, template, onApplyAll, sourceDuration, cues, p
       >
         <div className="flex flex-wrap gap-1.5">
           {cues.length > 0 && (
-            <Button size="sm" onClick={() => onChange({ subtitles: cuesForClip(cues, clip.start, clip.end) })}>
+            <Button size="sm" onClick={() => onChange({ subtitles: cuesForSegments(cues, segments) })}>
               자막 파일에서 다시 가져오기
             </Button>
           )}
