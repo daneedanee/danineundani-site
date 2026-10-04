@@ -25,6 +25,10 @@ export type Clip = {
   score: number | null;
   /** 가장 크게 터진 순간 (원본 기준) */
   peak: number | null;
+  /** 대본으로 고른 클립일 때: hook(후킹) / core(핵심) */
+  kind?: "hook" | "core";
+  /** 대본으로 고른 클립일 때: 고른 이유 */
+  note?: string;
   title: string;
   bottom: string;
   /** 영상 확대 배율 (1 = 칸을 빈틈없이 채움) */
