@@ -3,24 +3,6 @@ import type { Subtitle } from "./types";
 
 export const newId = () => (typeof crypto !== "undefined" && crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2));
 
-/** 여러 줄 글을 클립 길이에 맞춰 나눠 배치한다. 글자가 많은 줄은 더 오래 보여준다. */
-export function distributeLines(text: string, duration: number): Subtitle[] {
-  const lines = text
-    .split("\n")
-    .map((l) => l.trim())
-    .filter(Boolean);
-  if (!lines.length) return [];
-  const weights = lines.map((l) => Math.max(4, l.replace(/\*/g, "").length));
-  const total = weights.reduce((a, b) => a + b, 0);
-  let t = 0;
-  return lines.map((line, i) => {
-    const length = (weights[i] / total) * duration;
-    const sub = { id: newId(), start: round(t), end: round(t + length), text: line };
-    t += length;
-    return sub;
-  });
-}
-
 export function round(value: number) {
   return Math.round(value * 10) / 10;
 }

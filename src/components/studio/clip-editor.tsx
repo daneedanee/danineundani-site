@@ -2,11 +2,10 @@
 
 // 선택한 클립의 구간·문구·화면·자막·효과음을 고치는 곳.
 import { Minus, Play, Plus, Trash2 } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
 
 import { activeSubtitle } from "@/lib/studio/render";
 import { sfxLabel, sfxList } from "@/lib/studio/sfx";
-import { cuesForClip, distributeLines, formatTime, newId, round } from "@/lib/studio/subtitles";
+import { cuesForClip, formatTime, newId, round } from "@/lib/studio/subtitles";
 import type { Cue } from "@/lib/studio/subtitles";
 import type { Template } from "@/lib/studio/templates";
 import type { Clip, SfxCue, Subtitle } from "@/lib/studio/types";
@@ -61,15 +60,6 @@ function Nudge({ onClick, children, label }: { onClick: () => void; children: Re
 
 export function ClipEditor({ clip, template, onApplyAll, sourceDuration, cues, player, onChange }: Props) {
   const length = clip.end - clip.start;
-  const [bulk, setBulk] = useState("");
-  const [syncIndex, setSyncIndex] = useState<number | null>(null);
-  const syncRef = useRef<{ subs: Subtitle[]; index: number } | null>(null);
-  const relRef = useRef(player.rel);
-
-  useEffect(() => {
-    relRef.current = player.rel;
-  }, [player.rel]);
-
   function setRange(start: number, end: number) {
     const s = Math.max(0, Math.min(start, sourceDuration - 1));
     const e = Math.max(s + 1, Math.min(end, sourceDuration));
@@ -80,57 +70,6 @@ export function ClipEditor({ clip, template, onApplyAll, sourceDuration, cues, p
   function updateSubtitle(id: string, patch: Partial<Subtitle>) {
     onChange({ subtitles: clip.subtitles.map((s) => (s.id === id ? { ...s, ...patch } : s)) });
   }
-
-  function bulkLines() {
-    const lines = bulk
-      .split("\n")
-      .map((l) => l.trim())
-      .filter(Boolean);
-    return lines.length ? lines : clip.subtitles.map((s) => s.text);
-  }
-
-  function startSync() {
-    const lines = bulkLines();
-    if (!lines.length) return;
-    const subs = lines.map((text) => ({ id: newId(), start: length, end: length, text }));
-    syncRef.current = { subs, index: 0 };
-    onChange({ subtitles: subs });
-    setSyncIndex(0);
-    player.play(0);
-  }
-
-  // 맞추는 중: 스페이스바를 누를 때마다 다음 자막이 시작된다. 마지막 자막 뒤에 한 번 더 누르면 마지막 자막이 끝난다.
-  useEffect(() => {
-    if (syncIndex === null) return;
-    function onKey(e: KeyboardEvent) {
-      if (e.code !== "Space") return;
-      e.preventDefault();
-      e.stopImmediatePropagation();
-      const state = syncRef.current;
-      if (!state) return;
-      const t = round(Math.max(0, relRef.current));
-      const subs = [...state.subs];
-      if (state.index > 0) subs[state.index - 1] = { ...subs[state.index - 1], end: t };
-      if (state.index < subs.length) subs[state.index] = { ...subs[state.index], start: t, end: length };
-      state.subs = subs;
-      state.index += 1;
-      onChange({ subtitles: subs });
-      if (state.index > subs.length) {
-        setSyncIndex(null);
-        player.pause();
-      } else setSyncIndex(state.index);
-    }
-    window.addEventListener("keydown", onKey, true);
-    return () => window.removeEventListener("keydown", onKey, true);
-  }, [syncIndex, length, onChange, player]);
-
-  // 맞추다가 재생이 끝나면 맞추기도 끝낸다.
-  useEffect(() => {
-    if (syncIndex !== null && !player.playing) {
-      const id = setTimeout(() => setSyncIndex(null), 300);
-      return () => clearTimeout(id);
-    }
-  }, [player.playing, syncIndex]);
 
   const activeSubtitleId = activeSubtitle(clip.subtitles, player.rel)?.id;
 
@@ -255,25 +194,12 @@ export function ClipEditor({ clip, template, onApplyAll, sourceDuration, cues, p
 
       <Section
         title={`자막 (${clip.subtitles.length})`}
-        hint="한 줄에 자막 하나씩 붙여 넣고, 고르게 배치하거나 재생하면서 스페이스바로 넘기며 타이밍을 맞춰요."
+        hint="자막 파일(SRT)에서 클립 구간만큼 자동으로 들어가요. 틀린 글자나 시간만 아래에서 고치면 돼요."
       >
-        <textarea
-          rows={4}
-          value={bulk}
-          onChange={(e) => setBulk(e.target.value)}
-          placeholder={"자막을 한 줄에 하나씩\n여기에 붙여 넣으세요"}
-          className={cn(inputClass, "resize-y")}
-        />
-        <div className="mt-2 flex flex-wrap gap-1.5">
-          <Button size="sm" disabled={!bulkLines().length} onClick={() => onChange({ subtitles: distributeLines(bulkLines().join("\n"), length) })}>
-            고르게 배치
-          </Button>
-          <Button size="sm" tone={syncIndex !== null ? "primary" : "ghost"} disabled={!bulkLines().length || syncIndex !== null} onClick={startSync}>
-            {syncIndex !== null ? `스페이스바로 넘기는 중 (${Math.min(syncIndex, clip.subtitles.length)}/${clip.subtitles.length})` : "재생하며 맞추기"}
-          </Button>
+        <div className="flex flex-wrap gap-1.5">
           {cues.length > 0 && (
             <Button size="sm" onClick={() => onChange({ subtitles: cuesForClip(cues, clip.start, clip.end) })}>
-              자막 파일에서 가져오기
+              자막 파일에서 다시 가져오기
             </Button>
           )}
           {clip.subtitles.length > 0 && (
@@ -282,10 +208,8 @@ export function ClipEditor({ clip, template, onApplyAll, sourceDuration, cues, p
             </Button>
           )}
         </div>
-        {syncIndex !== null && (
-          <p className="mt-2 rounded-[8px] bg-coral/15 px-3 py-2 text-[12px] leading-5 text-[#ffb3a6]">
-            자막이 시작될 때마다 스페이스바를 누르세요. 마지막 자막이 끝날 때 한 번 더 누르면 끝나요.
-          </p>
+        {!clip.subtitles.length && !cues.length && (
+          <p className="text-[12px] leading-5 text-white/40">자막 파일을 넣지 않아서 자막이 없어요. 처음 화면에서 SRT 파일을 함께 넣어 주세요.</p>
         )}
 
         {clip.subtitles.length > 0 && (
