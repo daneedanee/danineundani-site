@@ -7,6 +7,7 @@
 import { Download, FileVideo, Plus, Trash2, Upload } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
+import { buildChatPrompt, parsePastedPicks } from "@/lib/studio/ai-picks";
 import type { AiPick, PickResponse } from "@/lib/studio/ai-picks";
 import { analyzeAudio } from "@/lib/studio/audio-analysis";
 import { exportClip, fileExtension, pickMimeType } from "@/lib/studio/export";
@@ -145,7 +146,11 @@ export function Studio({ fonts }: { fonts: FontFamilies }) {
   const [cueFileName, setCueFileName] = useState("");
   const [clipLength, setClipLength] = useState(45);
   const [clipCount, setClipCount] = useState(5);
-  const [pickMode, setPickMode] = useState<"script" | "sound">("script");
+  // chat: Claude 채팅에 직접 붙여 넣기(사용료 없음) / script: AI 자동(API 사용료) / sound: 소리 크기
+  const [pickMode, setPickMode] = useState<"chat" | "script" | "sound">("chat");
+  const [pasted, setPasted] = useState("");
+  const [copied, setCopied] = useState(false);
+  const pastedPicks = useMemo(() => parsePastedPicks(pasted), [pasted]);
   const [analyzeStep, setAnalyzeStep] = useState<"sound" | "sound-then-script" | "script">("sound");
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState("");
@@ -244,6 +249,16 @@ export function Studio({ fonts }: { fonts: FontFamilies }) {
     setCueFileName(next.name);
   }
 
+  async function copyChatPrompt() {
+    const text = buildChatPrompt(cues, clipLength, clipCount);
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(true);
+    } catch {
+      setError("복사하지 못했어요. 브라우저 주소창 옆의 권한 설정에서 클립보드를 허용해 주세요.");
+    }
+  }
+
   async function analyze() {
     if (!file) return;
     const controller = new AbortController();
@@ -257,7 +272,12 @@ export function Studio({ fonts }: { fonts: FontFamilies }) {
       // 소리 분석은 타임라인 그래프에도 쓰이므로 대본으로 고를 때도 먼저 한다.
       const env = await analyzeAudio(file, setProgress, controller.signal);
       let next: Clip[];
-      if (byScript) {
+      if (pickMode === "chat") {
+        next = pastedPicks
+          .filter((p) => p.start < env.duration - 1)
+          .map((p) => makeClipFromPick({ ...p, end: Math.min(p.end, env.duration) }, cues, template.defaultBottom ?? ""));
+        if (!next.length) setError("붙여 넣은 구간이 영상 길이를 벗어나요. 시각을 확인해 주세요.");
+      } else if (byScript) {
         setAnalyzeStep("script");
         const picks = await fetchAiPicks(cues, clipLength, clipCount, controller.signal);
         next = picks.map((p) => makeClipFromPick(p, cues, template.defaultBottom ?? ""));
@@ -449,27 +469,70 @@ export function Studio({ fonts }: { fonts: FontFamilies }) {
               <p className="mb-2 text-[14px] font-bold">구간 고르는 기준</p>
               <Choice
                 value={pickMode}
-                options={["script", "sound"] as const}
+                options={["chat", "script", "sound"] as const}
                 onChange={setPickMode}
-                format={(v) => (v === "script" ? "대본 내용 (AI)" : "소리 크기")}
+                format={(v) => (v === "chat" ? "Claude 채팅에 붙여넣기" : v === "script" ? "AI 자동 (사용료)" : "소리 크기")}
               />
               <p className="mt-2 text-[13px] leading-6 text-white/50">
-                {pickMode === "script"
-                  ? cues.length
-                    ? "AI가 대본을 읽고 핵심 내용과 첫 3초에 붙잡는 구간을 골라, 헤드 문구까지 제안해요. 관리자 로그인(/admin)이 필요하고, 한 번 고를 때마다 AI 사용료가 조금 들어요."
-                    : "대본으로 고르려면 위에 자막 파일을 넣어 주세요."
-                  : "웃음·탄성처럼 소리가 크게 터지는 구간을 골라요. 인터넷 없이 이 컴퓨터에서만 처리해요."}
+                {pickMode === "chat"
+                  ? "쓰시는 Claude 채팅에 대본을 붙여 넣어 구간을 받고, 그 답을 아래에 붙여 넣어요. API 사용료가 들지 않아요."
+                  : pickMode === "script"
+                    ? cues.length
+                      ? "버튼 한 번으로 AI가 대본을 읽고 구간과 헤드 문구를 골라요. 관리자 로그인(/admin)과 Vercel의 ANTHROPIC_API_KEY가 필요하고, 한 번 고를 때마다 사용료가 조금 들어요."
+                      : "대본으로 고르려면 위에 자막 파일을 넣어 주세요."
+                    : "웃음·탄성처럼 소리가 크게 터지는 구간을 골라요. 인터넷 없이 이 컴퓨터에서만 처리해요."}
               </p>
             </div>
+            {pickMode === "chat" && (
+              <div className="grid gap-3 rounded-[12px] border border-white/10 bg-white/[0.03] p-4">
+                <div>
+                  <p className="text-[14px] font-bold">① 대본을 Claude 채팅에 보내기</p>
+                  <p className="mt-1 text-[13px] leading-6 text-white/50">
+                    버튼을 누르면 대본과 고르는 기준, 답 형식이 함께 복사돼요. Claude 채팅 새 대화에 붙여 넣고 보내세요.
+                  </p>
+                  <div className="mt-2 flex flex-wrap items-center gap-2">
+                    <Button size="sm" disabled={!cues.length} onClick={() => void copyChatPrompt()}>
+                      {copied ? "다시 복사하기" : "AI에게 보낼 글 복사"}
+                    </Button>
+                    <a
+                      href="https://claude.ai/new"
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-[13px] text-coral underline-offset-4 hover:underline"
+                    >
+                      Claude 채팅 열기 ↗
+                    </a>
+                    {copied && <span className="text-[12px] text-white/50">복사했어요 (클립 길이·개수가 바뀌면 다시 복사하세요)</span>}
+                  </div>
+                  {!cues.length && <p className="mt-2 text-[12px] text-white/40">먼저 위에 자막 파일을 넣어 주세요.</p>}
+                </div>
+                <div>
+                  <p className="text-[14px] font-bold">② 받은 답 붙여 넣기</p>
+                  <p className="mt-1 text-[13px] leading-6 text-white/50">
+                    답 전체를 그대로 붙여 넣으면 돼요. 직접 쓸 때는 한 줄에 하나씩 <code className="text-white/70">3:21 ~ 4:05 | 후킹 | 첫 줄 / 둘째 줄</code>
+                  </p>
+                  <textarea
+                    rows={6}
+                    value={pasted}
+                    onChange={(e) => setPasted(e.target.value)}
+                    placeholder={"3:21.5 ~ 4:05.0 | 후킹 | 블로그 글 끝에 / 이것 안 넣으면 손해 | 이유\n12:03 ~ 12:48 | 핵심 | 문의 오는 글의 / 구조 7가지 | 이유"}
+                    className="mt-2 w-full resize-y rounded-[8px] border border-white/15 bg-black/40 px-3 py-2 text-[13px] text-white placeholder:text-white/25 outline-none focus-visible:border-coral"
+                  />
+                  <p className="mt-1 text-[12px] text-white/50">
+                    {pasted.trim() ? `알아본 구간 ${pastedPicks.length}개` : "아직 붙여 넣은 내용이 없어요"}
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
 
           <Button
             tone="primary"
             className="mt-10 h-12 w-full text-[16px]"
-            disabled={!file || (pickMode === "script" && !cues.length)}
+            disabled={!file || (pickMode === "script" && !cues.length) || (pickMode === "chat" && !pastedPicks.length)}
             onClick={() => void analyze()}
           >
-            {pickMode === "script" ? "대본에서 쇼츠 구간 찾기" : "터지는 구간 찾기"}
+            {pickMode === "chat" ? "붙여 넣은 구간으로 시작" : pickMode === "script" ? "대본에서 쇼츠 구간 찾기" : "터지는 구간 찾기"}
           </Button>
         </main>
       )}
@@ -487,7 +550,11 @@ export function Studio({ fonts }: { fonts: FontFamilies }) {
           ) : (
             <>
               <p className="text-[18px] font-bold">
-                {analyzeStep === "sound-then-script" ? "1/2 영상 소리 읽는 중…" : "소리를 듣고 터지는 구간을 찾는 중…"}
+                {analyzeStep === "sound-then-script"
+                  ? "1/2 영상 소리 읽는 중…"
+                  : pickMode === "chat"
+                    ? "영상을 읽고 클립을 만드는 중…"
+                    : "소리를 듣고 터지는 구간을 찾는 중…"}
               </p>
               <p className="mt-2 text-[13px] text-white/50">1시간 영상은 보통 1~3분 걸려요. 이 탭을 닫지 마세요.</p>
               <div className="mt-6 h-2 w-full overflow-hidden rounded-full bg-white/10">

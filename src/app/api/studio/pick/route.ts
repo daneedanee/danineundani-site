@@ -7,7 +7,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import { betaZodOutputFormat } from "@anthropic-ai/sdk/helpers/beta/zod";
 import { z } from "zod";
 
-import { STUDIO_ADMIN_EMAILS } from "@/lib/studio/ai-picks";
+import { CLIP_CRITERIA, formatTranscript, STUDIO_ADMIN_EMAILS } from "@/lib/studio/ai-picks";
 import type { AiPick, PickRequest, PickResponse } from "@/lib/studio/ai-picks";
 import { supabase } from "@/lib/supabase";
 
@@ -28,29 +28,14 @@ const PickSchema = z.object({
   ),
 });
 
-const SYSTEM_PROMPT = `너는 '다니는다니'(블로그 마케팅 강의·컨설팅) 유튜브 채널의 쇼츠 편집자다.
-롱폼·미드폼 영상의 자막 대본을 읽고, 쇼츠로 잘라 올릴 구간을 고른다.
+// 줄 번호·영어 kind 값은 서버용 구조화 답에만 쓰는 규칙이라 여기서 덧붙인다.
+const SYSTEM_PROMPT = `${CLIP_CRITERIA}
 
-좋은 구간:
-- 그 구간만 봐도 이해되는, 앞뒤 맥락 없이 완결된 이야기
-- 첫 문장이 바로 궁금증·문제·반전을 던지는 구간 (hook)
-- 시청자가 저장하고 싶을 만큼 구체적인 핵심 정보·방법·숫자가 있는 구간 (core)
-- 인사, 자기소개, 구독 부탁, 다음 영상 예고, 광고는 고르지 않는다
-
-규칙:
+답 형식:
 - 클립은 자막 줄 번호로 정한다. first_line의 시작 시각부터 last_line의 끝 시각까지가 한 클립이다.
-- 각 클립의 길이(끝 시각 - 시작 시각)는 요청한 길이에 최대한 가깝게, 요청 길이의 70%~130% 안에 둔다.
-- 문장 중간에서 시작하거나 끝나지 않게 한다.
-- 클립끼리 겹치지 않게 한다.
-- 좋은 순서(가장 먼저 올릴 만한 것)대로 나열한다.
-- title은 영상 맨 위에 크게 들어갈 헤드 문구다. 두 줄로, 한 줄에 공백 포함 12자 이내, 대본에 실제로 나온 내용만 쓴다. 과장하거나 대본에 없는 숫자·약속을 만들지 않는다.
+- kind는 후킹이면 hook, 핵심이면 core.
+- title은 헤드 문구 두 줄을 줄바꿈(\\n)으로 나눈다.
 - reason은 한국어 한 문장.`;
-
-function formatTime(seconds: number) {
-  const m = Math.floor(seconds / 60);
-  const s = (seconds % 60).toFixed(1).padStart(4, "0");
-  return `${m}:${s}`;
-}
 
 function json(body: PickResponse, status = 200) {
   return Response.json(body, { status });
@@ -100,9 +85,7 @@ export async function POST(request: Request) {
   const count = Math.min(15, Math.max(1, Math.round(body.count)));
   const cues = body.cues;
 
-  const transcript = cues
-    .map((c, i) => `#${i} [${formatTime(c.start)}–${formatTime(c.end)}] ${c.text.replace(/\s+/g, " ").trim()}`)
-    .join("\n");
+  const transcript = formatTranscript(cues);
 
   // 3) Claude에게 고르게 한다
   const client = new Anthropic();
