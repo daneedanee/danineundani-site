@@ -1,7 +1,8 @@
 // 클립 하나를 세로 쇼츠 영상 파일로 저장한다.
 // 화면(캔버스)에 그리면서 동시에 녹화하는 방식이라 클립 길이만큼 시간이 걸린다. (45초 클립 → 약 45초)
 // 컷이 여러 개면 컷을 차례로 재생하며 이어서 녹화한다. 컷을 넘어가는 순간에는 녹화를 잠깐 멈춘다.
-// 녹화 중 다른 탭으로 넘어가면 브라우저가 그리기를 멈추므로, 저장이 끝날 때까지 이 탭을 띄워 둬야 한다.
+// 녹화 중 다른 탭으로 넘어가면 브라우저가 화면 그리기를 멈춘다. 그래서 탭이 가려지면 녹화를 잠깐 멈추고,
+// 다시 돌아오면 이어서 녹화한다. (가려진 동안 화면 없이 소리만 녹화되던 문제를 막기 위해)
 import { drawFrame } from "./render";
 import { clipDuration, clipSegments, segmentOffsets } from "./segments";
 import type { FontFamilies } from "./render";
@@ -34,6 +35,8 @@ type ExportOptions = {
   template: Template;
   fonts: FontFamilies;
   onProgress: (ratio: number) => void;
+  /** 탭이 가려져서 저장이 잠깐 멈추면 true, 다시 이어지면 false */
+  onPausedChange?: (paused: boolean) => void;
   signal?: AbortSignal;
 };
 
@@ -41,7 +44,7 @@ function once(target: EventTarget, event: string) {
   return new Promise<void>((resolve) => target.addEventListener(event, () => resolve(), { once: true }));
 }
 
-export async function exportClip({ sourceUrl, clip, template, fonts, onProgress, signal }: ExportOptions): Promise<Blob> {
+export async function exportClip({ sourceUrl, clip, template, fonts, onProgress, onPausedChange, signal }: ExportOptions): Promise<Blob> {
   const mimeType = pickMimeType();
   if (!mimeType) throw new Error("이 브라우저는 영상 저장을 지원하지 않아요. 최신 크롬이나 엣지에서 열어 주세요.");
 
@@ -80,39 +83,69 @@ export async function exportClip({ sourceUrl, clip, template, fonts, onProgress,
   const stopped = once(recorder, "stop");
 
   let finished = false;
+  /** 컷을 재생하며 녹화하는 중인지 (컷 사이를 넘어가는 동안은 false) */
+  let playing = false;
+  /** 탭이 가려져서 잠깐 멈춘 상태인지 */
+  let hiddenPaused = false;
+  let segIndex = 0;
+  let segDone: (() => void) | null = null;
+
+  // 화면을 30분의 1초마다 그린다. requestVideoFrameCallback은 탭이 가려지면 멈춰서,
+  // 그 동안 화면 없이 소리만 녹화되는 문제가 있었다 (2026-10-04). 그래서 탭이 가려지면 아래에서 녹화 자체를 멈춘다.
+  const tick = () => {
+    if (finished || !playing || hiddenPaused) return;
+    const seg = segments[segIndex];
+    const t = offsets[segIndex] + Math.max(0, video.currentTime - seg.start);
+    drawFrame(ctx, video, template, clip, t, fonts);
+    onProgress(Math.min(1, t / total));
+    if ((video.currentTime >= seg.end || video.ended) && segDone) {
+      const done = segDone;
+      segDone = null;
+      done();
+    }
+  };
+  const timer = setInterval(tick, 1000 / 30);
+
   const finish = () => {
     if (finished) return;
     finished = true;
+    clearInterval(timer);
     video.pause();
     if (recorder.state !== "inactive") recorder.stop();
+    segDone?.();
   };
   signal?.addEventListener("abort", finish, { once: true });
 
-  /** index번 컷을 끝까지 재생하며 그린다. */
-  const playSegment = (index: number) =>
-    new Promise<void>((resolve) => {
-      const seg = segments[index];
-      const offset = offsets[index];
-      const draw = () => {
-        if (finished) return resolve();
-        const t = offset + Math.max(0, video.currentTime - seg.start);
-        drawFrame(ctx, video, template, clip, t, fonts);
-        onProgress(Math.min(1, t / total));
-        if (video.currentTime >= seg.end || video.ended) return resolve();
-        if ("requestVideoFrameCallback" in video) video.requestVideoFrameCallback(draw);
-        else requestAnimationFrame(draw);
-      };
-      const onTime = () => {
-        if (video.currentTime >= seg.end) {
-          video.removeEventListener("timeupdate", onTime);
-          resolve();
-        }
-      };
-      video.addEventListener("timeupdate", onTime);
-      video.addEventListener("ended", () => resolve(), { once: true });
-      draw();
-    });
+  // 탭이 가려지면 영상·녹화·효과음 시계를 함께 멈추고, 다시 보이면 이어서 녹화한다.
+  const onVisibility = () => {
+    if (finished || !playing) return;
+    if (document.hidden && !hiddenPaused) {
+      hiddenPaused = true;
+      video.pause();
+      if (recorder.state === "recording") recorder.pause();
+      void audioContext.suspend();
+      onPausedChange?.(true);
+    } else if (!document.hidden && hiddenPaused) {
+      void (async () => {
+        await audioContext.resume();
+        if (recorder.state === "paused") recorder.resume();
+        await video.play();
+        hiddenPaused = false;
+        onPausedChange?.(false);
+      })();
+    }
+  };
+  document.addEventListener("visibilitychange", onVisibility);
 
+  /** 탭이 보일 때까지 기다린다. (가려진 채로 녹화를 시작하지 않게) */
+  const waitUntilVisible = async () => {
+    if (!document.hidden) return;
+    onPausedChange?.(true);
+    while (document.hidden && !finished) await once(document, "visibilitychange");
+    onPausedChange?.(false);
+  };
+
+  await waitUntilVisible();
   recorder.start(1000);
   for (let i = 0; i < segments.length && !finished; i++) {
     if (i > 0) {
@@ -122,18 +155,28 @@ export async function exportClip({ sourceUrl, clip, template, fonts, onProgress,
       video.currentTime = segments[i].start;
       await once(video, "seeked");
       drawFrame(ctx, video, template, clip, offsets[i], fonts);
+      await waitUntilVisible();
       recorder.resume();
     }
+    segIndex = i;
+    const segmentFinished = new Promise<void>((resolve) => {
+      segDone = resolve;
+    });
     await video.play();
+    playing = true;
     // 이 컷이 실제로 재생되기 시작한 시점을 기준으로, 이 컷 안의 효과음만 예약한다.
     const base = audioContext.currentTime - (video.currentTime - segments[i].start);
     const segEnd = offsets[i] + (segments[i].end - segments[i].start);
     for (const cue of clip.sfx) {
       if (cue.at >= offsets[i] && cue.at < segEnd) scheduleSfx(audioContext, cue.kind, base + (cue.at - offsets[i]), audioOut);
     }
-    await playSegment(i);
+    // 재생이 끝난 직후 탭이 가려졌다면 바로 멈춘다.
+    onVisibility();
+    await segmentFinished;
+    playing = false;
   }
   finish();
+  document.removeEventListener("visibilitychange", onVisibility);
 
   await stopped;
   stream.getTracks().forEach((t) => t.stop());
