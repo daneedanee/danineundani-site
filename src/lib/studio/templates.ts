@@ -36,6 +36,8 @@ export type TextStyle = {
   maxLines: number;
   /** 글자 묶음을 세로로 어디에 붙일지. top이면 y가 첫 줄 위, bottom이면 y가 마지막 줄 아래 */
   anchor: "top" | "bottom";
+  /** 위치 기준. canvas면 화면 맨 위에서 y, videoBottom이면 보이는 영상 아랫변에서 y (기본 canvas) */
+  from?: "canvas" | "videoBottom";
   y: number;
 };
 
@@ -48,8 +50,16 @@ export type Template = {
   layout: "band" | "full";
   /** band 레이아웃에서 영상이 들어가는 칸 */
   videoBox: { top: number; height: number };
-  /** 1이면 영상 칸을 빈틈없이 채움. 클수록 확대된다. 클립마다 따로 바꿀 수 있다. */
+  /**
+   * 영상 크기를 정하는 방식.
+   * cover(기본): 영상 칸을 빈틈없이 채운다.
+   * width: 화면 가로폭에 맞춘 크기를 1로 보고 videoZoom배 한다. 영상은 칸 맨 위에 붙는다.
+   */
+  videoFit?: "cover" | "width";
+  /** 영상 확대 배율의 기준값. 클립마다 이 값에 다시 곱해서 조절한다. */
   videoZoom: number;
+  /** 영상 아래쪽을 잘라 낼 비율 기본값 (0~0.4). 화면에 박힌 자막을 가릴 때 쓴다. */
+  cropBottom?: number;
   /** 화면 위쪽을 검게 덮는 그라데이션 (제목이 잘 보이게) */
   topShade?: { height: number; opacity: number };
   /** 새 클립을 만들 때 바닥 문구에 미리 넣어 둘 글 */
@@ -110,6 +120,59 @@ export const templates: Template[] = [
       maxLines: 2,
       anchor: "bottom",
       y: 1440,
+    },
+  },
+  {
+    // 자막이 이미 박힌 가로 미드폼 완성본용 (2026-10-04 대표 작업 방식 기준)
+    // 9:16 화면에 영상을 가로폭의 150%로 키워 거의 정사각형으로 넣고, 아래를 잘라 박힌 자막을 가린다.
+    // 자막은 SRT로 새로 넣고, 보이는 영상 아랫변에 붙는다.
+    id: "dani-midform",
+    name: "미드폼 (자막 박힌 완성본)",
+    description: "가로 완성본을 150%로 키워 가운데에 넣고 아래를 잘라 박힌 자막을 가린다. 제목·바닥 문구는 채널 숏츠와 같다.",
+    background: "#000000",
+    layout: "band",
+    videoFit: "width",
+    videoBox: { top: 520, height: 960 },
+    videoZoom: 1.5,
+    cropBottom: 0.15,
+    defaultBottom: "다니는다니\n블로그마케팅",
+    header: {
+      font: "display",
+      size: 150,
+      color: "#f3ff4f",
+      accent: "#ffffff",
+      stroke: { color: "#000000", width: 22 },
+      sidePadding: 20,
+      letterSpacing: -0.05,
+      spaceScale: 0.5,
+      lineHeight: 1.08,
+      maxLines: 2,
+      anchor: "top",
+      y: 170,
+    },
+    bottom: {
+      font: "display",
+      size: 140,
+      color: "rgba(255,255,255,0.93)",
+      accent: "#f3ff4f",
+      letterSpacing: -0.04,
+      spaceScale: 0.5,
+      lineHeight: 1.02,
+      maxLines: 2,
+      anchor: "top",
+      y: 1530,
+    },
+    subtitle: {
+      font: "plain",
+      size: 60,
+      color: "#ffffff",
+      accent: "#f3ff4f",
+      box: "rgba(0,0,0,0.88)",
+      boxRadius: 2,
+      maxLines: 2,
+      anchor: "bottom",
+      from: "videoBottom",
+      y: -36,
     },
   },
   {

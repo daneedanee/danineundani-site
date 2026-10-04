@@ -520,7 +520,12 @@ export function Studio({ fonts }: { fonts: FontFamilies }) {
             {/* 편집 */}
             <aside className="border-white/10 lg:border-l">
               {clip ? (
-                <ClipEditor key={clip.id} clip={clip} sourceDuration={envelope.duration} cues={cues} player={player} onChange={updateClip} />
+                <ClipEditor
+                  key={clip.id}
+                  clip={clip}
+                  template={template}
+                  onApplyAll={(patch) => setClips((prev) => prev.map((c) => ({ ...c, ...patch })))}
+                  sourceDuration={envelope.duration} cues={cues} player={player} onChange={updateClip} />
               ) : null}
             </aside>
           </div>

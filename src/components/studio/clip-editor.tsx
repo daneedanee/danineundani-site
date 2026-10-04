@@ -4,9 +4,11 @@
 import { Minus, Play, Plus, Trash2 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
+import { activeSubtitle } from "@/lib/studio/render";
 import { sfxLabel, sfxList } from "@/lib/studio/sfx";
 import { cuesForClip, distributeLines, formatTime, newId, round } from "@/lib/studio/subtitles";
 import type { Cue } from "@/lib/studio/subtitles";
+import type { Template } from "@/lib/studio/templates";
 import type { Clip, SfxCue, Subtitle } from "@/lib/studio/types";
 import { cn } from "@/lib/utils";
 
@@ -15,6 +17,9 @@ import type { Player } from "./use-player";
 
 type Props = {
   clip: Clip;
+  template: Template;
+  /** 화면 설정(확대·위치·아래 자르기·자막 위치)을 모든 클립에 똑같이 적용 */
+  onApplyAll: (patch: Pick<Clip, "zoom" | "focusX" | "cropBottom" | "subtitleY">) => void;
   sourceDuration: number;
   cues: Cue[];
   player: Player;
@@ -54,7 +59,7 @@ function Nudge({ onClick, children, label }: { onClick: () => void; children: Re
   );
 }
 
-export function ClipEditor({ clip, sourceDuration, cues, player, onChange }: Props) {
+export function ClipEditor({ clip, template, onApplyAll, sourceDuration, cues, player, onChange }: Props) {
   const length = clip.end - clip.start;
   const [bulk, setBulk] = useState("");
   const [syncIndex, setSyncIndex] = useState<number | null>(null);
@@ -127,7 +132,7 @@ export function ClipEditor({ clip, sourceDuration, cues, player, onChange }: Pro
     }
   }, [player.playing, syncIndex]);
 
-  const activeSubtitle = clip.subtitles.find((s) => player.rel >= s.start && player.rel < s.end)?.id;
+  const activeSubtitleId = activeSubtitle(clip.subtitles, player.rel)?.id;
 
   // ── 효과음 ──
   function addSfx(kind: SfxCue["kind"]) {
@@ -192,9 +197,32 @@ export function ClipEditor({ clip, sourceDuration, cues, player, onChange }: Pro
         </label>
       </Section>
 
-      <Section title="화면">
+      <Section
+        title="화면"
+        action={
+          <Button
+            size="sm"
+            onClick={() =>
+              onApplyAll({ zoom: clip.zoom, focusX: clip.focusX, cropBottom: clip.cropBottom, subtitleY: clip.subtitleY })
+            }
+            title="확대·보이는 위치·아래 자르기·자막 위치를 모든 클립에 똑같이 적용해요"
+          >
+            모든 클립에 적용
+          </Button>
+        }
+      >
         <div className="grid gap-3">
-          <Slider label="확대" value={clip.zoom} min={1} max={2.5} step={0.05} onChange={(zoom) => onChange({ zoom })} format={(v) => `${v.toFixed(2)}배`} />
+          <Slider
+            label="확대"
+            value={clip.zoom}
+            min={0.6}
+            max={2.5}
+            step={0.05}
+            onChange={(zoom) => onChange({ zoom })}
+            format={(v) =>
+              template.videoFit === "width" ? `가로폭의 ${Math.round(v * template.videoZoom * 100)}%` : `${v.toFixed(2)}배`
+            }
+          />
           <Slider
             label="보이는 위치 (왼쪽 ↔ 오른쪽)"
             value={clip.focusX}
@@ -203,6 +231,24 @@ export function ClipEditor({ clip, sourceDuration, cues, player, onChange }: Pro
             step={0.01}
             onChange={(focusX) => onChange({ focusX })}
             format={(v) => (Math.abs(v - 0.5) < 0.02 ? "가운데" : v < 0.5 ? "왼쪽" : "오른쪽")}
+          />
+          <Slider
+            label="아래 자르기 (영상에 박힌 자막 가리기)"
+            value={clip.cropBottom ?? template.cropBottom ?? 0}
+            min={0}
+            max={0.4}
+            step={0.01}
+            onChange={(cropBottom) => onChange({ cropBottom })}
+            format={(v) => (v < 0.005 ? "안 자름" : `${Math.round(v * 100)}%`)}
+          />
+          <Slider
+            label="자막 위치 (위 ↔ 아래)"
+            value={clip.subtitleY ?? 0}
+            min={-700}
+            max={500}
+            step={5}
+            onChange={(subtitleY) => onChange({ subtitleY })}
+            format={(v) => (v === 0 ? "기본" : v < 0 ? `${-v}px 위로` : `${v}px 아래로`)}
           />
         </div>
       </Section>
@@ -249,7 +295,7 @@ export function ClipEditor({ clip, sourceDuration, cues, player, onChange }: Pro
                 key={s.id}
                 className={cn(
                   "flex min-w-0 items-center gap-1.5 rounded-[8px] border px-1.5 py-1.5",
-                  s.id === activeSubtitle ? "border-coral/60 bg-coral/10" : "border-white/10",
+                  s.id === activeSubtitleId ? "border-coral/60 bg-coral/10" : "border-white/10",
                 )}
               >
                 <button
