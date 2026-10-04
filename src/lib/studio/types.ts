@@ -25,12 +25,20 @@ export type Clip = {
   score: number | null;
   /** 가장 크게 터진 순간 (원본 기준) */
   peak: number | null;
+  /** 대본으로 고른 클립일 때: hook(후킹) / core(핵심) */
+  kind?: "hook" | "core";
+  /** 대본으로 고른 클립일 때: 고른 이유 */
+  note?: string;
   title: string;
   bottom: string;
   /** 영상 확대 배율 (1 = 칸을 빈틈없이 채움) */
   zoom: number;
   /** 잘릴 때 어디를 보여줄지. 0 = 왼쪽, 0.5 = 가운데, 1 = 오른쪽 */
   focusX: number;
+  /** 영상 아래쪽을 잘라 낼 비율 (0~0.4). 화면에 박힌 자막을 가릴 때 쓴다. 없으면 양식 기본값 */
+  cropBottom?: number;
+  /** 자막을 양식 기본 위치에서 위(-)·아래(+)로 옮길 거리(px). 없으면 0 */
+  subtitleY?: number;
   subtitles: Subtitle[];
   sfx: SfxCue[];
 };

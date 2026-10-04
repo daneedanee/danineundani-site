@@ -1,7 +1,7 @@
 // 한 장면(프레임)을 그린다. 미리보기와 영상 저장이 모두 이 함수를 쓰므로 보이는 그대로 저장된다.
 import { CANVAS_HEIGHT, CANVAS_WIDTH } from "./templates";
 import type { FontRole, Template, TextStyle } from "./templates";
-import type { Clip } from "./types";
+import type { Clip, Subtitle } from "./types";
 
 export type FontFamilies = Record<FontRole, { family: string; weight: number }>;
 
@@ -127,29 +127,52 @@ export function drawText(ctx: CanvasRenderingContext2D, text: string, style: Tex
   ctx.letterSpacing = "0px";
 }
 
-export function drawVideo(ctx: CanvasRenderingContext2D, video: HTMLVideoElement | null, template: Template, clip: Clip) {
+/** time(초)에 보여야 할 자막. 소수 계산 오차로 시작 시각에 딱 맞춰 이동해도 안 보이는 일이 없게 조금 여유를 둔다. */
+export function activeSubtitle(subtitles: Subtitle[], time: number) {
+  const t = time + 0.001;
+  return subtitles.find((s) => t >= s.start && t < s.end);
+}
+
+/** 영상을 그리고, 보이는 영상의 아랫변 y를 돌려준다. */
+export function drawVideo(ctx: CanvasRenderingContext2D, video: HTMLVideoElement | null, template: Template, clip: Clip): number {
   const box = template.layout === "full" ? { top: 0, height: CANVAS_HEIGHT } : template.videoBox;
+  const boxBottom = box.top + box.height;
+  const cropBottom = clip.cropBottom ?? template.cropBottom ?? 0;
+  const zoom = template.videoZoom * clip.zoom;
+  const ready = !!video && video.videoWidth > 0 && video.readyState >= 2;
+  // 영상을 아직 못 읽었으면 16:9로 보고 자리를 잡는다.
+  const vw = ready ? video.videoWidth : 1920;
+  const vh = ready ? video.videoHeight : 1080;
+
+  const scale = template.videoFit === "width" ? (CANVAS_WIDTH / vw) * zoom : Math.max(CANVAS_WIDTH / vw, box.height / vh) * zoom;
+  const dw = vw * scale;
+  const dh = vh * scale;
+  const dx = (CANVAS_WIDTH - dw) * clip.focusX;
+  const dy = template.videoFit === "width" ? box.top : box.top + (box.height - dh) / 2;
+  const visibleBottom = Math.min(boxBottom, dy + dh * (1 - cropBottom));
+
   ctx.save();
   ctx.beginPath();
-  ctx.rect(0, box.top, CANVAS_WIDTH, box.height);
+  ctx.rect(0, box.top, CANVAS_WIDTH, Math.max(0, visibleBottom - box.top));
   ctx.clip();
-  if (video && video.videoWidth && video.readyState >= 2) {
-    const vw = video.videoWidth;
-    const vh = video.videoHeight;
-    const scale = Math.max(CANVAS_WIDTH / vw, box.height / vh) * clip.zoom;
-    const dw = vw * scale;
-    const dh = vh * scale;
-    const dx = (CANVAS_WIDTH - dw) * clip.focusX;
-    const dy = box.top + (box.height - dh) / 2;
+  if (ready) {
     ctx.drawImage(video, dx, dy, dw, dh);
   } else {
     ctx.fillStyle = "#2a2a2a";
     ctx.fillRect(0, box.top, CANVAS_WIDTH, box.height);
   }
   ctx.restore();
+  return visibleBottom;
 }
 
-/** time: 클립 시작점부터 흐른 시간(초) */
+/** 클립별 자막 위치 조정과 "영상 아랫변 기준"을 반영한 자막 모양 */
+export function subtitleStyle(template: Template, clip: Clip, videoBottom: number): TextStyle {
+  const style = template.subtitle;
+  const base = style.from === "videoBottom" ? videoBottom : 0;
+  return { ...style, y: base + style.y + (clip.subtitleY ?? 0) };
+}
+
+/** time: 클립 시작점부터 흐른 시간(초). 보이는 영상의 아랫변 y를 돌려준다. */
 export function drawFrame(
   ctx: CanvasRenderingContext2D,
   video: HTMLVideoElement | null,
@@ -157,10 +180,10 @@ export function drawFrame(
   clip: Clip,
   time: number,
   fonts: FontFamilies,
-) {
+): number {
   ctx.fillStyle = template.background;
   ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-  drawVideo(ctx, video, template, clip);
+  const videoBottom = drawVideo(ctx, video, template, clip);
   if (template.topShade) {
     const { height, opacity } = template.topShade;
     const shade = ctx.createLinearGradient(0, 0, 0, height);
@@ -172,6 +195,7 @@ export function drawFrame(
   }
   drawText(ctx, clip.title, template.header, fonts);
   drawText(ctx, clip.bottom, template.bottom, fonts);
-  const subtitle = clip.subtitles.find((s) => time >= s.start && time < s.end);
-  if (subtitle) drawText(ctx, subtitle.text, template.subtitle, fonts);
+  const subtitle = activeSubtitle(clip.subtitles, time);
+  if (subtitle) drawText(ctx, subtitle.text, subtitleStyle(template, clip, videoBottom), fonts);
+  return videoBottom;
 }

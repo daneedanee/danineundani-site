@@ -4,7 +4,7 @@
 import { Pause, Play, SkipBack } from "lucide-react";
 import { useEffect, useRef } from "react";
 
-import { drawFrame, drawText } from "@/lib/studio/render";
+import { activeSubtitle, drawFrame, drawText, subtitleStyle } from "@/lib/studio/render";
 import type { FontFamilies } from "@/lib/studio/render";
 import { formatTime } from "@/lib/studio/subtitles";
 import { CANVAS_HEIGHT, CANVAS_WIDTH } from "@/lib/studio/templates";
@@ -35,7 +35,10 @@ export function Preview({ video, clip, template, fonts, fontsReady, player }: Pr
   useEffect(() => {
     const ctx = canvasRef.current?.getContext("2d");
     if (!ctx) return;
-    drawFrame(ctx, video, template, clip, rel, fonts);
+    const videoBottom = drawFrame(ctx, video, template, clip, rel, fonts);
+    if (!activeSubtitle(clip.subtitles, rel)) {
+      drawText(ctx, "자막 자리", guideStyle(subtitleStyle(template, clip, videoBottom)), fonts);
+    }
     if (!clip.title.trim()) drawText(ctx, "헤드 문구 자리", guideStyle(template.header), fonts);
     if (!clip.bottom.trim()) drawText(ctx, "바닥 문구 자리", guideStyle(template.bottom), fonts);
   }, [video, clip, template, fonts, fontsReady, rel, player.frame]);
