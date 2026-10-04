@@ -161,7 +161,7 @@ export function Studio({ fonts }: { fonts: FontFamilies }) {
   const [saved, setSaved] = useState<Saved | null>(null);
   const [fontsReady, setFontsReady] = useState(false);
   const [video, setVideo] = useState<HTMLVideoElement | null>(null);
-  const [exporting, setExporting] = useState<{ label: string; ratio: number } | null>(null);
+  const [exporting, setExporting] = useState<{ label: string; ratio: number; paused?: boolean } | null>(null);
   const abortRef = useRef<AbortController | null>(null);
 
   const template = findTemplate(templateId);
@@ -349,6 +349,7 @@ export function Studio({ fonts }: { fonts: FontFamilies }) {
     abortRef.current = controller;
     const base = file.name.replace(/\.[^.]+$/, "");
     const mime = pickMimeType() ?? "video/webm";
+    const pageTitle = document.title;
     try {
       for (const target of targets) {
         const index = clips.findIndex((c) => c.id === target.id) + 1;
@@ -360,13 +361,19 @@ export function Studio({ fonts }: { fonts: FontFamilies }) {
           template,
           fonts,
           signal: controller.signal,
-          onProgress: (ratio) => setExporting({ label, ratio }),
+          onProgress: (ratio) => setExporting((prev) => ({ label, ratio, paused: prev?.paused })),
+          // 다른 탭에서도 보이도록 탭 제목에 멈춤을 알린다.
+          onPausedChange: (paused) => {
+            setExporting((prev) => (prev ? { ...prev, paused } : prev));
+            document.title = paused ? "⏸ 저장 멈춤 · 이 탭으로 돌아오세요" : pageTitle;
+          },
         });
         download(blob, `${base}_shorts${index}.${fileExtension(mime)}`);
       }
     } catch (e) {
       if ((e as Error).name !== "AbortError") setError((e as Error).message || "저장하지 못했어요.");
     } finally {
+      document.title = pageTitle;
       setExporting(null);
     }
   }
@@ -677,7 +684,15 @@ export function Studio({ fonts }: { fonts: FontFamilies }) {
                     <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-white/10">
                       <div className="h-full bg-coral" style={{ width: `${Math.round(exporting.ratio * 100)}%` }} />
                     </div>
-                    <p className="mt-2 text-[12px] leading-5 text-white/50">클립 길이만큼 걸려요. 저장이 끝날 때까지 이 탭을 보고 있어 주세요.</p>
+                    {exporting.paused ? (
+                      <p className="mt-2 rounded-[6px] bg-coral/15 px-2 py-1.5 text-[12px] leading-5 text-[#ffb3a6]">
+                        이 탭이 가려져서 저장을 잠깐 멈췄어요. 이 탭을 보고 있으면 이어서 저장해요.
+                      </p>
+                    ) : (
+                      <p className="mt-2 text-[12px] leading-5 text-white/50">
+                        클립 길이만큼 걸려요. 다른 탭이나 창으로 가면 저장이 잠깐 멈췄다가, 돌아오면 이어져요.
+                      </p>
+                    )}
                     <Button size="sm" className="mt-2" onClick={() => abortRef.current?.abort()}>
                       멈추기
                     </Button>
