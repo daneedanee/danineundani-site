@@ -1,13 +1,15 @@
 import type { Metadata } from "next";
 import "./globals.css";
 
+import { allowIndexing, robotsMeta, siteName, siteUrl } from "@/lib/seo";
 import { hero } from "@/lib/site-content";
 
 export const metadata: Metadata = {
-  title: "다니는다니",
+  metadataBase: new URL(siteUrl),
+  title: siteName,
   description: hero.description,
-  // 배포 결정 전까지 검색 노출을 막는다.
-  robots: { index: false, follow: false },
+  // 검색 노출은 src/lib/seo.ts 의 스위치를 따른다. 대표가 열라고 할 때까지 꺼 둔다.
+  robots: robotsMeta(allowIndexing),
 };
 
 export default function RootLayout({

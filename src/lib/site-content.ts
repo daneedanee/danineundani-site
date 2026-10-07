@@ -18,11 +18,12 @@ export const sectionIds = {
   consult: "consult",
 } as const;
 
+// 주소 앞의 "/" : 홈이 아닌 페이지(/notes)에서도 홈의 해당 구역으로 가게 한다.
 export const navItems = [
-  { label: "블로그 진단", href: `#${sectionIds.diagnosis}` },
-  { label: "매출로 이어지는 블로그", href: `#${sectionIds.challenge}` },
-  { label: "블로그 대행", href: `#${sectionIds.agency}` },
-  { label: "상담 신청", href: `#${sectionIds.consult}` },
+  { label: "블로그 진단", href: `/#${sectionIds.diagnosis}` },
+  { label: "매출로 이어지는 블로그", href: `/#${sectionIds.challenge}` },
+  { label: "블로그 대행", href: `/#${sectionIds.agency}` },
+  { label: "상담 신청", href: `/#${sectionIds.consult}` },
 ] as const;
 
 export const hero = {
