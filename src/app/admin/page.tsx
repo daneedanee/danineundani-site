@@ -153,6 +153,12 @@ function InquiryList({ session, onSignOut }: { session: Session; onSignOut: () =
           </p>
         </div>
         <div className="flex gap-2">
+          <a
+            href="/admin/social"
+            className="flex h-[40px] items-center rounded-[4px] border border-[#d1d5db] bg-white px-4 text-[14px] font-semibold text-[#191919]"
+          >
+            인스타 · 스레드
+          </a>
           <button
             type="button"
             onClick={() => setReloadKey((k) => k + 1)}
