@@ -5,6 +5,7 @@
 // 데이터베이스 권한(supabase/02-admin-read.sql)이 정한다. 로그인하지 않았거나 관리자가
 // 아니면 이 화면에서 아무 내용도 받아오지 못한다.
 import type { Session } from "@supabase/supabase-js";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 
 import { inquiriesTable, supabase } from "@/lib/supabase";
@@ -153,6 +154,12 @@ function InquiryList({ session, onSignOut }: { session: Session; onSignOut: () =
           </p>
         </div>
         <div className="flex gap-2">
+          <Link
+            href="/admin/notes"
+            className="flex h-[40px] items-center rounded-[4px] border border-[#d1d5db] bg-white px-4 text-[14px] font-semibold text-[#191919]"
+          >
+            글 관리
+          </Link>
           <a
             href="/admin/social"
             className="flex h-[40px] items-center rounded-[4px] border border-[#d1d5db] bg-white px-4 text-[14px] font-semibold text-[#191919]"
