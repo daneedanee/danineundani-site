@@ -28,7 +28,7 @@
 - 구역 컴포넌트: `src/components/danineundani-home/` (상단 바, 첫 화면, 고민, 서비스, 시작 순서, 사례, 상담 신청, 푸터)
 - 공개 문구·링크·푸터 사업자 정보: `src/lib/site-content.ts` (주민등록번호·발급번호는 넣지 않는다)
 - 탭 아이콘: `src/app/icon.svg` (로고 파일 없음, 글자 로고 사용)
-- 글꼴: 고운돋움 (`public/fonts/gowun-dodum.ttf`, `src/app/globals.css`의 `--font-sans`). 구글 폰트의 무료 글꼴(OFL)이라 써도 된다. 참고 사이트에서 받은 글꼴 파일은 쓰지 않는다. 파일이 7MB라 느리면 woff2로 줄이는 것을 검토한다.
+- 글꼴: 고운돋움. `src/app/layout.tsx`에서 `next/font/google`로 불러오고 `src/app/globals.css`의 `--font-sans`가 가리킨다. 구글 폰트의 무료 글꼴(OFL)이라 써도 된다. 빌드할 때 내려받아 우리 사이트에서 직접 내주며, 방문자는 화면에 나온 글자가 든 조각만 받는다 (2026-10-07, 7.2MB ttf를 대신함. 홈 기준 약 217KB). 참고 사이트에서 받은 글꼴 파일은 쓰지 않는다.
 - 이미지: `public/images/danineundani/` (출처는 `docs/홈페이지-기획.md` 9장)
 - 화면 확인 캡처: `docs/captures/after-1440.png`, `docs/captures/after-390.png`
 - 상담 신청 저장 연결: `src/lib/supabase.ts`, 저장하는 곳은 `src/components/danineundani-home/consult-section.tsx`
