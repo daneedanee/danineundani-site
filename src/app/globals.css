@@ -146,3 +146,96 @@
     scroll-padding-top: 88px;
   }
 }
+
+/* 게시판 글 본문 (src/components/notes/post-body.ts 가 그리는 .note-body) */
+.note-body {
+  font-size: 17px;
+  line-height: 1.85;
+  color: #2b2421;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+.note-body > * + * {
+  margin-top: 1.25em;
+}
+.note-body h2 {
+  margin-top: 2.4em;
+  font-size: 24px;
+  line-height: 1.4;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+}
+.note-body h3 {
+  margin-top: 2em;
+  font-size: 20px;
+  line-height: 1.45;
+  font-weight: 800;
+}
+.note-body a {
+  text-decoration: underline;
+  text-decoration-color: #fd715b;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
+}
+.note-body ul,
+.note-body ol {
+  padding-left: 1.4em;
+}
+.note-body ul {
+  list-style: disc;
+}
+.note-body ol {
+  list-style: decimal;
+}
+.note-body li + li {
+  margin-top: 0.4em;
+}
+.note-body blockquote {
+  border-left: 3px solid #fd715b;
+  padding-left: 1em;
+  color: #5c514b;
+}
+.note-body img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 10px;
+}
+.note-body code {
+  border-radius: 4px;
+  background: #f3ebe3;
+  padding: 0.15em 0.4em;
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+.note-body pre {
+  overflow-x: auto;
+  border-radius: 10px;
+  background: #2b2421;
+  padding: 1em 1.2em;
+  color: #fffaf4;
+}
+.note-body pre code {
+  background: none;
+  padding: 0;
+}
+.note-body table {
+  display: block;
+  width: 100%;
+  overflow-x: auto;
+  border-collapse: collapse;
+  font-size: 15px;
+}
+.note-body th,
+.note-body td {
+  border: 1px solid #eaded4;
+  padding: 0.6em 0.8em;
+  text-align: left;
+}
+.note-body th {
+  background: #fff3e6;
+  font-weight: 800;
+}
+.note-body hr {
+  border: 0;
+  border-top: 1px solid #eaded4;
+}
