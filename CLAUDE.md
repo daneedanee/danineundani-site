@@ -12,7 +12,9 @@
 - **배포됨 (2026-09-20)**: <https://danineundani-site.vercel.app> · 저장소 <https://github.com/daneedanee/danineundani-site>
 - **도메인 연결됨 (2026-10-07)**: 대표 주소는 <https://www.daneedanee.com>. `daneedanee.com`은 `www`로 308 넘긴다(Vercel 프로젝트 도메인 설정). DNS는 가비아 DNS 관리에 있다 — A `@` → `216.198.79.1`, `64.29.17.1` / CNAME `www` → `0755e30c17ea3c63.vercel-dns-017.com.` 네임서버는 가비아 그대로다.
 - 고친 내용을 반영하려면 이 폴더에서 `vercel --prod`를 실행한다. Vercel과 GitHub이 아직 연결되지 않아 `git push`만으로는 반영되지 않는다.
-- 검색 노출은 계속 차단한다. `layout.tsx`의 `robots: noindex`는 대표가 풀라고 할 때까지 유지한다.
+- 검색 노출은 계속 차단한다. 여닫는 자리는 `src/lib/seo.ts` 하나다(`layout.tsx`·`robots.ts`·`sitemap.ts`가 읽는다). 여는 방법은 Vercel 환경 변수 `NEXT_PUBLIC_ALLOW_INDEXING=true` + 재배포이고, 대표가 열라고 할 때까지 넣지 않는다. 여는 날 할 일은 `docs/superpowers/specs/2026-10-07-notes-board-design.md` 11장.
+- **게시판 (2026-10-07)**: 공개 주소 `/notes`, 글쓰기 `/admin/notes`. 글은 Supabase 표 `cab_posts`(`supabase/05-posts.sql`), 이미지는 보관함 `cab-post-images`. 방문자는 발행한 글만 읽고 쓰기는 관리자 이메일만 한다. 발행하면 재배포 없이 바로 반영된다(`/api/notes/revalidate`). 한 번 발행한 글의 주소는 바꿀 수 없다. 게시판 문구(`site-content.ts`의 `notes`)는 임시이고 메뉴에는 아직 넣지 않았다 — 대표 확인 뒤에 넣는다.
+- `/admin`에는 비밀번호 재설정 화면이 없다. 복구 메일 링크를 눌러도 홈만 열린다 (2026-10-08 확인). 비밀번호는 Supabase SQL Editor에서 바꾼다.
 - `docs/` 폴더는 저장소에 올리지 않는다 (내부 문서). 작업 기록은 `docs/2주차-완료.md`를 본다.
 
 ## 실행 방법
@@ -21,6 +23,7 @@
 - 개발 서버: `npm run dev` → 터미널에 나온 `Local:` 주소를 브라우저로 연다 (기본 http://localhost:3000, 사용 중이면 다른 포트)
 - 서버 끄기: 개발 서버를 실행한 터미널에서 `Ctrl + C`
 - 점검: `npm run check` (lint + 타입 검사 + 빌드)
+- 시험: `npm test`
 
 ## 코드 위치
 
@@ -33,6 +36,8 @@
 - 화면 확인 캡처: `docs/captures/after-1440.png`, `docs/captures/after-390.png`
 - 상담 신청 저장 연결: `src/lib/supabase.ts`, 저장하는 곳은 `src/components/danineundani-home/consult-section.tsx`
 - 저장되는 화면 캡처: `docs/captures/consult-saved-1440.png`
+- 게시판: 공개 페이지 `src/app/notes/`, 화면 조각 `src/components/notes/`, 글 다루는 함수와 시험 `src/lib/notes/`, 관리 화면 `src/app/admin/notes/` · `src/components/admin/`
+- 시험: `npm test` (Node 내장 시험 도구). 시험이 불러오는 파일은 `.ts`로 쓰고 상대 import에 `.ts`를 붙인다
 - 이전 버전(밝은 배경) 컴포넌트: `src/components/site/` — 현재 사용하지 않음 (`consult-form.tsx`는 저장 연결 전 상태 그대로다)
 
 ---
