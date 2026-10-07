@@ -123,3 +123,20 @@ export const footer = {
   email: "marktive@naver.com",
   copyright: "© 2026 다니는다니",
 } as const;
+
+// 게시판(/notes).
+// 임시 문구다 — 대표 확인 전 (docs/superpowers/specs/2026-10-07-notes-board-design.md 9장).
+// 확인되기 전에는 메뉴(navItems)에 넣지 않는다.
+export const notes = {
+  title: "다니는다니의 글",
+  breadcrumbHome: "홈",
+  breadcrumbList: "글",
+  empty: "아직 올라온 글이 없습니다.",
+  backToList: "글 목록으로",
+} as const;
+
+// 구조화 데이터(JSON-LD)에 넣는 글쓴이. 사람으로 적고 운영 채널을 잇는다.
+export const author = {
+  name: "다니",
+  sameAs: [links.youtubeChannel, links.threads, links.blog],
+} as const;
