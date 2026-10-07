@@ -10,6 +10,7 @@
 - **Supabase 프로젝트는 두 개가 있다. 쓰는 것은 `ykwhdegzqcgtwynedxqv` 하나뿐이다.** 대시보드에서 신청 내용을 볼 때는 주소창의 프로젝트 번호가 이것과 같은지 먼저 확인한다. 다른 프로젝트를 열면 표가 비어 보인다. 기준은 언제나 `.env.local`의 `NEXT_PUBLIC_SUPABASE_URL`이다.
 - 주소와 키는 `.env.local`에 있고 git에 올리지 않는다. 배포할 때는 배포 서비스의 환경 변수에 같은 두 값을 넣어야 한다.
 - **배포됨 (2026-09-20)**: <https://danineundani-site.vercel.app> · 저장소 <https://github.com/daneedanee/danineundani-site>
+- **도메인 연결됨 (2026-10-07)**: 대표 주소는 <https://www.daneedanee.com>. `daneedanee.com`은 `www`로 308 넘긴다(Vercel 프로젝트 도메인 설정). DNS는 가비아 DNS 관리에 있다 — A `@` → `216.198.79.1`, `64.29.17.1` / CNAME `www` → `0755e30c17ea3c63.vercel-dns-017.com.` 네임서버는 가비아 그대로다.
 - 고친 내용을 반영하려면 이 폴더에서 `vercel --prod`를 실행한다. Vercel과 GitHub이 아직 연결되지 않아 `git push`만으로는 반영되지 않는다.
 - 검색 노출은 계속 차단한다. `layout.tsx`의 `robots: noindex`는 대표가 풀라고 할 때까지 유지한다.
 - `docs/` 폴더는 저장소에 올리지 않는다 (내부 문서). 작업 기록은 `docs/2주차-완료.md`를 본다.
