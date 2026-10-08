@@ -127,15 +127,13 @@ export const footer = {
 } as const;
 
 // 게시판(/notes).
-// 메뉴 이름 "칼럼"은 대표가 정했다 (2026-10-08). 현재 위치 표시(breadcrumbList)도 같은 말을 쓴다.
-// title · empty · backToList 는 임시 문구다 — 대표 확인 전
-// (docs/superpowers/specs/2026-10-07-notes-board-design.md 9장).
+// 메뉴 이름 "칼럼"은 대표가 정했다 (2026-10-08). 나머지 문구는 대표가 맡겨서 "칼럼"에 맞췄다 (같은 날).
 export const notes = {
-  title: "다니는다니의 글",
+  title: "칼럼",
   breadcrumbHome: "홈",
   breadcrumbList: "칼럼",
   empty: "아직 올라온 글이 없습니다.",
-  backToList: "글 목록으로",
+  backToList: "칼럼 목록으로",
 } as const;
 
 // 구조화 데이터(JSON-LD)에 넣는 글쓴이. 사람으로 적고 운영 채널을 잇는다.
