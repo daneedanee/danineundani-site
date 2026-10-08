@@ -23,6 +23,8 @@ export const navItems = [
   { label: "블로그 진단", href: `/#${sectionIds.diagnosis}` },
   { label: "매출로 이어지는 블로그", href: `/#${sectionIds.challenge}` },
   { label: "블로그 대행", href: `/#${sectionIds.agency}` },
+  // 게시판(/notes). 메뉴 이름 "칼럼"은 대표 결정 (2026-10-08).
+  { label: "칼럼", href: "/notes" },
   { label: "상담 신청", href: `/#${sectionIds.consult}` },
 ] as const;
 
@@ -125,12 +127,13 @@ export const footer = {
 } as const;
 
 // 게시판(/notes).
-// 임시 문구다 — 대표 확인 전 (docs/superpowers/specs/2026-10-07-notes-board-design.md 9장).
-// 확인되기 전에는 메뉴(navItems)에 넣지 않는다.
+// 메뉴 이름 "칼럼"은 대표가 정했다 (2026-10-08). 현재 위치 표시(breadcrumbList)도 같은 말을 쓴다.
+// title · empty · backToList 는 임시 문구다 — 대표 확인 전
+// (docs/superpowers/specs/2026-10-07-notes-board-design.md 9장).
 export const notes = {
   title: "다니는다니의 글",
   breadcrumbHome: "홈",
-  breadcrumbList: "글",
+  breadcrumbList: "칼럼",
   empty: "아직 올라온 글이 없습니다.",
   backToList: "글 목록으로",
 } as const;
