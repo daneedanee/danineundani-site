@@ -25,7 +25,11 @@ export async function listAllPosts(): Promise<ApiResult<{ posts: Post[] }>> {
   return { ok: true, posts: data ?? [] };
 }
 
-export async function savePost(id: string | null, input: PostInput, status: PostStatus): Promise<ApiResult> {
+export async function savePost(
+  id: string | null,
+  input: PostInput,
+  status: PostStatus,
+): Promise<ApiResult<{ id: string }>> {
   const row = {
     slug: input.slug,
     title: input.title.trim(),
@@ -41,7 +45,10 @@ export async function savePost(id: string | null, input: PostInput, status: Post
     : await supabase.from(postsTable).insert(row).select("id");
 
   if (error) console.error("글을 저장하지 못했습니다", error);
-  return writeOutcome({ error, rows: data?.length ?? 0 });
+  const outcome = writeOutcome({ error, rows: data?.length ?? 0 });
+  if (!outcome.ok) return outcome;
+  // 새 글을 초안으로 저장한 뒤 편집을 이어 갈 때, 다음 저장이 같은 글을 고치도록 id 를 돌려준다.
+  return { ok: true, id: String(data?.[0]?.id) };
 }
 
 export async function deletePost(id: string): Promise<ApiResult> {

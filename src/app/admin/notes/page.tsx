@@ -46,7 +46,10 @@ function NotesAdmin({ session }: { session: Session }) {
         key={editing === "new" ? "new" : editing.id}
         post={editing === "new" ? null : editing}
         accessToken={session.access_token}
-        onCancel={() => setEditing(null)}
+        onCancel={() => {
+          setEditing(null);
+          setReloadKey((k) => k + 1);
+        }}
         onDone={(message) => {
           setNotice(message);
           setEditing(null);

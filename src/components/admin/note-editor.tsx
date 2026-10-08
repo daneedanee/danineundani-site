@@ -2,10 +2,11 @@
 
 // 글 한 편을 쓰고 고치는 화면.
 // 저장·발행·삭제가 끝나면 게시판을 새로 만들게 하고(requestRevalidate) 목록으로 돌아간다.
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { PostBody } from "@/components/notes/post-body";
 import { deletePost, requestRevalidate, savePost, uploadPostImage } from "@/lib/notes/admin-api";
+import { isDirty } from "@/lib/notes/dirty";
 import { countImagesMissingAlt } from "@/lib/notes/markdown-images";
 import { slugify } from "@/lib/notes/slug";
 import type { Post, PostStatus } from "@/lib/notes/types";
@@ -33,6 +34,12 @@ export function NoteEditor({ post, accessToken, onDone, onCancel }: Props) {
     content_md: post?.content_md ?? "",
     cover_image_url: post?.cover_image_url ?? "",
   });
+  // 마지막으로 저장된 내용. 지금 내용과 다르면 "저장하지 않은 내용이 있다"고 본다.
+  const [savedInput, setSavedInput] = useState<PostInput>(input);
+  // 새 글을 초안으로 한 번 저장하면 id 가 생긴다. 그 뒤의 저장은 같은 글을 고친다.
+  const [postId, setPostId] = useState<string | null>(post?.id ?? null);
+  const [savedNotice, setSavedNotice] = useState("");
+  const [confirmingLeave, setConfirmingLeave] = useState(false);
   // 새 글은 제목을 따라 주소가 만들어진다. 주소 칸을 직접 고치면 그때부터 따라가지 않는다.
   const [slugTouched, setSlugTouched] = useState(post !== null);
   const [busy, setBusy] = useState(false);
@@ -45,6 +52,22 @@ export function NoteEditor({ post, accessToken, onDone, onCancel }: Props) {
   const slugLocked = Boolean(post?.published_at);
   const isPublished = post?.status === "published";
   const missingAlt = countImagesMissingAlt(input.content_md);
+  const dirty = isDirty(savedInput, input);
+
+  // 저장하지 않은 내용이 있을 때 새로고침·탭 닫기·뒤로 가기를 하면 브라우저가 한 번 묻게 한다.
+  useEffect(() => {
+    if (!dirty) return;
+    function warn(event: BeforeUnloadEvent) {
+      event.preventDefault();
+    }
+    window.addEventListener("beforeunload", warn);
+    return () => window.removeEventListener("beforeunload", warn);
+  }, [dirty]);
+
+  function handleLeave() {
+    if (dirty) setConfirmingLeave(true);
+    else onCancel();
+  }
 
   function setField(key: keyof PostInput, value: string) {
     setInput((prev) => ({ ...prev, [key]: value }));
@@ -67,9 +90,19 @@ export function NoteEditor({ post, accessToken, onDone, onCancel }: Props) {
     }
     setBusy(true);
     setProblems([]);
-    const result = await savePost(post?.id ?? null, input, status);
+    setSavedNotice("");
+    const result = await savePost(postId, input, status);
     if (!result.ok) {
       setProblems([result.message]);
+      setBusy(false);
+      return;
+    }
+    setPostId(result.id);
+    setSavedInput(input);
+    setConfirmingLeave(false);
+    // 초안을 초안으로 저장한 것은 사이트에 보이는 게 바뀌지 않는다. 화면을 닫지 않고 계속 쓰게 둔다.
+    if (status === "draft" && !isPublished) {
+      setSavedNotice("초안을 저장했습니다. 계속 쓰셔도 됩니다.");
       setBusy(false);
       return;
     }
@@ -79,10 +112,10 @@ export function NoteEditor({ post, accessToken, onDone, onCancel }: Props) {
   }
 
   async function handleDelete() {
-    if (!post) return;
+    if (!postId) return;
     setBusy(true);
     setProblems([]);
-    const result = await deletePost(post.id);
+    const result = await deletePost(postId);
     if (!result.ok) {
       setProblems([result.message]);
       setBusy(false);
@@ -115,9 +148,26 @@ export function NoteEditor({ post, accessToken, onDone, onCancel }: Props) {
         <h1 className="text-[20px] font-extrabold tracking-[-0.5px] text-[#191919] min-[992px]:text-[24px]">
           {post ? "글 고치기" : "새 글"}
         </h1>
-        <button type="button" onClick={onCancel} disabled={busy} className={plainButton}>
-          목록으로
-        </button>
+        {confirmingLeave ? (
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-[14px] font-semibold text-[#c9412f]">저장하지 않은 내용이 있습니다.</span>
+            <button type="button" onClick={() => setConfirmingLeave(false)} disabled={busy} className={plainButton}>
+              계속 쓰기
+            </button>
+            <button
+              type="button"
+              onClick={onCancel}
+              disabled={busy}
+              className="h-[44px] rounded-[4px] bg-[#c9412f] px-4 text-[14px] font-bold text-white disabled:opacity-60"
+            >
+              저장하지 않고 나가기
+            </button>
+          </div>
+        ) : (
+          <button type="button" onClick={handleLeave} disabled={busy} className={plainButton}>
+            목록으로
+          </button>
+        )}
       </div>
 
       <div className="mt-6 grid gap-6 min-[992px]:grid-cols-2">
@@ -242,6 +292,7 @@ export function NoteEditor({ post, accessToken, onDone, onCancel }: Props) {
       </div>
 
       <div role="status" aria-live="polite" className="mt-6 space-y-1">
+        {savedNotice && <p className="text-[14px] font-semibold text-[#1a7f4b]">{savedNotice}</p>}
         {problems.map((problem) => (
           <p key={problem} className="text-[14px] font-semibold text-[#c9412f]">
             {problem}
@@ -262,7 +313,7 @@ export function NoteEditor({ post, accessToken, onDone, onCancel }: Props) {
           {busy ? "처리 중…" : isPublished ? "고친 내용 발행" : "발행"}
         </button>
 
-        {post && (
+        {postId && (
           <div className="ml-auto flex items-center gap-2">
             {confirmingDelete ? (
               <>

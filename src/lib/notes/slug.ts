@@ -1,5 +1,7 @@
 // 글 주소(slug). 한글을 그대로 쓸 수 있다.
-export const SLUG_MAX = 120;
+// 60자까지: 빌드가 글마다 주소 이름으로 파일을 만드는데, 한글은 한 글자가 3바이트라
+// 더 길면 파일 이름 한도(255바이트)를 넘어 배포가 깨질 수 있다. 발행한 주소는 잠기므로 미리 막는다.
+export const SLUG_MAX = 60;
 
 // /notes/page/2 와 헷갈리지 않게 막아 둔 이름.
 const reserved = new Set(["page"]);

@@ -16,10 +16,15 @@ test("slugify: 쓸 수 있는 글자가 없으면 빈 문자열", () => {
   assert.equal(slugify(""), "");
 });
 
-test("slugify: 120자를 넘으면 자르고 끝의 - 를 뗀다", () => {
-  const slug = slugify(`${"가".repeat(119)} 나다`);
-  assert.equal(slug.length, 119);
+test("slugify: 60자를 넘으면 자르고 끝의 - 를 뗀다", () => {
+  const slug = slugify(`${"가".repeat(59)} 나다`);
+  assert.equal(slug.length, 59);
   assert.equal(slug.endsWith("-"), false);
+});
+
+test("isValidSlug: 한글 60자까지만 — 더 길면 빌드가 만드는 파일 이름이 255바이트를 넘는다", () => {
+  assert.equal(isValidSlug("가".repeat(60)), true);
+  assert.equal(isValidSlug("가".repeat(61)), false);
 });
 
 test("isValidSlug: 허용하는 꼴", () => {
@@ -28,7 +33,7 @@ test("isValidSlug: 허용하는 꼴", () => {
 });
 
 test("isValidSlug: 거부하는 꼴", () => {
-  for (const bad of ["", "Hello", "a b", "-a", "a-", "a--b", "a/b", "a%20b", "page", "가".repeat(121)]) {
+  for (const bad of ["", "Hello", "a b", "-a", "a-", "a--b", "a/b", "a%20b", "page", "가".repeat(61)]) {
     assert.equal(isValidSlug(bad), false, bad);
   }
 });

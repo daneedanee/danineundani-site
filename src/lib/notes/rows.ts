@@ -8,7 +8,10 @@ export function rowsOrThrow<T>(
   if (result.error) {
     throw new Error(`${what}을 읽지 못했습니다: ${result.error.message}`);
   }
-  return result.data ?? [];
+  if (result.data === null) {
+    throw new Error(`${what}을 읽지 못했습니다: 응답에 줄이 없습니다`);
+  }
+  return result.data;
 }
 
 // 줄 수를 꺼낸다. 오류가 없어도 수가 null 이면 실패로 본다.
