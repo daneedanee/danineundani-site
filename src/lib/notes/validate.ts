@@ -22,7 +22,7 @@ export function validatePost(input: PostInput, intent: "draft" | "publish"): str
   else if (title.length > TITLE_MAX) problems.push(`제목은 ${TITLE_MAX}자까지 쓸 수 있습니다.`);
 
   if (!isValidSlug(input.slug)) {
-    problems.push("주소는 영문 소문자·숫자·한글과 - 만 쓸 수 있습니다. 예: blog-seo-2026");
+    problems.push("주소는 영문 소문자·숫자·한글과 - 만, 60자까지 쓸 수 있습니다. 예: blog-seo-2026");
   }
 
   if (description.length > DESCRIPTION_MAX) problems.push(`설명은 ${DESCRIPTION_MAX}자까지 쓸 수 있습니다.`);
