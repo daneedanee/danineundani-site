@@ -160,12 +160,15 @@ function InquiryList({ session, onSignOut }: { session: Session; onSignOut: () =
           >
             글 관리
           </Link>
-          <a
-            href="/admin/social"
-            className="flex h-[40px] items-center rounded-[4px] border border-[#d1d5db] bg-white px-4 text-[14px] font-semibold text-[#191919]"
-          >
-            인스타 · 스레드
-          </a>
+          {/* 인스타 · 스레드 화면은 배포에 올리지 않는다(.vercelignore). 이 컴퓨터에서 띄웠을 때만 링크를 보인다. */}
+          {process.env.NODE_ENV === "development" && (
+            <a
+              href="/admin/social"
+              className="flex h-[40px] items-center rounded-[4px] border border-[#d1d5db] bg-white px-4 text-[14px] font-semibold text-[#191919]"
+            >
+              인스타 · 스레드
+            </a>
+          )}
           <button
             type="button"
             onClick={() => setReloadKey((k) => k + 1)}

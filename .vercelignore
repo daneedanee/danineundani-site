@@ -1,0 +1,5 @@
+# 배포에 올리지 않는 것.
+# 인스타그램 · 스레드 화면과 API 는 이 컴퓨터에서만 쓴다 (대표 결정, 2026-10-09).
+# src/lib/social/ 은 지우지 않는다 — 게시판의 관리자 확인(guard.ts)이 거기 있다.
+src/app/admin/social
+src/app/api/social
