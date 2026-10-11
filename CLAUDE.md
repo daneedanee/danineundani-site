@@ -60,6 +60,8 @@
 - 게시판: 공개 페이지 `src/app/notes/`, 화면 조각 `src/components/notes/`, 글 다루는 함수와 시험 `src/lib/notes/`, 관리 화면 `src/app/admin/notes/` · `src/components/admin/`
 - 시험: `npm test` (Node 내장 시험 도구). 시험이 불러오는 파일은 `.ts`로 쓰고 상대 import에 `.ts`를 붙인다
 - 홈의 유튜브 영상 띠: `src/components/danineundani-home/youtube-band.tsx`. 채널의 최근 일반 영상(쇼츠 제외) 10편을 유튜브 공개 피드에서 읽어 옆으로 흘린다(`src/lib/youtube.ts`, 6시간마다 갱신). 피드를 못 읽으면 파일에 적어 둔 4편을 보여 준다 (2026-10-11)
+- 상담 신청 건수 주소: `src/app/api/inquiry-count/route.ts` — `/api/inquiry-count?hours=24`(또는 `168`)가 건수와 가장 최근 시각만 돌려준다. 이름·이메일·내용은 돌려주지 않는다. 건수는 데이터베이스 함수(`supabase/06-new-inquiry-count.sql`)가 센다 (2026-10-11)
+- 매일 아침 상담 신청 확인 루틴: Claude Code 클라우드 루틴 「랜딩페이지 상담문의 수집」이 매일 오전 8:07(한국 시간)에 위 주소를 불러 새 신청 건수를 보고한다. 지시서는 `routines/inquiry-check.md`. 루틴에는 키·커넥터·쓰기 도구가 없다. 지시서를 고치면 `main`에 올려야 루틴이 새 내용을 읽는다. 관리는 <https://claude.ai/code/routines>
 - 이전 버전(밝은 배경) 컴포넌트: `src/components/site/` — 현재 사용하지 않음 (`consult-form.tsx`는 저장 연결 전 상태 그대로다)
 
 ---
