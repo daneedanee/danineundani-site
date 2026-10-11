@@ -5,6 +5,9 @@ export const links = {
   diagnosis: "https://www.latpeed.com/products/bxdTq",
   challengePreRegister:
     "https://docs.google.com/forms/d/e/1FAIpQLScndQ2oAWyhw5F3fw5g-pu33s6VvgbL4FibeTZlkhRyR7EDRg/viewform?usp=header",
+  // 「매출로 이어지는 블로그」 래피드 판매 페이지. 아직 열리지 않았다 (2026-10-11).
+  // 열리면 여기에 주소를 넣는다. 그러면 상단 메뉴가 그 페이지로 간다. 비어 있는 동안은 홈의 소개 구역으로 간다.
+  challengeSales: "",
   kakaoChannel: "https://pf.kakao.com/_bYIBn",
   youtubeChannel: "https://www.youtube.com/@다니는다니",
   threads: "https://www.threads.net/@danee_marktive",
@@ -18,15 +21,22 @@ export const sectionIds = {
   consult: "consult",
 } as const;
 
+// 상단 메뉴가 가는 곳 (대표 결정, 2026-10-11)
+//   · 블로그 진단 → 래피드 상세페이지 (새 탭)
+//   · 매출로 이어지는 블로그 → 래피드 판매 페이지 (새 탭). 열리기 전에는 홈의 소개 구역
+//   · 블로그 대행 → 홈의 문의 남기기(상담 신청 양식)
 // 주소 앞의 "/" : 홈이 아닌 페이지(/notes)에서도 홈의 해당 구역으로 가게 한다.
-export const navItems = [
-  { label: "블로그 진단", href: `/#${sectionIds.diagnosis}` },
-  { label: "매출로 이어지는 블로그", href: `/#${sectionIds.challenge}` },
-  { label: "블로그 대행", href: `/#${sectionIds.agency}` },
+// external 이 true 면 바깥 사이트라 새 탭으로 연다.
+export const navItems: { label: string; href: string; external: boolean }[] = [
+  { label: "블로그 진단", href: links.diagnosis, external: true },
+  links.challengeSales
+    ? { label: "매출로 이어지는 블로그", href: links.challengeSales, external: true }
+    : { label: "매출로 이어지는 블로그", href: `/#${sectionIds.challenge}`, external: false },
+  { label: "블로그 대행", href: `/#${sectionIds.consult}`, external: false },
   // 게시판(/notes). 메뉴 이름 "칼럼"은 대표 결정 (2026-10-08).
-  { label: "칼럼", href: "/notes" },
-  { label: "상담 신청", href: `/#${sectionIds.consult}` },
-] as const;
+  { label: "칼럼", href: "/notes", external: false },
+  { label: "상담 신청", href: `/#${sectionIds.consult}`, external: false },
+];
 
 export const hero = {
   title: "광고를 멈추면 문의도 멈추고 있지 않으신가요?",
