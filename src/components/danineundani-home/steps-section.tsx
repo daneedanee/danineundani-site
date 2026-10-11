@@ -5,7 +5,7 @@ import { links, services, steps } from "@/lib/site-content";
 import { Container } from "./shared";
 
 const markers = ["①", "②", "③"];
-const targets = [links.diagnosis, links.challengePreRegister, links.kakaoChannel];
+const targets = [links.diagnosis, links.challengePreRegister, links.agencyForm];
 
 // 구역 5: 시작하는 순서 (각 줄이 신청 링크)
 export function StepsSection() {

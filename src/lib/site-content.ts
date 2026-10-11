@@ -111,7 +111,8 @@ export const services = {
       price: "문의",
       priceNote: "",
       cta: "대행 문의하기",
-      href: links.kakaoChannel,
+      // 대행 문의는 네이버 폼으로 받는다 (대표, 2026-10-11 「우선은」). 상단 메뉴 「블로그 대행」과 같은 곳.
+      href: links.agencyForm,
     },
   ],
 } as const;
