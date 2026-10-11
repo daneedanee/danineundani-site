@@ -14,35 +14,30 @@
 
 ## 입력
 
-환경 변수 두 개를 씁니다. 둘 다 홈페이지에 공개된 값이고 비밀이 아닙니다.
+홈페이지의 주소 하나만 부릅니다. 키나 환경 변수는 쓰지 않습니다.
 
-- `SUPABASE_URL` — Supabase 프로젝트 주소
-- `SUPABASE_KEY` — 방문자용(publishable) 키
+```
+https://www.daneedanee.com/api/inquiry-count?hours=24     (지난 24시간)
+https://www.daneedanee.com/api/inquiry-count?hours=168    (지난 7일)
+```
 
-부르는 곳은 함수 하나뿐입니다: `cab_new_inquiry_count(since)`.
 기준 시각 뒤에 들어온 신청의 **건수**와 **가장 최근 시각**만 돌려줍니다. 이름·이메일·내용은 돌려주지 않습니다.
-함수의 정의는 이 저장소의 `supabase/06-new-inquiry-count.sql`에 있습니다.
+이 주소의 코드는 이 저장소의 `src/app/api/inquiry-count/route.ts`, 건수를 세는 함수는 `supabase/06-new-inquiry-count.sql`에 있습니다.
 
 ## 처리 순서
 
-1. 환경 변수 `SUPABASE_URL`과 `SUPABASE_KEY`가 비어 있지 않은지 확인합니다. 하나라도 비어 있으면 **중단**합니다.
-
-2. 지난 24시간의 건수를 묻습니다.
+1. 지난 24시간의 건수를 묻습니다.
 
    ```bash
-   SINCE=$(date -u -d '24 hours ago' +%Y-%m-%dT%H:%M:%SZ)
-   curl -sS --max-time 20 -w '\nHTTP %{http_code}\n' -X POST "$SUPABASE_URL/rest/v1/rpc/cab_new_inquiry_count" \
-     -H "apikey: $SUPABASE_KEY" -H "Authorization: Bearer $SUPABASE_KEY" \
-     -H "Content-Type: application/json" \
-     -d "{\"since\":\"$SINCE\"}"
+   curl -sS --max-time 20 -w '\nHTTP %{http_code}\n' "https://www.daneedanee.com/api/inquiry-count?hours=24"
    ```
 
-   정상 응답은 `HTTP 200`이고 본문은 이런 꼴입니다: `[{"new_count":2,"latest_at":"2026-10-12T01:23:45.678+00:00"}]`
-   신청이 없으면 `[{"new_count":0,"latest_at":null}]` 입니다.
+   정상 응답은 `HTTP 200`이고 본문은 이런 꼴입니다: `{"hours":24,"new_count":2,"latest_at":"2026-10-12T01:23:45.678+00:00"}`
+   신청이 없으면 `{"hours":24,"new_count":0,"latest_at":null}` 입니다.
 
-3. 같은 방법으로 지난 7일의 건수도 한 번 묻습니다 (`'7 days ago'`). 하루 실행이 빠졌을 때 놓친 신청이 있는지 보기 위한 것입니다.
+2. 같은 방법으로 지난 7일의 건수도 한 번 묻습니다 (`hours=168`). 하루 실행이 빠졌을 때 놓친 신청이 있는지 보기 위한 것입니다.
 
-4. 아래 「보고」 형식대로 마지막 답변을 쓰고 끝냅니다.
+3. 아래 「보고」 형식대로 마지막 답변을 쓰고 끝냅니다.
 
 ## 실패했을 때
 
@@ -84,8 +79,8 @@
 
 ## 하지 않는 일
 
-- `cab_inquiries` 표를 직접 읽지 않습니다. 위 함수만 부릅니다.
-- 서비스 키나 다른 키, 다른 주소, 다른 방법을 찾지 않습니다. 막히면 멈춥니다.
+- 위의 주소 두 개만 부릅니다. Supabase 에 직접 접속하지 않고, `cab_inquiries` 표를 읽으려 하지 않습니다.
+- 키나 다른 주소, 다른 방법을 찾지 않습니다. 막히면 멈춥니다.
 - 이 저장소의 파일을 고치거나 만들지 않습니다. 커밋·푸시·풀 리퀘스트를 하지 않습니다.
 - 메일·메시지를 보내지 않습니다. 무엇도 게시·발송·삭제하지 않습니다.
 - 커넥터를 쓰지 않습니다 (이 루틴에는 커넥터가 연결돼 있지 않아야 합니다).
@@ -93,7 +88,6 @@
 
 ## 중단 조건 (하나라도 해당하면 멈추고 보고)
 
-- 환경 변수가 비어 있다.
 - 두 번 시도해도 정상 응답을 받지 못했다.
 - 응답의 꼴이 이 문서와 다르다.
 - 이 문서에 없는 판단이 필요하다.
