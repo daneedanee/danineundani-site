@@ -18,6 +18,15 @@ function NavLink({ item, className, onClick }: { item: NavItem; className: strin
       </a>
     );
   }
+  // 홈의 구역으로 가는 주소(/#구역)는 일반 링크로 둔다. next/link 로 걸면 주소의 # 만 바뀌고
+  // 화면이 그 구역으로 내려가지 않았다 (2026-10-11 운영 사이트에서 확인). 일반 링크는 브라우저가 직접 내려 준다.
+  if (item.href.startsWith("/#")) {
+    return (
+      <a href={item.href} onClick={onClick} className={className}>
+        {item.label}
+      </a>
+    );
+  }
   return (
     <Link href={item.href} onClick={onClick} className={className}>
       {item.label}
