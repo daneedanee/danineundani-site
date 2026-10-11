@@ -8,6 +8,8 @@ export const links = {
   // 「매출로 이어지는 블로그」 래피드 판매 페이지. 아직 열리지 않았다 (2026-10-11).
   // 열리면 여기에 주소를 넣는다. 그러면 상단 메뉴가 그 페이지로 간다. 비어 있는 동안은 홈의 소개 구역으로 간다.
   challengeSales: "",
+  // 블로그 대행 문의 양식 (네이버 폼). 대표가 준 주소 (2026-10-11).
+  agencyForm: "https://naver.me/5AgoKebv",
   kakaoChannel: "https://pf.kakao.com/_bYIBn",
   youtubeChannel: "https://www.youtube.com/@다니는다니",
   threads: "https://www.threads.net/@danee_marktive",
@@ -24,7 +26,7 @@ export const sectionIds = {
 // 상단 메뉴가 가는 곳 (대표 결정, 2026-10-11)
 //   · 블로그 진단 → 래피드 상세페이지 (새 탭)
 //   · 매출로 이어지는 블로그 → 래피드 판매 페이지 (새 탭). 열리기 전에는 홈의 소개 구역
-//   · 블로그 대행 → 홈의 문의 남기기(상담 신청 양식)
+//   · 블로그 대행 → 대행 문의 네이버 폼 (새 탭)
 // 주소 앞의 "/" : 홈이 아닌 페이지(/notes)에서도 홈의 해당 구역으로 가게 한다.
 // external 이 true 면 바깥 사이트라 새 탭으로 연다.
 export const navItems: { label: string; href: string; external: boolean }[] = [
@@ -32,7 +34,7 @@ export const navItems: { label: string; href: string; external: boolean }[] = [
   links.challengeSales
     ? { label: "매출로 이어지는 블로그", href: links.challengeSales, external: true }
     : { label: "매출로 이어지는 블로그", href: `/#${sectionIds.challenge}`, external: false },
-  { label: "블로그 대행", href: `/#${sectionIds.consult}`, external: false },
+  { label: "블로그 대행", href: links.agencyForm, external: true },
   // 게시판(/notes). 메뉴 이름 "칼럼"은 대표 결정 (2026-10-08).
   { label: "칼럼", href: "/notes", external: false },
   { label: "상담 신청", href: `/#${sectionIds.consult}`, external: false },
