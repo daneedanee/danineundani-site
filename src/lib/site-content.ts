@@ -10,6 +10,8 @@ export const links = {
   challengeSales: "",
   // 블로그 대행 문의 양식 (네이버 폼). 대표가 준 주소 (2026-10-11).
   agencyForm: "https://naver.me/5AgoKebv",
+  // 위 짧은 주소가 가리키는 네이버 폼의 실제 주소. /agency 페이지에 끼워 넣을 때 쓴다 (짧은 주소는 거쳐 가는 주소라 끼워 넣기에 맞지 않는다).
+  agencyFormDirect: "https://form.naver.com/response/QkP-rfH77PD5gSf93n3cNA",
   // 뉴스레터 구독 신청 페이지(스티비). 상단 메뉴 「다니레터」가 여기로 간다 (이름은 대표 결정).
   // 지난 호를 보여 주는 공유 주소(stibee.com/api/.../emails/share/...)는 넣지 않는다. 구독자용 자료 링크가 들어 있다.
   newsletter: "https://page.stibee.com/subscriptions/512971",
@@ -34,7 +36,8 @@ export const sectionIds = {
 // 상단 메뉴가 가는 곳 (대표 결정, 2026-10-11)
 //   · 블로그 진단 → 래피드 상세페이지 (새 탭)
 //   · 매출로 이어지는 블로그 → 래피드 판매 페이지 (새 탭). 열리기 전에는 홈의 소개 구역
-//   · 블로그 대행 → 대행 문의 네이버 폼 (새 탭)
+//   · 블로그 대행 → /agency (네이버 폼을 메뉴 아래에 끼워 보여 준다)
+//   · 다니레터 → /letter (스티비 구독 페이지를 메뉴 아래에 끼워 보여 준다)
 // 주소 앞의 "/" : 홈이 아닌 페이지(/notes)에서도 홈의 해당 구역으로 가게 한다.
 // external 이 true 면 바깥 사이트라 새 탭으로 연다.
 export const navItems: { label: string; href: string; external: boolean }[] = [
@@ -42,10 +45,10 @@ export const navItems: { label: string; href: string; external: boolean }[] = [
   links.challengeSales
     ? { label: "매출로 이어지는 블로그", href: links.challengeSales, external: true }
     : { label: "매출로 이어지는 블로그", href: `/#${sectionIds.challenge}`, external: false },
-  { label: "블로그 대행", href: links.agencyForm, external: true },
+  { label: "블로그 대행", href: "/agency", external: false },
   // 게시판(/notes). 메뉴 이름 "칼럼"은 대표 결정 (2026-10-08).
   { label: "칼럼", href: "/notes", external: false },
-  ...(links.newsletter ? [{ label: "다니레터", href: links.newsletter, external: true }] : []),
+  ...(links.newsletter ? [{ label: "다니레터", href: "/letter", external: false }] : []),
   { label: "상담 신청", href: `/#${sectionIds.consult}`, external: false },
 ];
 
@@ -162,4 +165,12 @@ export const notes = {
 export const author = {
   name: "다니",
   sameAs: [links.youtubeChannel, links.threads, links.blog],
+} as const;
+
+// 바깥 서비스의 페이지를 메뉴 아래에 끼워 보여 주는 화면(/letter, /agency)의 문구.
+export const embeds = {
+  fallbackHint: "화면이 보이지 않으면",
+  openInNewTab: "새 창에서 열기",
+  letter: { title: "다니레터", frameTitle: "다니레터 구독 신청 (스티비)" },
+  agency: { title: "블로그 대행 문의", frameTitle: "블로그 대행 상담 신청서 (네이버 폼)" },
 } as const;
