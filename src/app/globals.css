@@ -230,3 +230,27 @@
   border: 0;
   border-top: 1px solid #eaded4;
 }
+
+/* 홈의 유튜브 영상 띠 (youtube-band.tsx): 같은 목록 두 벌을 이어 붙여 절반만큼 옮기면 끊김 없이 흐른다. */
+.youtube-track {
+  animation: youtube-flow 60s linear infinite;
+}
+/* 마우스를 올리거나 키보드로 들어오면 멈춘다. 누르려는 영상이 달아나지 않게. */
+.youtube-band:hover .youtube-track,
+.youtube-band:focus-within .youtube-track {
+  animation-play-state: paused;
+}
+@keyframes youtube-flow {
+  to {
+    transform: translateX(-50%);
+  }
+}
+/* 움직임을 줄이도록 설정한 사람에게는 흐르지 않고, 손으로 옆으로 넘겨 본다. */
+@media (prefers-reduced-motion: reduce) {
+  .youtube-track {
+    animation: none;
+  }
+  .youtube-band {
+    overflow-x: auto;
+  }
+}

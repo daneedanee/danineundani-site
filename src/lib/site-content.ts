@@ -16,6 +16,11 @@ export const links = {
   blog: "https://blog.naver.com/marktive",
 } as const;
 
+// 유튜브 채널 @다니는다니 의 ID. 홈의 영상 띠가 최근 영상을 읽는 데 쓴다.
+export const youtube = {
+  channelId: "UCHswvf6WXV6ftP8WqpHNUnA",
+} as const;
+
 export const sectionIds = {
   diagnosis: "service-diagnosis",
   challenge: "service-challenge",

@@ -11,9 +11,13 @@ const nextConfig: NextConfig = {
   // 그래서 Vercel에서 빌드할 때(VERCEL 환경 변수가 있을 때)만 끈다.
   ...(process.env.VERCEL ? {} : { output: "standalone" as const }),
   images: {
-    remotePatterns: supabaseHost
-      ? [{ protocol: "https", hostname: supabaseHost, pathname: "/storage/v1/object/public/cab-post-images/**" }]
-      : [],
+    remotePatterns: [
+      // 홈의 유튜브 영상 띠 썸네일
+      { protocol: "https", hostname: "i.ytimg.com", pathname: "/vi/**" },
+      ...(supabaseHost
+        ? [{ protocol: "https" as const, hostname: supabaseHost, pathname: "/storage/v1/object/public/cab-post-images/**" }]
+        : []),
+    ],
   },
 };
 
