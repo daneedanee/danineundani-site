@@ -3,3 +3,8 @@
 # src/lib/social/ 은 지우지 않는다 — 게시판의 관리자 확인(guard.ts)이 거기 있다.
 src/app/admin/social
 src/app/api/social
+
+# 쇼츠 편집기(/studio)도 이 컴퓨터에서만 쓴다 (대표 결정, 2026-10-11).
+# 쓸 때는 이 폴더에서 npm run dev 를 띄우고 http://localhost:3000/studio 로 들어간다.
+src/app/studio
+src/app/api/studio
