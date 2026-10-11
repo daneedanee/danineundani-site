@@ -62,6 +62,7 @@
 - 홈의 유튜브 영상 띠: `src/components/danineundani-home/youtube-band.tsx`. 채널의 최근 일반 영상(쇼츠 제외) 10편을 유튜브 공개 피드에서 읽어 옆으로 흘린다(`src/lib/youtube.ts`, 6시간마다 갱신). 피드를 못 읽으면 파일에 적어 둔 4편을 보여 준다 (2026-10-11)
 - 상담 신청 건수 주소: `src/app/api/inquiry-count/route.ts` — `/api/inquiry-count?hours=24`(또는 `168`)가 건수와 가장 최근 시각만 돌려준다. 이름·이메일·내용은 돌려주지 않는다. 건수는 데이터베이스 함수(`supabase/06-new-inquiry-count.sql`)가 센다 (2026-10-11)
 - 매일 아침 상담 신청 확인 루틴: Claude Code 클라우드 루틴 「랜딩페이지 상담문의 수집」이 매일 오전 8:07(한국 시간)에 위 주소를 불러 새 신청 건수를 보고한다. 지시서는 `routines/inquiry-check.md`. 루틴에는 키·커넥터·쓰기 도구가 없다. 지시서를 고치면 `main`에 올려야 루틴이 새 내용을 읽는다. 관리는 <https://claude.ai/code/routines>
+- 끼워 넣은 신청 페이지: `/letter`(다니레터, 스티비 구독 페이지)와 `/agency`(블로그 대행, 네이버 폼)는 바깥 페이지를 상단 메뉴 아래에 끼워 보여 준다 (`src/components/embed/embed-page.tsx`, 2026-10-11). 상대 사이트가 끼워 넣기를 막으면 빈 화면이 되므로 「새 창에서 열기」 링크를 함께 둔다. 결제가 들어가는 래피드 페이지는 끼워 넣지 않는다
 - 이전 버전(밝은 배경) 컴포넌트: `src/components/site/` — 현재 사용하지 않음 (`consult-form.tsx`는 저장 연결 전 상태 그대로다)
 
 ---
