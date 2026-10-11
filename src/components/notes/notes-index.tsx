@@ -8,6 +8,7 @@ import { countPublished, listPublishedPage } from "@/lib/notes/queries";
 import { absoluteUrl, siteName } from "@/lib/seo";
 import { notes } from "@/lib/site-content";
 
+import { AdminWriteLink } from "./admin-write-link";
 import { NotesShell } from "./notes-shell";
 import { Pagination } from "./pagination";
 
@@ -32,9 +33,12 @@ export async function NotesIndex({ page }: { page: number }) {
 
   return (
     <NotesShell>
-      <h1 className="text-[28px] leading-[1.3] font-extrabold tracking-[-0.5px] text-[#2b2421] min-[992px]:text-[36px]">
-        {notes.title}
-      </h1>
+      <div className="flex items-center justify-between gap-4">
+        <h1 className="text-[28px] leading-[1.3] font-extrabold tracking-[-0.5px] text-[#2b2421] min-[992px]:text-[36px]">
+          {notes.title}
+        </h1>
+        <AdminWriteLink />
+      </div>
 
       {posts.length === 0 ? (
         <p className="mt-10 text-[16px] leading-7 text-[#5c514b]">{notes.empty}</p>

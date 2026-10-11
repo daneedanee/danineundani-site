@@ -17,7 +17,14 @@ function NotesAdmin({ session }: { session: Session }) {
   const [posts, setPosts] = useState<Post[] | null>(null);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
-  const [editing, setEditing] = useState<Post | "new" | null>(null);
+  // 칼럼 페이지의 「글쓰기」 버튼(/admin/notes?new=1)으로 들어오면 새 글 화면을 바로 연다.
+  const [editing, setEditing] = useState<Post | "new" | null>(() =>
+    typeof window !== "undefined" && new URLSearchParams(window.location.search).get("new") === "1" ? "new" : null,
+  );
+  // 주소의 ?new=1 은 한 번 쓰고 지운다. 남겨 두면 새로고침할 때마다 새 글 화면이 다시 열린다.
+  useEffect(() => {
+    if (window.location.search) window.history.replaceState(null, "", "/admin/notes");
+  }, []);
   // 편집을 마칠 때마다 이 숫자가 올라가고, 그때마다 아래 effect 가 목록을 다시 읽는다.
   const [reloadKey, setReloadKey] = useState(0);
 
