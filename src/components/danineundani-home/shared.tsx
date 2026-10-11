@@ -1,5 +1,6 @@
 // 홈페이지 구역들이 함께 쓰는 폭·제목·외부 링크 버튼.
 import { ArrowUpRight } from "lucide-react";
+import Link from "next/link";
 
 import { cn } from "@/lib/utils";
 
@@ -26,6 +27,23 @@ type ExternalButtonProps = {
 };
 
 export function ExternalButton({ href, children, tone = "coral", className }: ExternalButtonProps) {
+  // 사이트 안의 주소(/agency 등)는 같은 탭에서 연다. 바깥 사이트만 새 탭으로 연다.
+  if (href.startsWith("/")) {
+    return (
+      <Link
+        href={href}
+        className={cn(
+          "inline-flex items-center justify-center gap-1 font-semibold tracking-[-0.5px] transition-transform duration-200 hover:scale-[1.01]",
+          tone === "coral" && "bg-[#fd715b] text-black",
+          tone === "dark" && "bg-[#191919] text-white",
+          tone === "white" && "bg-white text-black",
+          className,
+        )}
+      >
+        {children}
+      </Link>
+    );
+  }
   return (
     <a
       href={href}

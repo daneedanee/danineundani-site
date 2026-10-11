@@ -5,7 +5,8 @@ import { links, services, steps } from "@/lib/site-content";
 import { Container } from "./shared";
 
 const markers = ["①", "②", "③"];
-const targets = [links.diagnosis, links.challengePreRegister, links.agencyForm];
+// 셋째(대행 문의)는 사이트 안의 /agency 로 간다. 바깥 사이트만 새 탭으로 연다.
+const targets = [links.diagnosis, links.challengePreRegister, "/agency"];
 
 // 구역 5: 시작하는 순서 (각 줄이 신청 링크)
 export function StepsSection() {
@@ -33,8 +34,7 @@ export function StepsSection() {
               <li key={step.target}>
                 <a
                   href={targets[index]}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  {...(targets[index].startsWith("/") ? {} : { target: "_blank", rel: "noopener noreferrer" })}
                   className="flex items-center justify-between gap-3 rounded-[10px] bg-[#1c1c1c] py-2 pr-2 pl-4 text-white transition-transform duration-200 hover:-translate-y-0.5 min-[992px]:py-3 min-[992px]:pr-3 min-[992px]:pl-5"
                 >
                   <span className="text-[14px] leading-[21px] font-light break-keep min-[992px]:text-[15px] min-[992px]:leading-[22.5px]">
@@ -46,7 +46,7 @@ export function StepsSection() {
                   <span className="w-[112px] shrink-0 rounded-[6px] bg-white px-2 py-2.5 text-center text-[13px] leading-[20px] font-semibold tracking-[-0.5px] text-black min-[992px]:w-[140px] min-[992px]:py-3.5 min-[992px]:text-[15px] min-[992px]:leading-[22px]">
                     {services.items[index].cta}
                   </span>
-                  <span className="sr-only">(새 탭에서 열림)</span>
+                  {!targets[index].startsWith("/") && <span className="sr-only">(새 탭에서 열림)</span>}
                 </a>
               </li>
             ))}
