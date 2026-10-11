@@ -10,6 +10,9 @@ export const links = {
   challengeSales: "",
   // 블로그 대행 문의 양식 (네이버 폼). 대표가 준 주소 (2026-10-11).
   agencyForm: "https://naver.me/5AgoKebv",
+  // 뉴스레터 구독 신청 페이지(스티비). 주소를 넣으면 상단 메뉴에 「뉴스레터 신청하기」가 생긴다.
+  // 2026-10-11 에 받은 주소는 구독 페이지가 아니라 지난 호 한 편(구독자용 자료 링크 포함)이라 넣지 않았다.
+  newsletter: "",
   kakaoChannel: "https://pf.kakao.com/_bYIBn",
   youtubeChannel: "https://www.youtube.com/@다니는다니",
   threads: "https://www.threads.net/@danee_marktive",
@@ -42,6 +45,7 @@ export const navItems: { label: string; href: string; external: boolean }[] = [
   { label: "블로그 대행", href: links.agencyForm, external: true },
   // 게시판(/notes). 메뉴 이름 "칼럼"은 대표 결정 (2026-10-08).
   { label: "칼럼", href: "/notes", external: false },
+  ...(links.newsletter ? [{ label: "뉴스레터 신청하기", href: links.newsletter, external: true }] : []),
   { label: "상담 신청", href: `/#${sectionIds.consult}`, external: false },
 ];
 
