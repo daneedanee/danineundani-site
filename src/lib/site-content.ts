@@ -10,7 +10,7 @@ export const links = {
   challengeSales: "",
   // 블로그 대행 문의 양식 (네이버 폼). 대표가 준 주소 (2026-10-11).
   agencyForm: "https://naver.me/5AgoKebv",
-  // 뉴스레터 구독 신청 페이지(스티비). 상단 메뉴 「뉴스레터 신청하기」가 여기로 간다 (대표, 2026-10-11).
+  // 뉴스레터 구독 신청 페이지(스티비). 상단 메뉴 「다니레터」가 여기로 간다 (이름은 대표 결정).
   // 지난 호를 보여 주는 공유 주소(stibee.com/api/.../emails/share/...)는 넣지 않는다. 구독자용 자료 링크가 들어 있다.
   newsletter: "https://page.stibee.com/subscriptions/512971",
   kakaoChannel: "https://pf.kakao.com/_bYIBn",
@@ -45,7 +45,7 @@ export const navItems: { label: string; href: string; external: boolean }[] = [
   { label: "블로그 대행", href: links.agencyForm, external: true },
   // 게시판(/notes). 메뉴 이름 "칼럼"은 대표 결정 (2026-10-08).
   { label: "칼럼", href: "/notes", external: false },
-  ...(links.newsletter ? [{ label: "뉴스레터 신청하기", href: links.newsletter, external: true }] : []),
+  ...(links.newsletter ? [{ label: "다니레터", href: links.newsletter, external: true }] : []),
   { label: "상담 신청", href: `/#${sectionIds.consult}`, external: false },
 ];
 
