@@ -52,12 +52,20 @@ export const navItems: { label: string; href: string; external: boolean }[] = [
   { label: "상담 신청", href: `/#${sectionIds.consult}`, external: false },
 ];
 
+// 첫 화면 문구. 대표가 준 문구 그대로다 (2026-10-11). 줄 나눔도 대표가 준 대로 둔다.
 export const hero = {
-  title: "광고를 멈추면 문의도 멈추고 있지 않으신가요?",
+  eyebrow: "다니는다니 · 마켓티브",
+  titleLines: ["광고를 끄면 문의도 끊기는 사업,", "이제 콘텐츠가 일하게 하세요."],
+  descriptionLines: [
+    "다니는다니와 마켓티브는 매출이 막힌 이유를 블로그에서 찾고,",
+    "고객이 먼저 발견하고 문의하는 콘텐츠 구조를 만듭니다.",
+  ],
+  subDescription: "먼저 블로그 진단으로, 지금 막혀 있는 지점부터 확인해 보세요.",
+  cta: "블로그 진단 신청",
+  // 한 줄로 이은 것. 검색 결과 설명(layout.tsx)과 이전 버전 컴포넌트가 쓴다.
+  title: "광고를 끄면 문의도 끊기는 사업, 이제 콘텐츠가 일하게 하세요.",
   description:
-    "다니는다니는 매출이 막힌 사업자가 스스로 복리형 콘텐츠를 쌓아 매출을 만들 수 있도록 돕습니다.",
-  subDescription: "어디가 막혔는지부터 확인하는 블로그 진단으로 시작해 보세요.",
-  cta: "블로그 진단 신청 · 59,000원",
+    "다니는다니와 마켓티브는 매출이 막힌 이유를 블로그에서 찾고, 고객이 먼저 발견하고 문의하는 콘텐츠 구조를 만듭니다.",
 } as const;
 
 export const pains = {
