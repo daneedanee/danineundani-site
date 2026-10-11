@@ -10,9 +10,9 @@ export const links = {
   challengeSales: "",
   // 블로그 대행 문의 양식 (네이버 폼). 대표가 준 주소 (2026-10-11).
   agencyForm: "https://naver.me/5AgoKebv",
-  // 뉴스레터 구독 신청 페이지(스티비). 주소를 넣으면 상단 메뉴에 「뉴스레터 신청하기」가 생긴다.
-  // 2026-10-11 에 받은 주소는 구독 페이지가 아니라 지난 호 한 편(구독자용 자료 링크 포함)이라 넣지 않았다.
-  newsletter: "",
+  // 뉴스레터 구독 신청 페이지(스티비). 상단 메뉴 「뉴스레터 신청하기」가 여기로 간다 (대표, 2026-10-11).
+  // 지난 호를 보여 주는 공유 주소(stibee.com/api/.../emails/share/...)는 넣지 않는다. 구독자용 자료 링크가 들어 있다.
+  newsletter: "https://page.stibee.com/subscriptions/512971",
   kakaoChannel: "https://pf.kakao.com/_bYIBn",
   youtubeChannel: "https://www.youtube.com/@다니는다니",
   threads: "https://www.threads.net/@danee_marktive",
