@@ -12,7 +12,7 @@
 - **배포됨 (2026-09-20)**: <https://danineundani-site.vercel.app> · 저장소 <https://github.com/daneedanee/danineundani-site>
 - **도메인 연결됨 (2026-10-07)**: 대표 주소는 <https://www.daneedanee.com>. `daneedanee.com`은 `www`로 308 넘긴다(Vercel 프로젝트 도메인 설정). DNS는 가비아 DNS 관리에 있다 — A `@` → `216.198.79.1`, `64.29.17.1` / CNAME `www` → `0755e30c17ea3c63.vercel-dns-017.com.` 네임서버는 가비아 그대로다.
 - 인스타그램·스레드 화면(`/admin/social`, `/api/social`)은 배포에 올리지 않는다 (대표 결정, 2026-10-09). `.vercelignore`가 빼고, `/admin`의 링크는 개발 서버에서만 보인다. 올리기로 하면 `.vercelignore`의 두 줄을 지우고 토큰을 Vercel 환경 변수에 넣는다.
-- 고친 내용을 반영하려면 이 폴더에서 `vercel --prod`를 실행한다. Vercel과 GitHub이 아직 연결되지 않아 `git push`만으로는 반영되지 않는다.
+- 고친 내용을 반영하려면 이 폴더에서 `vercel --prod`를 실행한다. `globals.css`를 고친 배포에서는 Vercel이 옛 스타일을 그대로 쓴 일이 있었다(2026-10-11, 유튜브 띠의 흐르는 효과가 운영에서만 빠짐). 스타일을 고쳤으면 `vercel --prod --force`로 올리고, 올린 뒤 운영 사이트에서 직접 확인한다. Vercel과 GitHub이 아직 연결되지 않아 `git push`만으로는 반영되지 않는다.
 - 검색 노출은 계속 차단한다. 여닫는 자리는 `src/lib/seo.ts` 하나다(`layout.tsx`·`robots.ts`·`sitemap.ts`가 읽는다). 여는 방법은 Vercel 환경 변수 `NEXT_PUBLIC_ALLOW_INDEXING=true` + 재배포이고, 대표가 열라고 할 때까지 넣지 않는다. 여는 날 할 일은 `docs/superpowers/specs/2026-10-07-notes-board-design.md` 11장.
 - **게시판 (2026-10-07)**: 공개 주소 `/notes`, 글쓰기 `/admin/notes`. 글은 Supabase 표 `cab_posts`(`supabase/05-posts.sql`), 이미지는 보관함 `cab-post-images`. 방문자는 발행한 글만 읽고 쓰기는 관리자 이메일만 한다. 발행하면 재배포 없이 바로 반영된다(`/api/notes/revalidate`). 한 번 발행한 글의 주소는 바꿀 수 없다. 상단 메뉴 이름은 「칼럼」(대표 결정, 2026-10-08). 게시판 제목·돌아가기 링크도 「칼럼」에 맞췄다(`site-content.ts`의 `notes`).
 - `/admin`에는 비밀번호 재설정 화면이 없다. 복구 메일 링크를 눌러도 홈만 열린다 (2026-10-08 확인). 비밀번호는 Supabase SQL Editor에서 바꾼다.
