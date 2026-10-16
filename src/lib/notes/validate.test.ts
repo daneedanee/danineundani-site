@@ -9,6 +9,8 @@ const good = {
   description: "설명입니다.",
   content_md: "본문",
   cover_image_url: "",
+  pillar: "",
+  branch: "",
 };
 
 test("빠진 데 없으면 문제 없음", () => {
@@ -47,4 +49,15 @@ test("대표 이미지는 https 주소만", () => {
     "대표 이미지 주소는 https:// 로 시작해야 합니다.",
   ]);
   assert.deepEqual(validatePost({ ...good, cover_image_url: "https://x/a.png" }, "draft"), []);
+});
+
+test("기둥은 비우거나 목록의 키여야 한다", () => {
+  assert.deepEqual(validatePost({ ...good, pillar: "" }, "publish"), []);
+  assert.deepEqual(validatePost({ ...good, pillar: "blog-marketing" }, "publish"), []);
+  assert.ok(validatePost({ ...good, pillar: "seo" }, "draft").some((m) => m.includes("주제")));
+});
+
+test("가지는 40자까지", () => {
+  assert.deepEqual(validatePost({ ...good, branch: "가".repeat(40) }, "draft"), []);
+  assert.ok(validatePost({ ...good, branch: "가".repeat(41) }, "draft").some((m) => m.includes("40자")));
 });

@@ -36,6 +36,8 @@ export async function savePost(
     description: input.description.trim(),
     content_md: input.content_md,
     cover_image_url: input.cover_image_url.trim() || null,
+    pillar: input.pillar || null,
+    branch: input.branch.trim() || null,
     status,
   };
 

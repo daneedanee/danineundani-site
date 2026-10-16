@@ -9,6 +9,7 @@ import { deletePost, requestRevalidate, savePost, uploadPostImage } from "@/lib/
 import { isDirty } from "@/lib/notes/dirty";
 import { countImagesMissingAlt } from "@/lib/notes/markdown-images";
 import { slugify } from "@/lib/notes/slug";
+import { BRANCH_MAX, PILLARS } from "@/lib/notes/topics";
 import type { Post, PostStatus } from "@/lib/notes/types";
 import { DESCRIPTION_MAX, validatePost, type PostInput } from "@/lib/notes/validate";
 
@@ -33,6 +34,8 @@ export function NoteEditor({ post, accessToken, onDone, onCancel }: Props) {
     description: post?.description ?? "",
     content_md: post?.content_md ?? "",
     cover_image_url: post?.cover_image_url ?? "",
+    pillar: post?.pillar ?? "",
+    branch: post?.branch ?? "",
   });
   // 마지막으로 저장된 내용. 지금 내용과 다르면 "저장하지 않은 내용이 있다"고 본다.
   const [savedInput, setSavedInput] = useState<PostInput>(input);
@@ -215,6 +218,40 @@ export function NoteEditor({ post, accessToken, onDone, onCancel }: Props) {
               className={inputClass}
             />
             <p className={hintClass}>검색 결과와 목록에서 제목 아래에 나오는 문장입니다.</p>
+          </div>
+
+          <div>
+            <label htmlFor="note-pillar" className={labelClass}>
+              주제 (기둥)
+            </label>
+            <select
+              id="note-pillar"
+              value={input.pillar}
+              onChange={(e) => setField("pillar", e.target.value)}
+              className={inputClass}
+            >
+              <option value="">없음</option>
+              {PILLARS.map((p) => (
+                <option key={p.key} value={p.key}>
+                  {p.name}
+                </option>
+              ))}
+            </select>
+            <p className={hintClass}>고르면 /notes/topic/{input.pillar || "…"} 모음 페이지에 이 글이 실립니다.</p>
+          </div>
+
+          <div>
+            <label htmlFor="note-branch" className={labelClass}>
+              가지 <span className="font-normal text-[#5f6368]">({input.branch.trim().length}/{BRANCH_MAX})</span>
+            </label>
+            <input
+              id="note-branch"
+              type="text"
+              value={input.branch}
+              onChange={(e) => setField("branch", e.target.value)}
+              className={inputClass}
+            />
+            <p className={hintClass}>기둥 안의 세부 갈래입니다. 비워 둘 수 있습니다. 예: 키워드 분석</p>
           </div>
 
           <div>
