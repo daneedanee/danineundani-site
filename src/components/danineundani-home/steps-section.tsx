@@ -6,7 +6,7 @@ import { Container } from "./shared";
 
 const markers = ["①", "②", "③"];
 // 셋째(대행 문의)는 사이트 안의 /agency 로 간다. 바깥 사이트만 새 탭으로 연다.
-const targets = [links.diagnosis, links.challengePreRegister, "/agency"];
+const targets = [links.diagnosis, links.challengeSales, "/agency"];
 
 // 구역 5: 시작하는 순서 (각 줄이 신청 링크)
 export function StepsSection() {

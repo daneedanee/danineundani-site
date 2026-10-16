@@ -63,7 +63,7 @@ export function ServicesSection() {
                   {service.details.length > 0 && (
                     <p className="mb-1 text-[12px] leading-[19.2px] font-medium text-[#5f6368] break-keep">{service.details.join(" · ")}</p>
                   )}
-                  <p className="text-[18px] leading-[26px] font-extrabold text-[#191919]">{service.price}</p>
+                  {service.price && <p className="text-[18px] leading-[26px] font-extrabold text-[#191919]">{service.price}</p>}
                   {service.priceNote && <p className="mt-1 text-[12px] leading-[18px] font-semibold text-[#c9412f] break-keep">{service.priceNote}</p>}
                 </div>
               </li>

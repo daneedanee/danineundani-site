@@ -5,9 +5,9 @@ export const links = {
   diagnosis: "https://www.latpeed.com/products/bxdTq",
   challengePreRegister:
     "https://docs.google.com/forms/d/e/1FAIpQLScndQ2oAWyhw5F3fw5g-pu33s6VvgbL4FibeTZlkhRyR7EDRg/viewform?usp=header",
-  // 「매출로 이어지는 블로그」 래피드 판매 페이지. 아직 열리지 않았다 (2026-10-11).
-  // 열리면 여기에 주소를 넣는다. 그러면 상단 메뉴가 그 페이지로 간다. 비어 있는 동안은 홈의 소개 구역으로 간다.
-  challengeSales: "",
+  // 「매출로 이어지는 블로그」 래피드 판매 페이지. 2기 정식 모집 (대표가 준 주소, 2026-10-16).
+  // 상단 메뉴·서비스 카드·시작 순서가 여기로 간다. 비우면 상단 메뉴는 홈의 소개 구역으로 간다.
+  challengeSales: "https://www.latpeed.com/products/RjkkI",
   // 블로그 대행 문의 양식 (네이버 폼). 대표가 준 주소 (2026-10-11).
   agencyForm: "https://naver.me/5AgoKebv",
   // 위 짧은 주소가 가리키는 네이버 폼의 실제 주소. /agency 페이지에 끼워 넣을 때 쓴다 (짧은 주소는 거쳐 가는 주소라 끼워 넣기에 맞지 않는다).
@@ -99,16 +99,17 @@ export const services = {
     {
       id: sectionIds.challenge,
       name: "매출로 이어지는 블로그",
-      badge: "다음 기수 사전신청",
+      badge: "2기 모집 중",
       description:
         "블로그는 쓰고 있는데 문의가 끊긴 사업자를 위한 4주 과정입니다. 세팅, 키워드, 구조화된 글, 문의 받는 공지글까지 직접 발행하며 익힙니다.",
       includes: ["시작 전 개인 블로그 진단", "라이브 다시보기", "제출 글마다 1,000자 안팎 피드백", "주차별 워크시트·템플릿", "종료 후 30일 콘텐츠 계획"],
       note: "",
       details: ["4주", "주 1회 라이브", "글 7편 발행"],
-      price: "다음 기수 290,000원",
-      priceNote: "블로그 진단 구매자는 진단 비용을 차감해 231,000원",
-      cta: "사전신청하기",
-      href: links.challengePreRegister,
+      // 2기 모집부터 가격은 홈에 적지 않는다 (대표 결정, 2026-10-16). 가격은 래피드 페이지에서 본다.
+      price: "",
+      priceNote: "",
+      cta: "2기 신청하기",
+      href: links.challengeSales,
     },
     {
       id: sectionIds.agency,
