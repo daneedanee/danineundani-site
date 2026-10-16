@@ -39,6 +39,7 @@ export function validatePost(input: PostInput, intent: "draft" | "publish"): str
   if (cover && !cover.startsWith("https://")) problems.push("대표 이미지 주소는 https:// 로 시작해야 합니다.");
 
   if (input.pillar !== "" && !isPillarKey(input.pillar)) problems.push("주제는 목록에서 골라 주세요.");
+  if (input.branch.trim() !== "" && input.pillar === "") problems.push("가지를 쓰려면 먼저 주제를 골라 주세요.");
   if (input.branch.trim().length > BRANCH_MAX) problems.push(`가지 이름은 ${BRANCH_MAX}자까지 쓸 수 있습니다.`);
 
   return problems;

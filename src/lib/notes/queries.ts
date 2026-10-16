@@ -80,7 +80,7 @@ export async function getPublishedBySlug(slug: string): Promise<Post | null> {
 export async function listAllPublished(): Promise<PostRef[]> {
   const result = await serverClient()
     .from(postsTable)
-    .select("slug, updated_at")
+    .select("slug, updated_at, pillar")
     .eq("status", "published")
     .order("published_at", { ascending: false });
   return rowsOrThrow<PostRef>(result, "글 주소 목록");

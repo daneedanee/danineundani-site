@@ -23,4 +23,4 @@ export type Post = {
 export type PostSummary = Pick<Post, "slug" | "title" | "description" | "cover_image_url" | "published_at" | "pillar" | "branch">;
 
 // 사이트맵과 미리 만들 주소 목록에 쓰는 줄.
-export type PostRef = Pick<Post, "slug" | "updated_at">;
+export type PostRef = Pick<Post, "slug" | "updated_at" | "pillar">;

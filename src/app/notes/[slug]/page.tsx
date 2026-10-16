@@ -158,7 +158,8 @@ export default async function NotePage({ params }: Props) {
 
       <RelatedPosts posts={related} />
 
-      <p className="mt-14 border-t border-[#eaded4] pt-6 text-[15px]">
+      {/* 구분선은 한 줄만 둔다. 관련 글이 있으면 그 블록의 선을 쓰고 여기서는 뺀다. */}
+      <p className={`text-[15px] ${related.length > 0 ? "mt-8" : "mt-14 border-t border-[#eaded4] pt-6"}`}>
         <Link href="/notes" className="font-semibold text-[#2b2421] underline decoration-[#fd715b] decoration-2 underline-offset-4">
           {notes.backToList}
         </Link>

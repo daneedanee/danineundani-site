@@ -9,7 +9,7 @@ import { deletePost, requestRevalidate, savePost, uploadPostImage } from "@/lib/
 import { isDirty } from "@/lib/notes/dirty";
 import { countImagesMissingAlt } from "@/lib/notes/markdown-images";
 import { slugify } from "@/lib/notes/slug";
-import { BRANCH_MAX, PILLARS } from "@/lib/notes/topics";
+import { BRANCH_MAX, hubPath, isPillarKey, PILLARS } from "@/lib/notes/topics";
 import type { Post, PostStatus } from "@/lib/notes/types";
 import { DESCRIPTION_MAX, validatePost, type PostInput } from "@/lib/notes/validate";
 
@@ -227,7 +227,11 @@ export function NoteEditor({ post, accessToken, onDone, onCancel }: Props) {
             <select
               id="note-pillar"
               value={input.pillar}
-              onChange={(e) => setField("pillar", e.target.value)}
+              onChange={(e) => {
+                setField("pillar", e.target.value);
+                // 주제가 없으면 가지도 없다.
+                if (e.target.value === "") setField("branch", "");
+              }}
               className={inputClass}
             >
               <option value="">없음</option>
@@ -237,7 +241,9 @@ export function NoteEditor({ post, accessToken, onDone, onCancel }: Props) {
                 </option>
               ))}
             </select>
-            <p className={hintClass}>고르면 /notes/topic/{input.pillar || "…"} 모음 페이지에 이 글이 실립니다.</p>
+            {isPillarKey(input.pillar) && (
+              <p className={hintClass}>{hubPath(input.pillar)} 모음 페이지에 이 글이 실립니다.</p>
+            )}
           </div>
 
           <div>
@@ -248,6 +254,7 @@ export function NoteEditor({ post, accessToken, onDone, onCancel }: Props) {
               id="note-branch"
               type="text"
               value={input.branch}
+              disabled={input.pillar === ""}
               onChange={(e) => setField("branch", e.target.value)}
               className={inputClass}
             />

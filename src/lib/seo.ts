@@ -45,7 +45,7 @@ export function robotsFor(allow: boolean, base: string = siteUrl): MetadataRoute
 
 export function sitemapFor(
   allow: boolean,
-  posts: { slug: string; updated_at: string }[],
+  posts: { slug: string; updated_at: string; pillar?: string | null }[],
   base: string = siteUrl,
 ): MetadataRoute.Sitemap {
   if (!allow) return [];
@@ -60,8 +60,8 @@ export function sitemapFor(
     // 블로그 진단 상세페이지 (2026-10-25). 결제는 래피드에서 한다.
     { url: absoluteUrl("/diagnosis", base) },
     { url: absoluteUrl("/notes", base), ...(latest ? { lastModified: new Date(latest) } : {}) },
-    // 기둥 허브. 글이 없어도 들어가고, 수정 시각은 넣지 않는다.
-    ...PILLARS.map((pillar) => ({ url: absoluteUrl(hubPath(pillar.key), base) })),
+    // 기둥 허브. 발행 글이 하나 이상 있는 기둥만 넣고, 수정 시각은 넣지 않는다.
+    ...PILLARS.filter((pillar) => posts.some((post) => post.pillar === pillar.key)).map((pillar) => ({ url: absoluteUrl(hubPath(pillar.key), base) })),
     ...posts.map((post) => ({
       url: absoluteUrl(`/notes/${post.slug}`, base),
       lastModified: new Date(post.updated_at),

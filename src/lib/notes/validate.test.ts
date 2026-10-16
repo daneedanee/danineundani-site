@@ -58,6 +58,11 @@ test("기둥은 비우거나 목록의 키여야 한다", () => {
 });
 
 test("가지는 40자까지", () => {
-  assert.deepEqual(validatePost({ ...good, branch: "가".repeat(40) }, "draft"), []);
-  assert.ok(validatePost({ ...good, branch: "가".repeat(41) }, "draft").some((m) => m.includes("40자")));
+  assert.deepEqual(validatePost({ ...good, pillar: "blog-marketing", branch: "가".repeat(40) }, "draft"), []);
+  assert.ok(validatePost({ ...good, pillar: "blog-marketing", branch: "가".repeat(41) }, "draft").some((m) => m.includes("40자")));
+});
+
+test("주제 없이 가지만 쓰면 안내", () => {
+  assert.deepEqual(validatePost({ ...good, branch: "키워드 분석" }, "draft"), ["가지를 쓰려면 먼저 주제를 골라 주세요."]);
+  assert.deepEqual(validatePost({ ...good, pillar: "blog-marketing", branch: "키워드 분석" }, "draft"), []);
 });

@@ -49,12 +49,12 @@ test("사이트맵: 꺼진 동안 비어 있다", () => {
   assert.deepEqual(sitemapFor(false, [{ slug: "a", updated_at: "2026-10-07T00:00:00Z" }], base), []);
 });
 
-test("사이트맵: 켜지면 홈, 진단 상세, 목록, 글이 들어간다", () => {
+test("사이트맵: 켜지면 홈, 진단 상세, 목록, 글이 들어가고 글 있는 허브만 들어간다", () => {
   const entries = sitemapFor(
     true,
     [
-      { slug: "old", updated_at: "2026-10-01T00:00:00Z" },
-      { slug: "새-글", updated_at: "2026-10-07T00:00:00Z" },
+      { slug: "old", updated_at: "2026-10-01T00:00:00Z", pillar: null },
+      { slug: "새-글", updated_at: "2026-10-07T00:00:00Z", pillar: "small-business-marketing" },
     ],
     base,
   );
@@ -64,7 +64,6 @@ test("사이트맵: 켜지면 홈, 진단 상세, 목록, 글이 들어간다", 
       "https://www.daneedanee.com/",
       "https://www.daneedanee.com/diagnosis",
       "https://www.daneedanee.com/notes",
-      "https://www.daneedanee.com/notes/topic/blog-marketing",
       "https://www.daneedanee.com/notes/topic/small-business-marketing",
       "https://www.daneedanee.com/notes/old",
       "https://www.daneedanee.com/notes/%EC%83%88-%EA%B8%80",
@@ -72,18 +71,29 @@ test("사이트맵: 켜지면 홈, 진단 상세, 목록, 글이 들어간다", 
   );
   // 목록의 수정 시각은 가장 최근 글을 따른다.
   assert.equal((entries[2].lastModified as Date).toISOString(), "2026-10-07T00:00:00.000Z");
-  assert.equal((entries[6].lastModified as Date).toISOString(), "2026-10-07T00:00:00.000Z");
+  assert.equal((entries[5].lastModified as Date).toISOString(), "2026-10-07T00:00:00.000Z");
 });
 
-test("사이트맵: 글이 없어도 홈, 진단 상세, 목록, 허브는 들어간다", () => {
-  assert.deepEqual(
-    sitemapFor(true, [], base).map((e) => e.url),
+test("사이트맵: 두 기둥에 글이 있으면 기둥 순서대로 목록 바로 뒤에 들어간다", () => {
+  const urls = sitemapFor(
+    true,
     [
-      "https://www.daneedanee.com/",
-      "https://www.daneedanee.com/diagnosis",
-      "https://www.daneedanee.com/notes",
-      "https://www.daneedanee.com/notes/topic/blog-marketing",
-      "https://www.daneedanee.com/notes/topic/small-business-marketing",
+      { slug: "a", updated_at: "2026-10-01T00:00:00Z", pillar: "small-business-marketing" },
+      { slug: "b", updated_at: "2026-10-01T00:00:00Z", pillar: "blog-marketing" },
     ],
+    base,
+  ).map((e) => e.url);
+  assert.deepEqual(urls.slice(3, 5), [
+    "https://www.daneedanee.com/notes/topic/blog-marketing",
+    "https://www.daneedanee.com/notes/topic/small-business-marketing",
+  ]);
+});
+
+test("사이트맵: 글이 없거나 기둥이 모두 비어 있으면 허브는 빠진다", () => {
+  const home = ["https://www.daneedanee.com/", "https://www.daneedanee.com/diagnosis", "https://www.daneedanee.com/notes"];
+  assert.deepEqual(sitemapFor(true, [], base).map((e) => e.url), home);
+  assert.deepEqual(
+    sitemapFor(true, [{ slug: "a", updated_at: "2026-10-01T00:00:00Z", pillar: null }], base).map((e) => e.url),
+    [...home, "https://www.daneedanee.com/notes/a"],
   );
 });

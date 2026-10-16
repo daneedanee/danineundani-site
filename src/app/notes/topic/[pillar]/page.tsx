@@ -1,13 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { cache } from "react";
 
 import { JsonLd } from "@/components/notes/json-ld";
 import { NotesShell } from "@/components/notes/notes-shell";
 import { PostList } from "@/components/notes/post-list";
 import { breadcrumbJsonLd } from "@/lib/notes/jsonld";
 import { listPublishedInPillar } from "@/lib/notes/queries";
-import { hubPath, isPillarKey, PILLARS } from "@/lib/notes/topics";
+import { hubPath, isPillarKey, PILLARS, type PillarKey } from "@/lib/notes/topics";
 import { absoluteUrl, siteName } from "@/lib/seo";
 import { notes, topics } from "@/lib/site-content";
 
@@ -22,9 +23,15 @@ export function generateStaticParams() {
   return PILLARS.map((p) => ({ pillar: p.key }));
 }
 
+// 메타데이터와 본문이 같은 읽기를 쓴다. 한 요청에 데이터베이스는 한 번만 읽는다.
+const loadPosts = cache((key: PillarKey) => listPublishedInPillar(key));
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const key = (await params).pillar;
   if (!isPillarKey(key)) return {};
+
+  // 글이 없는 모음 페이지는 색인에서 뺀다. 링크는 따라가게 둔다.
+  const empty = (await loadPosts(key)).length === 0;
 
   const title = `${topics[key].title} · ${siteName}`;
   const url = absoluteUrl(hubPath(key));
@@ -32,6 +39,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title,
     description: topics[key].intro,
     alternates: { canonical: url },
+    ...(empty ? { robots: { index: false, follow: true } } : {}),
     openGraph: { type: "website", url, title, description: topics[key].intro, siteName, locale: "ko_KR" },
   };
 }
@@ -41,7 +49,7 @@ export default async function TopicHubPage({ params }: Props) {
   if (!isPillarKey(key)) notFound();
 
   const topic = topics[key];
-  const posts = await listPublishedInPillar(key);
+  const posts = await loadPosts(key);
 
   return (
     <NotesShell>
