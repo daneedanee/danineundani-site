@@ -1,6 +1,8 @@
 // 공개 문구·링크는 docs/홈페이지-기획.md 5장에서 대표가 확인한 초안(2026-09-13)만 쓴다.
 // 문구를 바꾸려면 기획 문서를 먼저 고치고 대표 확인을 받는다.
 
+import type { PillarKey } from "./notes/topics";
+
 export const links = {
   diagnosis: "https://www.latpeed.com/products/bxdTq",
   challengePreRegister:
@@ -446,7 +448,15 @@ export const notes = {
   breadcrumbList: "칼럼",
   empty: "아직 올라온 글이 없습니다.",
   backToList: "칼럼 목록으로",
+  relatedTitle: "같은 주제 글",
+  topicsLabel: "주제",
 } as const;
+
+// 기둥 허브 문구. 2026-10-17 초안 - 대표 확인 전. 확인받으면 이 줄을 "대표 확인 (날짜)"로 바꾼다.
+export const topics = {
+  "blog-marketing": { title: "블로그마케팅", intro: "블로그로 문의와 매출을 만드는 방법을 정리합니다." },
+  "small-business-marketing": { title: "자영업자 마케팅", intro: "광고비에 기대지 않고 손님이 찾아오게 하는 방법을 정리합니다." },
+} as const satisfies Record<PillarKey, { title: string; intro: string }>;
 
 // 구조화 데이터(JSON-LD)에 넣는 글쓴이. 사람으로 적고 운영 채널을 잇는다.
 export const author = {

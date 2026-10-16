@@ -7,11 +7,14 @@ import { cache } from "react";
 import { JsonLd } from "@/components/notes/json-ld";
 import { NotesShell } from "@/components/notes/notes-shell";
 import { PostBody } from "@/components/notes/post-body";
+import { RelatedPosts } from "@/components/notes/related-posts";
 import { formatDate } from "@/lib/notes/format";
 import { isStorageImage } from "@/lib/notes/images";
 import { blogPostingJsonLd, breadcrumbJsonLd } from "@/lib/notes/jsonld";
-import { getPublishedBySlug, listAllPublished } from "@/lib/notes/queries";
+import { getPublishedBySlug, listAllPublished, listRelatedCandidates } from "@/lib/notes/queries";
+import { pickRelated } from "@/lib/notes/related";
 import { decodeSlugParam } from "@/lib/notes/slug";
+import { hubPath, pillarName } from "@/lib/notes/topics";
 import { absoluteUrl, siteName } from "@/lib/seo";
 import { author, notes } from "@/lib/site-content";
 
@@ -76,6 +79,9 @@ export default async function NotePage({ params }: Props) {
 
   const url = postUrl(post.slug);
   const cover = post.cover_image_url;
+  const pillar = post.pillar;
+  const pillarLabel = pillarName(pillar);
+  const related = pickRelated(post, pillar ? await listRelatedCandidates(pillar) : []);
 
   return (
     <NotesShell>
@@ -91,6 +97,7 @@ export default async function NotePage({ params }: Props) {
         data={breadcrumbJsonLd([
           { name: notes.breadcrumbHome, url: absoluteUrl("/") },
           { name: notes.breadcrumbList, url: absoluteUrl("/notes") },
+          ...(pillar && pillarLabel ? [{ name: pillarLabel, url: absoluteUrl(hubPath(pillar)) }] : []),
           { name: post.title, url },
         ])}
       />
@@ -108,6 +115,16 @@ export default async function NotePage({ params }: Props) {
               {notes.breadcrumbList}
             </Link>
           </li>
+          {pillar && pillarLabel && (
+            <>
+              <li aria-hidden>›</li>
+              <li>
+                <Link href={hubPath(pillar)} className="hover:text-[#fd715b]">
+                  {pillarLabel}
+                </Link>
+              </li>
+            </>
+          )}
         </ol>
       </nav>
 
@@ -138,6 +155,8 @@ export default async function NotePage({ params }: Props) {
           <PostBody markdown={post.content_md} />
         </div>
       </article>
+
+      <RelatedPosts posts={related} />
 
       <p className="mt-14 border-t border-[#eaded4] pt-6 text-[15px]">
         <Link href="/notes" className="font-semibold text-[#2b2421] underline decoration-[#fd715b] decoration-2 underline-offset-4">

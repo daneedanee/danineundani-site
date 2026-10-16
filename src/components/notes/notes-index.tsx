@@ -2,15 +2,16 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import { formatDate } from "@/lib/notes/format";
 import { notesPagePath, totalPages } from "@/lib/notes/paging";
 import { countPublished, listPublishedPage } from "@/lib/notes/queries";
 import { absoluteUrl, siteName } from "@/lib/seo";
+import { hubPath, PILLARS } from "@/lib/notes/topics";
 import { notes } from "@/lib/site-content";
 
 import { AdminWriteLink } from "./admin-write-link";
 import { NotesShell } from "./notes-shell";
 import { Pagination } from "./pagination";
+import { PostList } from "./post-list";
 
 // 목록 쪽의 제목과 대표 주소. 쪽마다 자기 주소가 대표 주소다.
 export function notesIndexMetadata(page: number): Metadata {
@@ -40,28 +41,23 @@ export async function NotesIndex({ page }: { page: number }) {
         <AdminWriteLink />
       </div>
 
+      <nav aria-label={notes.topicsLabel} className="mt-4 flex flex-wrap items-center gap-2 text-[14px]">
+        <span className="text-[#8a7d75]">{notes.topicsLabel}</span>
+        {PILLARS.map((pillar) => (
+          <Link
+            key={pillar.key}
+            href={hubPath(pillar.key)}
+            className="rounded-full border border-[#eaded4] px-3 py-1 font-semibold text-[#2b2421] hover:border-[#fd715b] hover:text-[#fd715b]"
+          >
+            {pillar.name}
+          </Link>
+        ))}
+      </nav>
+
       {posts.length === 0 ? (
         <p className="mt-10 text-[16px] leading-7 text-[#5c514b]">{notes.empty}</p>
       ) : (
-        <ul className="mt-10 divide-y divide-[#eaded4] border-y border-[#eaded4]">
-          {posts.map((post) => (
-            <li key={post.slug}>
-              <article className="py-7">
-                <h2 className="text-[20px] leading-[1.4] font-extrabold tracking-[-0.3px] text-[#2b2421] min-[992px]:text-[22px]">
-                  <Link href={`/notes/${encodeURIComponent(post.slug)}`} className="hover:text-[#fd715b]">
-                    {post.title}
-                  </Link>
-                </h2>
-                <p className="mt-2 text-[15px] leading-7 text-[#5c514b]">{post.description}</p>
-                {post.published_at && (
-                  <p className="mt-3 text-[13px] text-[#8a7d75]">
-                    <time dateTime={post.published_at}>{formatDate(post.published_at)}</time>
-                  </p>
-                )}
-              </article>
-            </li>
-          ))}
-        </ul>
+        <PostList posts={posts} />
       )}
 
       <Pagination page={page} pages={pages} />
