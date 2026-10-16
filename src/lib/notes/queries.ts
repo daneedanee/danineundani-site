@@ -33,7 +33,7 @@ export async function listPublishedPage(page: number): Promise<PostSummary[]> {
   const { from, to } = pageRange(page);
   const result = await serverClient()
     .from(postsTable)
-    .select("slug, title, description, cover_image_url, published_at")
+    .select("slug, title, description, cover_image_url, published_at, pillar, branch")
     .eq("status", "published")
     .order("published_at", { ascending: false })
     .range(from, to);

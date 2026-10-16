@@ -33,7 +33,7 @@ test("isValidSlug: 허용하는 꼴", () => {
 });
 
 test("isValidSlug: 거부하는 꼴", () => {
-  for (const bad of ["", "Hello", "a b", "-a", "a-", "a--b", "a/b", "a%20b", "page", "가".repeat(61)]) {
+  for (const bad of ["", "Hello", "a b", "-a", "a-", "a--b", "a/b", "a%20b", "page", "topic", "가".repeat(61)]) {
     assert.equal(isValidSlug(bad), false, bad);
   }
 });

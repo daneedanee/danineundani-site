@@ -3,8 +3,8 @@
 // 더 길면 파일 이름 한도(255바이트)를 넘어 배포가 깨질 수 있다. 발행한 주소는 잠기므로 미리 막는다.
 export const SLUG_MAX = 60;
 
-// /notes/page/2 와 헷갈리지 않게 막아 둔 이름.
-const reserved = new Set(["page"]);
+// /notes/page/2, /notes/topic/… 허브와 헷갈리지 않게 막아 둔 이름.
+const reserved = new Set(["page", "topic"]);
 const shape = /^[a-z0-9가-힣]+(?:-[a-z0-9가-힣]+)*$/;
 
 export function slugify(title: string): string {
