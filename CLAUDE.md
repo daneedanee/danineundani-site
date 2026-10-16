@@ -17,6 +17,7 @@
 - 스타일(`globals.css`)을 고친 배포에서 Vercel이 옛 스타일을 그대로 쓴 일이 있었다(2026-10-11, 유튜브 띠의 흐르는 효과가 운영에서만 빠짐). 그럴 때는 `vercel --prod --force`로 캐시 없이 다시 올린다. 올린 뒤에는 운영 사이트에서 직접 확인한다.
 - **검색 노출 열림 (대표 결정, 2026-10-16)**: Vercel Production 환경 변수 `NEXT_PUBLIC_ALLOW_INDEXING=true`. 여닫는 자리는 `src/lib/seo.ts` 하나다(`layout.tsx`·`robots.ts`·`sitemap.ts`가 읽는다). 다시 닫으려면 그 변수를 지우고 재배포한다. 연 뒤 남은 일(서치 콘솔·서치어드바이저 등록, vercel.app 주소 넘기기, Supabase 회원가입 닫기, 요금제)은 `docs/superpowers/specs/2026-10-07-notes-board-design.md` 9·11장.
 - **게시판 (2026-10-07)**: 공개 주소 `/notes`, 글쓰기 `/admin/notes`. 글은 Supabase 표 `cab_posts`(`supabase/05-posts.sql`), 이미지는 보관함 `cab-post-images`. 방문자는 발행한 글만 읽고 쓰기는 관리자 이메일만 한다. 발행하면 재배포 없이 바로 반영된다(`/api/notes/revalidate`). 한 번 발행한 글의 주소는 바꿀 수 없다. 상단 메뉴 이름은 「칼럼」(대표 결정, 2026-10-08). 게시판 제목·돌아가기 링크도 「칼럼」에 맞췄다(`site-content.ts`의 `notes`).
+- **칼럼 주제 (2026-10-17)**: 글마다 기둥(`pillar`, `blog-marketing`·`small-business-marketing` 둘 중 하나 또는 비움)과 가지(`branch`, 자유 글자 40자, 비움 가능)를 단다(`supabase/07-post-topics.sql`). 기둥 목록은 `src/lib/notes/topics.ts` 한 곳. 기둥별 허브는 `/notes/topic/<기둥 키>`(주소 바꾸지 않음), 허브 문구는 `site-content.ts`의 `topics`(대표 확인). 글이 없는 허브는 색인 막음·사이트맵 제외. 글 아래 「같은 주제 글」은 같은 가지 → 같은 기둥 순. 글 주소 `topic`은 예약어. 가지별 허브는 없다. 대시보드 「홈페이지 칼럼」 작성기가 같은 기둥 키를 쓴다.
 - `/admin`에는 비밀번호 재설정 화면이 없다. 복구 메일 링크를 눌러도 홈만 열린다 (2026-10-08 확인). 비밀번호는 Supabase SQL Editor에서 바꾼다.
 - `docs/` 폴더는 저장소에 올리지 않는다 (내부 문서). 작업 기록은 `docs/2주차-완료.md`를 본다.
 

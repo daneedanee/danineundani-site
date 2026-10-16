@@ -452,7 +452,7 @@ export const notes = {
   topicsLabel: "주제",
 } as const;
 
-// 기둥 허브 문구. 2026-10-17 초안 - 대표 확인 전. 확인받으면 이 줄을 "대표 확인 (날짜)"로 바꾼다.
+// 기둥 허브 문구. 대표 확인 (2026-10-17).
 export const topics = {
   "blog-marketing": { title: "블로그마케팅", intro: "블로그로 문의와 매출을 만드는 방법을 정리합니다." },
   "small-business-marketing": { title: "자영업자 마케팅", intro: "광고비에 기대지 않고 손님이 찾아오게 하는 방법을 정리합니다." },
