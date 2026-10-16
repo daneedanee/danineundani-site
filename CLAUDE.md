@@ -15,7 +15,7 @@
 - **배포는 GitHub `main`에 올리면 자동으로 된다** (Vercel이 저장소와 연결돼 있다. 2026-10-11 확인). 고친 내용은 브랜치에서 작업해 `main`에 합치고 `git push` 한다.
 - **이 폴더에서 `vercel --prod`로 직접 올리기 전에는 반드시 `git fetch`로 GitHub `main`과 같은지 본다.** 다른 곳(클라우드 세션의 PR 등)에서 `main`에 들어간 작업이 이 폴더에 없으면, 직접 올리는 순간 그 작업이 운영 사이트에서 빠진다. 2026-10-11에 쇼츠 편집기(`/studio`)가 그렇게 내려갔다가 합치면서 복구됐다.
 - 스타일(`globals.css`)을 고친 배포에서 Vercel이 옛 스타일을 그대로 쓴 일이 있었다(2026-10-11, 유튜브 띠의 흐르는 효과가 운영에서만 빠짐). 그럴 때는 `vercel --prod --force`로 캐시 없이 다시 올린다. 올린 뒤에는 운영 사이트에서 직접 확인한다.
-- 검색 노출은 계속 차단한다. 여닫는 자리는 `src/lib/seo.ts` 하나다(`layout.tsx`·`robots.ts`·`sitemap.ts`가 읽는다). 여는 방법은 Vercel 환경 변수 `NEXT_PUBLIC_ALLOW_INDEXING=true` + 재배포이고, 대표가 열라고 할 때까지 넣지 않는다. 여는 날 할 일은 `docs/superpowers/specs/2026-10-07-notes-board-design.md` 11장.
+- **검색 노출 열림 (대표 결정, 2026-10-16)**: Vercel Production 환경 변수 `NEXT_PUBLIC_ALLOW_INDEXING=true`. 여닫는 자리는 `src/lib/seo.ts` 하나다(`layout.tsx`·`robots.ts`·`sitemap.ts`가 읽는다). 다시 닫으려면 그 변수를 지우고 재배포한다. 연 뒤 남은 일(서치 콘솔·서치어드바이저 등록, vercel.app 주소 넘기기, Supabase 회원가입 닫기, 요금제)은 `docs/superpowers/specs/2026-10-07-notes-board-design.md` 9·11장.
 - **게시판 (2026-10-07)**: 공개 주소 `/notes`, 글쓰기 `/admin/notes`. 글은 Supabase 표 `cab_posts`(`supabase/05-posts.sql`), 이미지는 보관함 `cab-post-images`. 방문자는 발행한 글만 읽고 쓰기는 관리자 이메일만 한다. 발행하면 재배포 없이 바로 반영된다(`/api/notes/revalidate`). 한 번 발행한 글의 주소는 바꿀 수 없다. 상단 메뉴 이름은 「칼럼」(대표 결정, 2026-10-08). 게시판 제목·돌아가기 링크도 「칼럼」에 맞췄다(`site-content.ts`의 `notes`).
 - `/admin`에는 비밀번호 재설정 화면이 없다. 복구 메일 링크를 눌러도 홈만 열린다 (2026-10-08 확인). 비밀번호는 Supabase SQL Editor에서 바꾼다.
 - `docs/` 폴더는 저장소에 올리지 않는다 (내부 문서). 작업 기록은 `docs/2주차-완료.md`를 본다.
