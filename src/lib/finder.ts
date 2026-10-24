@@ -39,26 +39,29 @@ export function nextQuestion(answers: Answers): QuestionId | null {
   return null;
 }
 
+// 챌린지 후보가 4주 과제를 지금 못 하는 이유별 추천 (2026-10-24 대표 인터뷰).
+// 시간이 없으면 맡기기, 막막하면 기초부터, 일정만 안 맞으면 다음 기수를 기다리게 한다.
+function notNow(q3: Q3 | undefined): Rule | null {
+  if (q3 === "BUSY") return { key: "busy", primary: "agency", alternative: "feedback" };
+  if (q3 === "STUCK") return { key: "stuck", primary: "vod", alternative: "newsletter" };
+  if (q3 === "LATER") return { key: "later", primary: "challenge", alternative: "feedback" };
+  return null;
+}
+
 function rule(answers: Answers): Rule | null {
   const { q1, q2, q3 } = answers;
-  const able = q3 === "YES";
   switch (q1) {
     case "NO_RESULTS":
       if (q2 === "WHAT_IS_WRONG") return { key: "diagnose", primary: "diagnosis", alternative: "freeTemplate" };
       if (q2 === "NO_TIME") return { key: "delegateNoResults", primary: "agency", alternative: "diagnosis" };
-      // 4주가 어려운 경우는 문서에 없다. 실행 도움을 원하는 사람이라 입문 강의 대신 가벼운 피드백으로 보낸다.
-      return able
-        ? { key: "challengeKnowFix", primary: "challenge", alternative: "feedback" }
-        : { key: "feedbackNoTime", primary: "feedback", alternative: "diagnosis" };
+      return q3 === "YES" ? { key: "challengeKnowFix", primary: "challenge", alternative: "feedback" } : notNow(q3);
     case "NEW_BEGINNER":
       return q2 === "LEARN_SELF"
         ? { key: "beginnerSelf", primary: "vod", alternative: "freeTemplate" }
         : { key: "beginnerDelegate", primary: "agency", alternative: "freeTemplate" };
     case "EXECUTION_BLOCK":
       if (q2 === "NEED_BASICS") return { key: "basics", primary: "vod", alternative: "newsletter" };
-      return able
-        ? { key: "challengeExecution", primary: "challenge", alternative: "feedback" }
-        : { key: "selfPaced", primary: "vod", alternative: "newsletter" };
+      return q3 === "YES" ? { key: "challengeExecution", primary: "challenge", alternative: "feedback" } : notNow(q3);
     case "NEED_FEEDBACK":
       // 글 한 편 교정을 원하는 사람을 블로그 전체 진단으로 돌리지 않는다.
       return q2 === "SPECIFIC_DRAFT"
