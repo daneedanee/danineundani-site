@@ -27,24 +27,274 @@ export const youtube = {
 } as const;
 
 export const sectionIds = {
+  finder: "finder",
   diagnosis: "service-diagnosis",
   challenge: "service-challenge",
   agency: "service-agency",
   consult: "consult",
 } as const;
 
-// 상단 메뉴가 가는 곳 (대표 결정, 2026-10-11)
+// 해결 방법의 공개 상태. 상태와 주소를 여기서만 바꾸면 고민 찾기 결과·서비스 카드·상단 메뉴가 같이 바뀐다.
+//   available: 지금 신청·구매 가능 / waitlist: 다음 모집 전 / upcoming: 준비 중, 판매하지 않음
+//   consult: 상담으로 범위 확인 / content: 무료로 읽거나 구독
+// 모집 전·준비 중인 것은 결제 페이지로 보내지 않는다 (finder.test.ts 가 막는다).
+// 아래 문구 가운데 "초안" 표시는 2026-10-24 퍼널 인수인계서를 바탕으로 쓴 것이고 대표 확인 전이다.
+export type OfferStatus = "available" | "waitlist" | "upcoming" | "consult" | "content";
+
+export const offerStatusLabels: Record<OfferStatus, string> = {
+  available: "지금 신청 가능",
+  waitlist: "다음 기수 준비 중",
+  upcoming: "준비 중",
+  consult: "상담 후 진행",
+  content: "무료",
+};
+
+// 초안. 모집 전·준비 중인 해결 방법 카드 아래에 붙는 안내.
+export const offerStatusNotes: Partial<Record<OfferStatus, string>> = {
+  waitlist: "지금은 모집하지 않습니다.",
+  upcoming: "아직 판매하지 않는 서비스입니다.",
+};
+
+type Offer = { name: string; status: OfferStatus; summary: string; price: string; cta: string; href: string };
+
+export const offers = {
+  // 이름·설명·가격·버튼은 서비스 카드의 대표 확인 문구 그대로다.
+  diagnosis: {
+    name: "블로그 진단",
+    status: "available",
+    summary: "지금 블로그에서 어디가 막혔는지 먼저 확인합니다. 진단 결과는 리포트로 전달드립니다.",
+    price: "59,000원",
+    cta: "진단 신청하기",
+    href: links.diagnosis,
+  },
+  // 2기 판매는 래피드에서 2026-10-18 마감, 2기 사전대기 구글폼도 응답 마감 (2026-10-24 확인).
+  // 다음 기수 대기 명단이 따로 없어 다니레터로 보낸다(초안). 모집을 열면 status 를 available, href 를 links.challengeSales 로 바꾼다.
+  challenge: {
+    name: "매출로 이어지는 블로그",
+    status: "waitlist",
+    summary:
+      "블로그는 쓰고 있는데 문의가 끊긴 사업자를 위한 4주 과정입니다. 세팅, 키워드, 구조화된 글, 문의 받는 공지글까지 직접 발행하며 익힙니다.",
+    price: "",
+    cta: "다음 기수 소식 받기",
+    href: "/letter",
+  },
+  // 초안. 범위·가격·출시 시기 미정 (인수인계서 2장 [기획]). 구매 버튼을 달지 않는다.
+  feedback: {
+    name: "글 피드백",
+    status: "upcoming",
+    summary: "이미 쓰고 있는 글을 봐 드리는 피드백 서비스를 준비하고 있습니다.",
+    price: "",
+    cta: "출시 소식 받기",
+    href: "/letter",
+  },
+  // 초안. 2027년 출시 검토 (인수인계서 2장 [기획]). 구매 버튼을 달지 않는다.
+  vod: {
+    name: "블로그 입문 강의 (VOD)",
+    status: "upcoming",
+    summary: "블로그 설정부터 첫 글까지, 처음 시작하는 분을 위한 강의를 준비하고 있습니다.",
+    price: "",
+    cta: "출시 소식 받기",
+    href: "/letter",
+  },
+  // 이름·설명·버튼은 서비스 카드의 대표 확인 문구 그대로다. 가격은 홈에 적지 않는다 (기획 5장 「문의」).
+  agency: {
+    name: "블로그 관리 대행 (마켓티브)",
+    status: "consult",
+    summary: "블로그 운영을 맡기고 싶은 분을 위한 관리 대행입니다. 현재 6개 업체의 블로그를 관리하고 있습니다.",
+    price: "",
+    cta: "대행 문의하기",
+    href: "/agency",
+  },
+  // 설명·버튼은 상담 신청 구역의 대표 확인 문구 그대로다.
+  consult: {
+    name: "상담 신청",
+    status: "consult",
+    summary: "지금 상황을 적어 주시면 확인 후 이메일로 연락드리겠습니다.",
+    price: "",
+    cta: "상담 신청하기",
+    href: `/#${sectionIds.consult}`,
+  },
+  // 초안.
+  notes: {
+    name: "칼럼",
+    status: "content",
+    summary: "블로그로 문의를 만드는 방법을 칼럼으로 먼저 읽어 보세요.",
+    price: "",
+    cta: "칼럼 읽기",
+    href: "/notes",
+  },
+  // 초안.
+  newsletter: {
+    name: "다니레터",
+    status: "content",
+    summary: "다니의 블로그 마케팅 이야기를 메일로 받아 보세요.",
+    price: "",
+    cta: "다니레터 구독하기",
+    href: "/letter",
+  },
+  // 무료 실행 자료(인수인계서 5-2, 제목 미정). 자료가 생기면 이름·설명·주소를 넣는다. 주소가 비어 있으면 고민 찾기 결과에 나오지 않는다.
+  freeTemplate: {
+    name: "무료 글 설계 템플릿",
+    status: "upcoming",
+    summary: "",
+    price: "",
+    cta: "",
+    href: "",
+  },
+} satisfies Record<string, Offer>;
+
+export type OfferId = keyof typeof offers;
+
+// 지금 신청·구매할 수 있는지. 상태 값을 바꿔 가며 쓰므로 함수로 둔다.
+export function isOpen(status: OfferStatus): boolean {
+  return status === "available";
+}
+
+// 고민 찾기 (홈 첫 화면 바로 아래). 전부 초안: 질문·선택지는 인수인계서 4장, 추천 이유는 새로 썼다.
+// 추천 규칙은 src/lib/finder.ts. 결과 하나마다 이유 두 줄.
+export const finder = {
+  // 제목은 기존 고민 구역의 대표 확인 문구를 그대로 쓴다.
+  title: "이런 고민, 혼자 하고 계신가요?",
+  description: "질문 두세 개에 답하면 지금 상황에 맞는 방법을 바로 보여 드립니다.",
+  progress: "질문",
+  q1: {
+    question: "지금 가장 큰 고민은 무엇인가요?",
+    options: {
+      NO_RESULTS: "블로그를 운영하는데 성과가 없어요",
+      NEW_BEGINNER: "블로그를 처음 시작하려고 해요",
+      EXECUTION_BLOCK: "무엇을 해야 할지는 알지만 혼자 꾸준히 하기 어려워요",
+      NEED_FEEDBACK: "글을 쓰고 있는데 제대로 쓰는지 모르겠어요",
+      WANT_DELEGATION: "직접 관리할 시간이 없어서 맡기고 싶어요",
+    },
+  },
+  q2: {
+    NO_RESULTS: {
+      question: "가장 필요한 것은 무엇인가요?",
+      options: {
+        WHAT_IS_WRONG: "무엇이 문제인지부터 알고 싶어요",
+        KNOW_FIX_NEED_HELP: "방향은 아는데 실행할 도움이 필요해요",
+        NO_TIME: "전부 맡기고 싶어요",
+      },
+    },
+    NEW_BEGINNER: {
+      question: "블로그 설정과 글쓰기를 직접 배워 볼 수 있나요?",
+      options: {
+        LEARN_SELF: "네, 직접 배워 볼게요",
+        NO_TIME: "여력이 없어서 맡기고 싶어요",
+      },
+    },
+    EXECUTION_BLOCK: {
+      question: "기본 설정과 글 발행은 해 보셨나요?",
+      options: {
+        HAS_EXPERIENCE: "네, 해 봤어요",
+        NEED_BASICS: "처음부터 안내가 필요해요",
+      },
+    },
+    NEED_FEEDBACK: {
+      question: "어떤 피드백이 필요하신가요?",
+      options: {
+        SPECIFIC_DRAFT: "내가 쓴 글 한 편을 봐 주세요",
+        WHOLE_BLOG: "블로그 전체의 문제와 우선순위가 궁금해요",
+      },
+    },
+    WANT_DELEGATION: {
+      question: "어떤 사업을 운영하시나요?",
+      options: {
+        LOCAL_BUSINESS: "매장·현장 업종 (소상공인)",
+        PROFESSIONAL: "전문직 (세무사·변호사 등)",
+        OTHER: "기타",
+      },
+    },
+  },
+  // 챌린지 후보에게만 묻는다.
+  q3: {
+    question: "4주 동안 매주 글을 쓰고 과제를 낼 수 있나요?",
+    options: {
+      YES: "네, 할 수 있어요",
+      NO: "지금은 어려워요",
+    },
+  },
+  resultLead: "지금 상황이라면",
+  resultTail: "부터 살펴보세요.",
+  summaryLabel: "고르신 내용",
+  alternativeLabel: "이런 방법도 있어요",
+  back: "이전 질문",
+  restart: "처음부터 다시 고르기",
+  readNotes: "칼럼 먼저 읽기",
+  reasons: {
+    diagnose: [
+      "글을 더 쓰기 전에 어디서 막혔는지부터 확인하는 게 먼저입니다.",
+      "진단 리포트로 지금 블로그에서 막힌 곳과 개선 방향을 정리해 드립니다.",
+    ],
+    challengeKnowFix: [
+      "방향을 알고 있다면 직접 써 보면서 피드백을 받는 방식이 맞습니다.",
+      "4주 동안 글을 발행하고 글마다 피드백을 받는 과정입니다. 지금은 다음 기수를 준비하고 있습니다.",
+    ],
+    feedbackNoTime: [
+      "4주 과정이 부담스럽다면 쓰고 있는 글을 봐 드리는 피드백이 더 가볍습니다.",
+      "피드백 서비스는 지금 준비하고 있습니다. 먼저 막힌 곳을 확인하고 싶다면 블로그 진단도 있습니다.",
+    ],
+    delegateNoResults: [
+      "직접 고칠 시간이 없다면 운영을 맡기는 쪽이 현실적입니다.",
+      "맡기기 전에 막힌 곳만 먼저 확인하고 싶다면 블로그 진단도 있습니다.",
+    ],
+    beginnerSelf: [
+      "처음이라면 블로그 설정과 첫 글부터 차근차근 배우는 게 먼저입니다.",
+      "입문 강의는 지금 준비하고 있습니다.",
+    ],
+    beginnerDelegate: [
+      "처음부터 직접 하기 어렵다면 운영을 맡기는 방법이 있습니다.",
+      "대행 문의에 업종과 지금 상황을 적어 주세요.",
+    ],
+    challengeExecution: [
+      "혼자서는 꾸준히 하기 어렵다면 일정과 피드백이 있는 과정이 도움이 됩니다.",
+      "4주 동안 글을 발행하고 글마다 피드백을 받는 과정입니다. 지금은 다음 기수를 준비하고 있습니다.",
+    ],
+    selfPaced: [
+      "4주 일정을 맞추기 어렵다면 내 속도로 볼 수 있는 강의가 맞습니다.",
+      "입문 강의는 지금 준비하고 있습니다.",
+    ],
+    basics: [
+      "기본 설정부터 다시 잡고 시작하는 게 먼저입니다.",
+      "입문 강의는 지금 준비하고 있습니다.",
+    ],
+    draftFeedback: [
+      "글 한 편을 고치고 싶다면 블로그 전체 진단보다 글 피드백이 맞습니다.",
+      "피드백 서비스는 지금 준비하고 있습니다.",
+    ],
+    wholeBlog: [
+      "글 한 편보다 블로그 전체에서 무엇부터 고칠지가 궁금하다면 진단이 맞습니다.",
+      "진단 리포트로 지금 블로그에서 막힌 곳과 개선 방향을 정리해 드립니다.",
+    ],
+    delegateLocal: [
+      "매장·현장 업종이라면 블로그 관리 대행을 상담해 보세요.",
+      "대행 문의에 업종과 지금 상황을 적어 주세요.",
+    ],
+    delegatePro: [
+      "전문직은 원하는 업무 범위에 따라 진행 방식이 달라서 상담으로 먼저 확인합니다.",
+      "대행 문의에 지금 상황과 맡기고 싶은 범위를 적어 주세요.",
+    ],
+    delegateOther: [
+      "업종에 따라 맡을 수 있는지 상담에서 먼저 확인합니다.",
+      "지금 상황을 적어 주시면 확인 후 이메일로 연락드리겠습니다.",
+    ],
+  },
+} as const;
+
+// 상단 메뉴가 가는 곳 (대표 결정, 2026-10-11. 고민 찾기와 챌린지 조건은 2026-10-24 초안)
+//   · 고민 찾기 → 홈의 고민 찾기 구역 (초안)
 //   · 블로그 진단 → 래피드 상세페이지 (새 탭)
-//   · 매출로 이어지는 블로그 → 래피드 판매 페이지 (새 탭). 열리기 전에는 홈의 소개 구역
+//   · 매출로 이어지는 블로그 → 모집 중(offers.challenge.status 가 available)일 때만 메뉴에 둔다 (초안)
 //   · 블로그 대행 → /agency (네이버 폼을 메뉴 아래에 끼워 보여 준다)
 //   · 다니레터 → /letter (스티비 구독 페이지를 메뉴 아래에 끼워 보여 준다)
 // 주소 앞의 "/" : 홈이 아닌 페이지(/notes)에서도 홈의 해당 구역으로 가게 한다.
 // external 이 true 면 바깥 사이트라 새 탭으로 연다.
 export const navItems: { label: string; href: string; external: boolean }[] = [
+  { label: "고민 찾기", href: `/#${sectionIds.finder}`, external: false },
   { label: "블로그 진단", href: links.diagnosis, external: true },
-  links.challengeSales
-    ? { label: "매출로 이어지는 블로그", href: links.challengeSales, external: true }
-    : { label: "매출로 이어지는 블로그", href: `/#${sectionIds.challenge}`, external: false },
+  ...(isOpen(offers.challenge.status)
+    ? [{ label: "매출로 이어지는 블로그", href: offers.challenge.href, external: !offers.challenge.href.startsWith("/") }]
+    : []),
   { label: "블로그 대행", href: "/agency", external: false },
   // 게시판(/notes). 메뉴 이름 "칼럼"은 대표 결정 (2026-10-08).
   { label: "칼럼", href: "/notes", external: false },
@@ -62,12 +312,15 @@ export const hero = {
   ],
   subDescription: "먼저 블로그 진단으로, 지금 막혀 있는 지점부터 확인해 보세요.",
   cta: "블로그 진단 신청",
+  // 초안 (2026-10-24). 버튼 아래 고민 찾기로 내려가는 링크.
+  finderLink: "어떤 방법이 맞을지 모르겠다면, 고민부터 골라 보세요",
   // 한 줄로 이은 것. 검색 결과 설명(layout.tsx)과 이전 버전 컴포넌트가 쓴다.
   title: "광고를 끄면 문의도 끊기는 사업, 이제 콘텐츠가 일하게 하세요.",
   description:
     "다니는다니와 마켓티브는 매출이 막힌 이유를 블로그에서 찾고, 고객이 먼저 발견하고 문의하는 콘텐츠 구조를 만듭니다.",
 } as const;
 
+// 홈에서는 고민 찾기(finder)가 이 구역을 대신한다 (2026-10-24). 쓰지 않는 이전 버전 컴포넌트(src/components/site/)가 읽어서 남겨 둔다.
 export const pains = {
   title: "이런 고민, 혼자 하고 계신가요?",
   items: [
@@ -98,18 +351,18 @@ export const services = {
     },
     {
       id: sectionIds.challenge,
-      name: "매출로 이어지는 블로그",
-      badge: "2기 모집 중",
-      description:
-        "블로그는 쓰고 있는데 문의가 끊긴 사업자를 위한 4주 과정입니다. 세팅, 키워드, 구조화된 글, 문의 받는 공지글까지 직접 발행하며 익힙니다.",
+      name: offers.challenge.name,
+      // 배지·안내·버튼·주소는 모집 상태(offers.challenge)를 따른다. 2기 판매 마감(2026-10-18) 뒤로 「다음 기수 준비 중」.
+      badge: offerStatusLabels[offers.challenge.status],
+      description: offers.challenge.summary,
       includes: ["시작 전 개인 블로그 진단", "라이브 다시보기", "제출 글마다 1,000자 안팎 피드백", "주차별 워크시트·템플릿", "종료 후 30일 콘텐츠 계획"],
-      note: "",
+      note: offerStatusNotes[offers.challenge.status] ?? "",
       details: ["4주", "주 1회 라이브", "글 7편 발행"],
       // 2기 모집부터 가격은 홈에 적지 않는다 (대표 결정, 2026-10-16). 가격은 래피드 페이지에서 본다.
       price: "",
       priceNote: "",
-      cta: "2기 신청하기",
-      href: links.challengeSales,
+      cta: offers.challenge.cta,
+      href: offers.challenge.href,
     },
     {
       id: sectionIds.agency,
@@ -129,6 +382,8 @@ export const services = {
   ],
 } as const;
 
+// 홈에서는 고민 찾기(finder)가 이 구역을 대신한다 (2026-10-24). 진단 → 챌린지 → 대행을 한 줄 순서로 보이지 않게 뺐다.
+// 쓰지 않는 이전 버전 컴포넌트(src/components/site/)가 읽어서 남겨 둔다.
 export const steps = {
   title: "어디서부터 시작하면 좋을까요?",
   items: [

@@ -1,4 +1,4 @@
-import { hero, links } from "@/lib/site-content";
+import { hero, links, sectionIds } from "@/lib/site-content";
 
 import { ExternalButton } from "./shared";
 
@@ -34,6 +34,12 @@ export function TopBanner() {
             <ExternalButton href={links.diagnosis} className="mt-6 rounded-[5px] px-5 py-3 text-[15px] min-[992px]:mt-8 min-[992px]:px-6 min-[992px]:text-[18px]">
               {hero.cta}
             </ExternalButton>
+            <a
+              href={`#${sectionIds.finder}`}
+              className="mt-4 text-[14px] leading-[21px] text-white/75 underline underline-offset-4 break-keep hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#fd715b] min-[992px]:text-[15px]"
+            >
+              {hero.finderLink}
+            </a>
           </div>
         </div>
       </div>

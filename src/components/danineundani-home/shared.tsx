@@ -27,18 +27,27 @@ type ExternalButtonProps = {
 };
 
 export function ExternalButton({ href, children, tone = "coral", className }: ExternalButtonProps) {
+  const classes = cn(
+    "inline-flex items-center justify-center gap-1 font-semibold tracking-[-0.5px] transition-transform duration-200 hover:scale-[1.01]",
+    tone === "coral" && "bg-[#fd715b] text-black",
+    tone === "dark" && "bg-[#191919] text-white",
+    tone === "white" && "bg-white text-black",
+    className,
+  );
+  // 홈의 구역으로 가는 주소(/#구역)는 일반 링크로 둔다. next/link 로 걸면 화면이 내려가지 않는다 (site-header.tsx 와 같은 이유).
+  if (href.startsWith("/#")) {
+    return (
+      <a href={href} className={classes}>
+        {children}
+      </a>
+    );
+  }
   // 사이트 안의 주소(/agency 등)는 같은 탭에서 연다. 바깥 사이트만 새 탭으로 연다.
   if (href.startsWith("/")) {
     return (
       <Link
         href={href}
-        className={cn(
-          "inline-flex items-center justify-center gap-1 font-semibold tracking-[-0.5px] transition-transform duration-200 hover:scale-[1.01]",
-          tone === "coral" && "bg-[#fd715b] text-black",
-          tone === "dark" && "bg-[#191919] text-white",
-          tone === "white" && "bg-white text-black",
-          className,
-        )}
+        className={classes}
       >
         {children}
       </Link>
@@ -49,13 +58,7 @@ export function ExternalButton({ href, children, tone = "coral", className }: Ex
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className={cn(
-        "inline-flex items-center justify-center gap-1 font-semibold tracking-[-0.5px] transition-transform duration-200 hover:scale-[1.01]",
-        tone === "coral" && "bg-[#fd715b] text-black",
-        tone === "dark" && "bg-[#191919] text-white",
-        tone === "white" && "bg-white text-black",
-        className,
-      )}
+      className={classes}
     >
       {children}
       <ArrowUpRight aria-hidden className="size-4 shrink-0" />
