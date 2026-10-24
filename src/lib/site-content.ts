@@ -38,7 +38,8 @@ export const sectionIds = {
 //   available: 지금 신청·구매 가능 / waitlist: 다음 모집 전 / upcoming: 준비 중, 판매하지 않음
 //   consult: 상담으로 범위 확인 / content: 무료로 읽거나 구독
 // 모집 전·준비 중인 것은 결제 페이지로 보내지 않는다 (finder.test.ts 가 막는다).
-// 아래 문구 가운데 "초안" 표시는 2026-10-24 퍼널 인수인계서를 바탕으로 쓴 것이고 대표 확인 전이다.
+// 고민 찾기·해결 방법 문구는 2026-10-24 퍼널 인수인계서를 바탕으로 쓰고 같은 날 대표가 목록으로 확인했다.
+// 말투: 해결 방법 카드와 안내는 서비스 카드와 같은 합니다체, 추천 이유(finder.reasons)만 다니 말투(해요체) (대표 결정).
 export type OfferStatus = "available" | "waitlist" | "upcoming" | "consult" | "content";
 
 export const offerStatusLabels: Record<OfferStatus, string> = {
@@ -49,7 +50,7 @@ export const offerStatusLabels: Record<OfferStatus, string> = {
   content: "무료",
 };
 
-// 초안. 모집 전·준비 중인 해결 방법 카드 아래에 붙는 안내.
+// 모집 전·준비 중인 해결 방법 카드 아래에 붙는 안내.
 export const offerStatusNotes: Partial<Record<OfferStatus, string>> = {
   waitlist: "지금은 모집하지 않습니다.",
   upcoming: "아직 판매하지 않는 서비스입니다.",
@@ -68,7 +69,7 @@ export const offers = {
     href: links.diagnosis,
   },
   // 2기 판매는 래피드에서 2026-10-18 마감, 2기 사전대기 구글폼도 응답 마감 (2026-10-24 확인).
-  // 다음 기수 대기 명단이 따로 없어 다니레터로 보낸다(초안). 모집을 열면 status 를 available, href 를 links.challengeSales 로 바꾼다.
+  // 다음 기수 대기 명단이 따로 없어 다니레터로 보낸다 (대표 결정). 모집을 열면 status 를 available, href 를 links.challengeSales 로 바꾼다.
   challenge: {
     name: "매출로 이어지는 블로그",
     status: "waitlist",
@@ -78,7 +79,8 @@ export const offers = {
     cta: "다음 기수 소식 받기",
     href: "/letter",
   },
-  // 초안. 범위·가격·출시 시기 미정 (인수인계서 2장 [기획]). 구매 버튼을 달지 않는다.
+  // 범위·가격·출시 시기 미정 (인수인계서 2장 [기획]). 구매 버튼을 달지 않는다.
+  // 출시 전까지 고민 찾기는 이 자리에 블로그 진단을 보여 준다 (finder.ts 의 feedbackForNow).
   feedback: {
     name: "글 피드백",
     status: "upcoming",
@@ -87,7 +89,7 @@ export const offers = {
     cta: "출시 소식 받기",
     href: "/letter",
   },
-  // 초안. 2027년 출시 검토 (인수인계서 2장 [기획]). 구매 버튼을 달지 않는다.
+  // 2027년 출시 검토 (인수인계서 2장 [기획]). 구매 버튼을 달지 않는다.
   vod: {
     name: "블로그 입문 강의 (VOD)",
     status: "upcoming",
@@ -115,7 +117,6 @@ export const offers = {
     cta: "상담 신청하기",
     href: `/#${sectionIds.consult}`,
   },
-  // 초안.
   notes: {
     name: "칼럼",
     status: "content",
@@ -124,7 +125,6 @@ export const offers = {
     cta: "칼럼 읽기",
     href: "/notes",
   },
-  // 초안.
   newsletter: {
     name: "다니레터",
     status: "content",
@@ -240,7 +240,7 @@ export const finder = {
     ],
     busy: [
       "매주 글 쓸 시간이 없다면 운영을 맡기시는 쪽이 현실적이에요.",
-      "직접 쓰신 글만 봐 드리는 글 피드백도 준비하고 있어요.",
+      "맡기기 전에 막힌 곳만 먼저 확인하고 싶다면 블로그 진단도 있어요.",
     ],
     stuck: [
       "혼자 쓰기가 막막하다면 블로그 기본부터 차근차근 잡는 게 먼저예요.",
@@ -266,9 +266,10 @@ export const finder = {
       "기본 설정부터 다시 잡고 시작하는 게 먼저예요.",
       "입문 강의는 지금 준비하고 있어요.",
     ],
+    // 글 피드백 출시 전까지 진단을 권하는 이유 (2026-10-24 대표 결정).
     draftFeedback: [
-      "글 한 편이 고민이면 블로그 전체보다 그 글부터 보는 게 맞아요.",
-      "피드백 서비스는 지금 준비하고 있어요.",
+      "글 한 편만 봐 드리는 피드백은 지금 준비하고 있어요.",
+      "그동안은 블로그 진단에서 쓰신 글까지 함께 보고 무엇부터 고칠지 정리해 드려요.",
     ],
     wholeBlog: [
       "블로그 전체에서 무엇부터 고칠지 궁금하시면 진단이 맞아요.",
@@ -289,10 +290,10 @@ export const finder = {
   },
 } as const;
 
-// 상단 메뉴가 가는 곳 (대표 결정, 2026-10-11. 고민 찾기와 챌린지 조건은 2026-10-24 초안)
-//   · 고민 찾기 → 홈의 고민 찾기 구역 (초안)
+// 상단 메뉴가 가는 곳 (대표 결정, 2026-10-11. 고민 찾기와 챌린지 조건은 2026-10-24 대표 결정)
+//   · 고민 찾기 → 홈의 고민 찾기 구역
 //   · 블로그 진단 → 래피드 상세페이지 (새 탭)
-//   · 매출로 이어지는 블로그 → 모집 중(offers.challenge.status 가 available)일 때만 메뉴에 둔다 (초안)
+//   · 매출로 이어지는 블로그 → 모집 중(offers.challenge.status 가 available)일 때만 메뉴에 둔다
 //   · 블로그 대행 → /agency (네이버 폼을 메뉴 아래에 끼워 보여 준다)
 //   · 다니레터 → /letter (스티비 구독 페이지를 메뉴 아래에 끼워 보여 준다)
 // 주소 앞의 "/" : 홈이 아닌 페이지(/notes)에서도 홈의 해당 구역으로 가게 한다.

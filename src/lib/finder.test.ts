@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 
 import { needsQ3, nextQuestion, recommend, totalSteps, type Answers } from "./finder.ts";
-import { links, offers } from "./site-content.ts";
+import { finder, links, offers } from "./site-content.ts";
 
 // 모든 해결 방법에 주소가 있는 상태. 대안이 주소 때문에 빠지지 않게 해서 결정표만 본다.
 const allReady = Object.fromEntries(
@@ -12,19 +12,19 @@ const allReady = Object.fromEntries(
 test("고민 찾기: 결정표대로 1순위와 대안을 고른다", () => {
   const cases: [Answers, string, string | null][] = [
     [{ q1: "NO_RESULTS", q2: "WHAT_IS_WRONG" }, "diagnosis", "freeTemplate"],
-    [{ q1: "NO_RESULTS", q2: "KNOW_FIX_NEED_HELP", q3: "YES" }, "challenge", "feedback"],
-    [{ q1: "NO_RESULTS", q2: "KNOW_FIX_NEED_HELP", q3: "BUSY" }, "agency", "feedback"],
+    [{ q1: "NO_RESULTS", q2: "KNOW_FIX_NEED_HELP", q3: "YES" }, "challenge", "diagnosis"],
+    [{ q1: "NO_RESULTS", q2: "KNOW_FIX_NEED_HELP", q3: "BUSY" }, "agency", "diagnosis"],
     [{ q1: "NO_RESULTS", q2: "KNOW_FIX_NEED_HELP", q3: "STUCK" }, "vod", "newsletter"],
-    [{ q1: "NO_RESULTS", q2: "KNOW_FIX_NEED_HELP", q3: "LATER" }, "challenge", "feedback"],
+    [{ q1: "NO_RESULTS", q2: "KNOW_FIX_NEED_HELP", q3: "LATER" }, "challenge", "diagnosis"],
     [{ q1: "NO_RESULTS", q2: "NO_TIME" }, "agency", "diagnosis"],
     [{ q1: "NEW_BEGINNER", q2: "LEARN_SELF" }, "vod", "freeTemplate"],
     [{ q1: "NEW_BEGINNER", q2: "NO_TIME" }, "agency", "freeTemplate"],
-    [{ q1: "EXECUTION_BLOCK", q2: "HAS_EXPERIENCE", q3: "YES" }, "challenge", "feedback"],
-    [{ q1: "EXECUTION_BLOCK", q2: "HAS_EXPERIENCE", q3: "BUSY" }, "agency", "feedback"],
+    [{ q1: "EXECUTION_BLOCK", q2: "HAS_EXPERIENCE", q3: "YES" }, "challenge", "diagnosis"],
+    [{ q1: "EXECUTION_BLOCK", q2: "HAS_EXPERIENCE", q3: "BUSY" }, "agency", "diagnosis"],
     [{ q1: "EXECUTION_BLOCK", q2: "HAS_EXPERIENCE", q3: "STUCK" }, "vod", "newsletter"],
-    [{ q1: "EXECUTION_BLOCK", q2: "HAS_EXPERIENCE", q3: "LATER" }, "challenge", "feedback"],
+    [{ q1: "EXECUTION_BLOCK", q2: "HAS_EXPERIENCE", q3: "LATER" }, "challenge", "diagnosis"],
     [{ q1: "EXECUTION_BLOCK", q2: "NEED_BASICS" }, "vod", "newsletter"],
-    [{ q1: "NEED_FEEDBACK", q2: "SPECIFIC_DRAFT" }, "feedback", "challenge"],
+    [{ q1: "NEED_FEEDBACK", q2: "SPECIFIC_DRAFT" }, "diagnosis", "challenge"],
     [{ q1: "NEED_FEEDBACK", q2: "WHOLE_BLOG" }, "diagnosis", "freeTemplate"],
     [{ q1: "WANT_DELEGATION", q2: "LOCAL_BUSINESS" }, "agency", "diagnosis"],
     [{ q1: "WANT_DELEGATION", q2: "PROFESSIONAL" }, "agency", "notes"],
@@ -81,5 +81,36 @@ test("해결 방법: 모집 전·준비 중인 것은 결제 페이지로 보내
     if (offer.status === "waitlist" || offer.status === "upcoming") {
       assert.ok(!salesPages.includes(offer.href), `${id} 가 결제 페이지로 간다`);
     }
+  }
+});
+
+// 고를 수 있는 답의 모든 조합. 결정표 밖의 조합이 생겨도 아래 시험이 함께 본다.
+function everyPath(): Answers[] {
+  const paths: Answers[] = [];
+  for (const q1 of Object.keys(finder.q1.options) as NonNullable<Answers["q1"]>[]) {
+    for (const q2 of Object.keys(finder.q2[q1].options) as NonNullable<Answers["q2"]>[]) {
+      if (!needsQ3({ q1, q2 })) {
+        paths.push({ q1, q2 });
+        continue;
+      }
+      for (const q3 of Object.keys(finder.q3.options) as NonNullable<Answers["q3"]>[]) paths.push({ q1, q2, q3 });
+    }
+  }
+  return paths;
+}
+
+test("고민 찾기: 출시 전인 글 피드백은 어떤 답에서도 권하지 않는다", () => {
+  for (const answers of everyPath()) {
+    const result = recommend(answers, allReady);
+    assert.ok(result, JSON.stringify(answers));
+    assert.notEqual(result.primary, "feedback", JSON.stringify(answers));
+    assert.notEqual(result.alternative, "feedback", JSON.stringify(answers));
+  }
+});
+
+test("고민 찾기: 1순위와 대안이 같은 해결 방법이 되지 않는다", () => {
+  for (const answers of everyPath()) {
+    const result = recommend(answers, allReady);
+    assert.notEqual(result?.primary, result?.alternative, JSON.stringify(answers));
   }
 });

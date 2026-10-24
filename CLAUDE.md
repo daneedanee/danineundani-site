@@ -52,7 +52,7 @@
 - 구역 컴포넌트: `src/components/danineundani-home/` (상단 바, 첫 화면, 고민 찾기, 서비스, 유튜브 띠, 상담 신청, 푸터)
 - 고민 찾기 (2026-10-24, 퍼널 인수인계서 4장): 질문 2개(챌린지 후보는 3개)에 답하면 해결 방법 하나와 대안 하나를 보여 준다. 화면 `problem-finder.tsx`, 추천 규칙과 시험 `src/lib/finder.ts`·`finder.test.ts`. 이메일을 받지 않고 고른 답을 주소에 남기지 않는다. 예전 고민 구역·시작 순서 구역은 이 구역으로 바뀌었다
 - 해결 방법의 공개 상태는 `site-content.ts`의 `offers` 한 곳에서 바꾼다 (available·waitlist·upcoming·consult·content). 고민 찾기 결과, 서비스 카드의 챌린지, 상단 메뉴의 챌린지 칸이 같이 바뀐다. 모집 전·준비 중인 것은 결제 페이지로 보내지 않는다(시험이 막는다). 다음 기수 모집을 열 때는 `offers.challenge`의 status 를 available, href 를 `links.challengeSales`로 바꾼다
-- 고민 찾기의 질문·추천 이유와 "초안" 표시가 붙은 문구는 2026-10-24 기준 대표 확인 전이다
+- 고민 찾기 문구는 2026-10-24 대표가 확인했다. 말투는 해결 방법 카드·안내는 합니다체, 추천 이유만 다니 말투(해요체). 글 피드백은 출시 전이라 그 자리에 블로그 진단을 보여 준다(`finder.ts`의 `feedbackForNow`, 출시하면 되돌리고 이유 문구도 고친다)
 - 공개 문구·링크·푸터 사업자 정보: `src/lib/site-content.ts` (주민등록번호·발급번호는 넣지 않는다)
 - 탭 아이콘: `src/app/icon.svg` (로고 파일 없음, 글자 로고 사용)
 - 글꼴: 고운돋움. `src/app/layout.tsx`에서 `next/font/google`로 불러오고 `src/app/globals.css`의 `--font-sans`가 가리킨다. 구글 폰트의 무료 글꼴(OFL)이라 써도 된다. 빌드할 때 내려받아 우리 사이트에서 직접 내주며, 방문자는 화면에 나온 글자가 든 조각만 받는다 (2026-10-07, 7.2MB ttf를 대신함. 홈 기준 약 217KB). 참고 사이트에서 받은 글꼴 파일은 쓰지 않는다.

@@ -142,7 +142,8 @@ export function ProblemFinder() {
           </ul>
         </div>
         <h3 ref={headingRef} tabIndex={-1} className={headingClass}>
-          {finder.resultLead} <span className="text-[#c9412f]">{primary.name}</span>
+          {/* "블로그 관리 대행 (마켓티브)부터"처럼 괄호 뒤에 조사가 붙지 않게 제목에서만 괄호 부분을 뺀다. */}
+          {finder.resultLead} <span className="text-[#c9412f]">{primary.name.replace(/\s*\(.*\)$/, "")}</span>
           {finder.resultTail}
         </h3>
         <div className="flex flex-col gap-1 text-[14px] leading-[22px] text-[#333] break-keep">
