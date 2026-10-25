@@ -1,6 +1,6 @@
-import { ArrowDown, ArrowUpRight } from "lucide-react";
+import { ArrowDown } from "lucide-react";
 
-import { hero, links, sectionIds } from "@/lib/site-content";
+import { hero, sectionIds } from "@/lib/site-content";
 
 import { ExternalButton } from "./shared";
 
@@ -42,14 +42,10 @@ export function TopBanner() {
               <ArrowDown aria-hidden className="size-4 shrink-0" />
             </ExternalButton>
             <a
-              href={links.diagnosis}
-              target="_blank"
-              rel="noopener noreferrer"
+              href="/diagnosis"
               className="mt-4 inline-flex items-center gap-1 text-[14px] leading-[21px] text-white/75 underline underline-offset-4 break-keep hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#fd715b] min-[992px]:text-[15px]"
             >
               {hero.diagnosisLink}
-              <ArrowUpRight aria-hidden className="size-3.5 shrink-0" />
-              <span className="sr-only">(새 탭에서 열림)</span>
             </a>
           </div>
         </div>

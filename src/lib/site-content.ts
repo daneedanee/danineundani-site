@@ -65,8 +65,9 @@ export const offers = {
     status: "available",
     summary: "지금 블로그에서 어디가 막혔는지 먼저 확인합니다. 진단 결과는 리포트로 전달드립니다.",
     price: "59,000원",
-    cta: "진단 신청하기",
-    href: links.diagnosis,
+    // 2026-10-26 대표 결정: 진단 버튼은 상세페이지(/diagnosis)로 보내고, 결제는 상세페이지에서 래피드로 한다.
+    cta: "진단 자세히 보기",
+    href: "/diagnosis",
   },
   // 2기 판매는 래피드에서 2026-10-18 마감, 2기 사전대기 구글폼도 응답 마감 (2026-10-24 확인).
   // 다음 기수 대기 명단이 따로 없어 다니레터로 보낸다 (대표 결정). 모집을 열면 status 를 available, href 를 links.challengeSales 로 바꾼다.
@@ -302,7 +303,7 @@ export const finder = {
 // external 이 true 면 바깥 사이트라 새 탭으로 연다.
 export const navItems: { label: string; href: string; external: boolean }[] = [
   { label: "고민 찾기", href: `/#${sectionIds.finder}`, external: false },
-  { label: "블로그 진단", href: links.diagnosis, external: true },
+  { label: "블로그 진단", href: "/diagnosis", external: false },
   ...(isOpen(offers.challenge.status)
     ? [{ label: "매출로 이어지는 블로그", href: offers.challenge.href, external: !offers.challenge.href.startsWith("/") }]
     : []),
@@ -326,8 +327,8 @@ export const hero = {
   subDescription: "지금 어디서 막혀 있는지부터 찾아보세요.",
   // 주 버튼: 아래 고민 찾기로 내려간다.
   cta: "내 상황에 맞는 방법 찾기",
-  // 보조 링크: 래피드 진단 페이지(새 탭). 진단 상세페이지(/diagnosis)를 만들면 그쪽으로 바꾼다.
-  diagnosisLink: "바로 블로그 진단 신청하기",
+  // 보조 링크: 진단 상세페이지 (2026-10-26 대표 결정)
+  diagnosisLink: "블로그 진단 자세히 보기",
   // 한 줄로 이은 것. 검색 결과 설명(layout.tsx)과 이전 버전 컴포넌트가 쓴다.
   title: "광고를 끄면 문의도 끊기는 사업, 이제 콘텐츠가 일하게 하세요.",
   description:
@@ -347,7 +348,8 @@ export const pains = {
 // 서비스 카드: 확인 문구(기획 5장) + 노션 상세페이지 내용(2026-09-14 대표 확인, 세 카드 모두)
 // 노션 상세페이지의 실적·후기(원생 증가율, 방문자 수, 고객 후기 캡처 등)는 넣지 않는다.
 export const services = {
-  title: "지금 상황에 맞는 방법을 고르세요",
+  // 2026-10-26 대표 결정: 고민 찾기와 겹치지 않게, 바로 고르려는 사람을 위한 목차로 (예전: 지금 상황에 맞는 방법을 고르세요)
+  title: "바로 고르고 싶다면",
   items: [
     {
       id: sectionIds.diagnosis,
@@ -361,8 +363,8 @@ export const services = {
       details: ["1회", "노션 또는 PDF 리포트", "사전 설문 후 영업일 3~5일"],
       price: "59,000원",
       priceNote: "",
-      cta: "진단 신청하기",
-      href: links.diagnosis,
+      cta: "진단 자세히 보기",
+      href: "/diagnosis",
     },
     {
       id: sectionIds.challenge,
@@ -500,35 +502,37 @@ export const diagnosisPage = {
       { title: "바로 적용할 개선 방향", text: "\"여기가 문제예요\"로 끝내지 않고, 무엇부터 고칠지, 어떤 글부터 쓸지, 블로그 구조를 어떻게 정리할지 순서대로 정리해 드립니다." },
     ],
   },
-  // 샘플: 2026-09-18에 보낸 청소 업종 리포트(노션 공개본)의 목차와 가린 캡처. 목차의 지역명은 일반화했다.
+  // 샘플: 2026-09-18에 보낸 청소 업종 리포트(노션 공개본)의 목차와 가린 캡처.
+  // 같은 업종이 베껴 가지 못하게 장 제목·흐름만 읽히고 본문은 흐리게 한다 (2026-10-26 대표 요청).
   // 캡처 파일은 public/images/diagnosis/ 에 둔다. images 가 비어 있으면 목차만 보인다.
   sample: {
     title: "리포트 실제 예시",
-    description: "2026년 9월에 보낸 청소 업종 리포트의 일부입니다. 상호·지역·연락처와 검색 화면은 가렸습니다. 리포트는 업종과 블로그마다 새로 씁니다.",
+    description: "2026년 9월에 보낸 청소 업종 리포트의 일부입니다. 상호·지역·연락처와 리포트 본문은 흐리게 했습니다. 리포트는 업종과 블로그마다 새로 씁니다.",
     zoomHint: "누르면 크게 볼 수 있습니다",
-    tocTitle: "이 리포트의 목차",
+    // 목차는 같은 업종이 그대로 가져가지 못하게 문장 대신 주제 이름만 둔다 (2026-10-26 대표 요청).
+    tocTitle: "이 리포트에서 다룬 것",
     toc: [
-      "플레이스는 등록돼 있는데, 주력 지역에서는 보이지 않습니다",
-      "업체 이름이 생각보다 겹칩니다",
-      "업체명으로 검색하면 68위인데, 그 위에 좋은 소식이 있습니다",
-      "지금 글은 아파트 이름을 아는 사람에게만 열려 있습니다",
-      "글을 쓰기 전에 '쇼핑이 먼저 나오는지'를 보세요",
-      "첫 세 문장에서 답을 먼저 주세요",
-      "사진 110장의 역할을 바꿔 주세요",
-      "글 마지막에 무엇을 보내면 되는지 알려 주세요",
-      "공지글 두 편은 시간이 많이 지났습니다",
-      "카테고리 220편이 한 칸에 들어 있습니다",
-      "복사해서 쓰는 대표 글 구조",
-      "먼저 발행하면 좋은 글",
+      "플레이스 노출 지역 점검",
+      "비슷한 업체명 정리",
+      "업체명 검색 결과 점검",
+      "글 제목 방향",
+      "검색어별 네이버 화면 확인",
+      "글 첫머리",
+      "사진 활용",
+      "글 끝 문의 안내",
+      "공지글",
+      "카테고리",
+      "대표 글 구조",
+      "먼저 발행할 글",
       "한 달 발행 구성",
       "4주 실행 순서",
-      "다음 글을 발행하기 전 체크리스트",
+      "발행 전 체크리스트",
       "마무리",
     ],
     images: [
-      { src: "/images/diagnosis/sample-1-opening.png", width: 1552, height: 1406, caption: "첫머리: 가장 궁금해하신 것에 먼저 답하고, 가장 먼저 할 일 세 가지를 정리합니다." },
-      { src: "/images/diagnosis/sample-2-search.png", width: 1552, height: 2056, caption: "검색어마다 네이버 화면이 어떻게 다른지 직접 검색해 확인한 부분 (검색 화면은 가렸습니다)" },
-      { src: "/images/diagnosis/sample-3-plan.png", width: 1552, height: 2186, caption: "4주 동안 할 일을 주차별 체크리스트로 정리한 부분" },
+      { src: "/images/diagnosis/sample-1-opening.png", width: 1632, height: 1346, caption: "첫머리: 고객이 말한 고민에서 시작해, 가장 궁금해하신 것에 먼저 답합니다." },
+      { src: "/images/diagnosis/sample-2-ranks.png", width: 1632, height: 2400, caption: "업체명 검색 결과를 직접 확인해 순위와 그 이유를 정리한 부분" },
+      { src: "/images/diagnosis/sample-3-plan.png", width: 1632, height: 2316, caption: "4주 동안 할 일을 주차별 체크리스트로 정리한 부분" },
     ] as { src: string; width: number; height: number; caption: string }[],
   },
   process: {
@@ -595,4 +599,17 @@ export const diagnosisPage = {
     cta: "진단 신청하기",
     kakao: "카카오톡으로 먼저 물어보기",
   },
+} as const;
+
+// 홈의 진단 후기 (고민 찾기 바로 아래, 2026-10-26 대표 결정). 진단 상세페이지 후기에서 세 개를 골라 쓴다.
+export const homeReviews = {
+  title: diagnosisPage.reviews.title,
+  note: "블로그 진단을 받은 분들이 보내 주신 후기입니다. 개인의 경험이며, 결과는 블로그마다 다를 수 있습니다.",
+  items: [
+    { text: diagnosisPage.reviews.captures[0].quote, source: diagnosisPage.reviews.captures[0].caption },
+    { text: diagnosisPage.reviews.items[0].text, source: diagnosisPage.reviews.items[0].source },
+    { text: diagnosisPage.reviews.items[3].text, source: diagnosisPage.reviews.items[3].source },
+  ],
+  more: "후기 더 보기",
+  moreHref: "/diagnosis#diagnosis-reviews",
 } as const;

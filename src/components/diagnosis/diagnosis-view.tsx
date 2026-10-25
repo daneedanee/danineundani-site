@@ -125,7 +125,7 @@ export function DiagnosisView() {
           </Container>
         </section>
 
-        <section className={`${sectionClass} bg-[#fff4ea]`}>
+        <section id="diagnosis-reviews" className={`${sectionClass} bg-[#fff4ea]`}>
           <Container className="flex flex-col gap-6">
             <SectionTitle title={copy.reviews.title} subtitle={copy.reviews.note} />
             <div className="grid gap-4 min-[992px]:grid-cols-2 min-[992px]:items-start">

@@ -49,7 +49,8 @@
 ## 코드 위치
 
 - 페이지 구역 순서: `src/app/page.tsx`
-- 구역 컴포넌트: `src/components/danineundani-home/` (상단 바, 첫 화면, 고민 찾기, 서비스, 유튜브 띠, 상담 신청, 푸터)
+- 구역 컴포넌트: `src/components/danineundani-home/` (상단 바, 첫 화면, 고민 찾기, 진단 후기, 유튜브 띠, 서비스 "바로 고르고 싶다면", 워크북 띠, 상담 신청, 푸터). 2026-10-26 순서
+- 블로그 진단 상세페이지 `/diagnosis` (2026-10-26): 화면 `src/components/diagnosis/diagnosis-view.tsx`, 문구 `site-content.ts`의 `diagnosisPage`. 결제는 래피드. 홈의 진단 버튼(메뉴·첫 화면 보조 링크·고민 찾기·서비스 카드)은 모두 여기로 온다. 후기 캡처와 리포트 샘플은 `public/images/diagnosis/`에 있고 고객을 알아볼 수 없게 흐리게 처리했다. 샘플은 같은 업종이 베끼지 못하게 장 제목만 읽히게 한다
 - 고민 찾기 (2026-10-24, 퍼널 인수인계서 4장): 질문 2개(챌린지 후보는 3개)에 답하면 해결 방법 하나와 대안 하나를 보여 준다. 화면 `problem-finder.tsx`, 추천 규칙과 시험 `src/lib/finder.ts`·`finder.test.ts`. 이메일을 받지 않고 고른 답을 주소에 남기지 않는다. 예전 고민 구역·시작 순서 구역은 이 구역으로 바뀌었다
 - 해결 방법의 공개 상태는 `site-content.ts`의 `offers` 한 곳에서 바꾼다 (available·waitlist·upcoming·consult·content). 고민 찾기 결과, 서비스 카드의 챌린지, 상단 메뉴의 챌린지 칸이 같이 바뀐다. 모집 전·준비 중인 것은 결제 페이지로 보내지 않는다(시험이 막는다). 다음 기수 모집을 열 때는 `offers.challenge`의 status 를 available, href 를 `links.challengeSales`로 바꾼다
 - 고민 찾기 문구는 2026-10-24 대표가 확인했다. 말투는 해결 방법 카드·안내는 합니다체, 추천 이유만 다니 말투(해요체). 글 피드백은 출시 전이라 그 자리에 블로그 진단을 보여 준다(`finder.ts`의 `feedbackForNow`, 출시하면 되돌리고 이유 문구도 고친다)

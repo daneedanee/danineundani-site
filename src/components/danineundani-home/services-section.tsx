@@ -1,4 +1,3 @@
-import { Check } from "lucide-react";
 import Image from "next/image";
 
 import { services } from "@/lib/site-content";
@@ -11,7 +10,7 @@ const images = [
   { src: "/images/danineundani/service-agency.webp", width: 640, height: 354, fit: "object-cover", alt: "복리형 콘텐츠 블로그 관리 대행 영상" },
 ];
 
-// 구역 4: 서비스 카드 (이미지 + 신청 버튼 + 배지 + 포함 내용 + 구성·가격 박스)
+// 서비스 한눈에 보기: 고민 찾기 없이 바로 고르려는 사람을 위한 짧은 카드 (2026-10-26 대표 결정으로 유튜브 띠 아래로, 포함 내용·구성은 상세페이지에서)
 export function ServicesSection() {
   return (
     <section id="services" className="bg-[#fbf7f2] px-5 pt-14 pb-[88px] min-[992px]:px-0 min-[992px]:pt-[88px] min-[992px]:pb-[132px]">
@@ -47,25 +46,12 @@ export function ServicesSection() {
                   <span className="mt-1 -ml-0.5 rounded-[4px] bg-[#ffe5e1] px-2 py-1 text-[11px] leading-[15px] font-semibold text-[#c9412f]">
                     {service.badge}
                   </span>
-                  {service.includes.length > 0 && (
-                    <ul className="mt-3 flex flex-col gap-1.5">
-                      {service.includes.map((item) => (
-                        <li key={item} className="flex items-start gap-1.5 text-[13px] leading-[19px] text-[#333] break-keep">
-                          <Check aria-hidden className="mt-0.5 size-3.5 shrink-0 text-[#c9412f]" />
-                          {item}
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                  {service.note && <p className="mt-3 text-[12px] leading-[18px] text-[#5f6368] break-keep">{service.note}</p>}
                 </div>
-                <div className="mt-2.5 bg-[#f4ebe3] p-4">
-                  {service.details.length > 0 && (
-                    <p className="mb-1 text-[12px] leading-[19.2px] font-medium text-[#5f6368] break-keep">{service.details.join(" · ")}</p>
-                  )}
-                  {service.price && <p className="text-[18px] leading-[26px] font-extrabold text-[#191919]">{service.price}</p>}
-                  {service.priceNote && <p className="mt-1 text-[12px] leading-[18px] font-semibold text-[#c9412f] break-keep">{service.priceNote}</p>}
-                </div>
+                {service.price && (
+                  <div className="mt-2.5 bg-[#f4ebe3] px-4 py-3">
+                    <p className="text-[18px] leading-[26px] font-extrabold text-[#191919]">{service.price}</p>
+                  </div>
+                )}
               </li>
             );
           })}
