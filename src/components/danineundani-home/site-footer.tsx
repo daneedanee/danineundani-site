@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import { footer, links } from "@/lib/site-content";
 
 // 구역 9: 푸터 (사업자 정보는 사업자등록증 기준)
@@ -43,6 +45,10 @@ export function SiteFooter() {
               </a>
             </li>
           </ul>
+          {/* 개인정보처리방침 (2026-10-26). 다른 글보다 눈에 띄게 굵게 둔다. */}
+          <Link href="/privacy" className="mt-2 text-[12px] font-bold text-white underline decoration-[#fd715b] underline-offset-2">
+            {footer.privacy}
+          </Link>
           <p className="mt-2 text-[11px] font-extralight">{footer.copyright}</p>
         </div>
       </div>

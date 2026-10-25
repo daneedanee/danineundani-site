@@ -1,39 +1,17 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 
 import { consult, links, sectionIds } from "@/lib/site-content";
 import { inquiriesTable, supabase } from "@/lib/supabase";
+import { validateInquiry, type InquiryErrors } from "@/lib/inquiries/validate";
 import { sendSignal } from "@/lib/visibility/measurement";
 
 import { SectionTitle } from "./shared";
 
 type Fields = { name: string; email: string; message: string };
-type Errors = Partial<Record<keyof Fields, string>>;
 type Status = "idle" | "sending" | "done" | "failed";
-
-const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-// 글자 수 제한은 supabase/01-inquiries.sql 의 표 규칙과 같게 둔다.
-function validate(fields: Fields): Errors {
-  const errors: Errors = {};
-  const name = fields.name.trim();
-  const email = fields.email.trim();
-  const message = fields.message.trim();
-
-  if (!name) errors.name = "이름을 입력해 주세요.";
-  else if (name.length > 50) errors.name = "이름은 50자까지 넣을 수 있습니다.";
-
-  if (!email) errors.email = "이메일을 입력해 주세요.";
-  else if (!emailPattern.test(email)) errors.email = "이메일 형식을 확인해 주세요.";
-  else if (email.length > 254) errors.email = "이메일이 너무 깁니다.";
-
-  // 최소 글자 수 제한은 두지 않는다 (2026-09-20 대표 결정). 비어 있는 것만 막는다.
-  if (!message) errors.message = "상담 내용을 입력해 주세요.";
-  else if (message.length > 1000) errors.message = "상담 내용은 1000자까지 넣을 수 있습니다.";
-
-  return errors;
-}
 
 const inputClass =
   "mt-2 w-full rounded-[6px] border border-[#d1d5db] bg-white px-4 py-3 text-[15px] text-[#191919] outline-none focus-visible:border-[#fd715b] focus-visible:ring-2 focus-visible:ring-[#fd715b]/40 aria-invalid:border-[#c9412f]";
@@ -46,7 +24,8 @@ const fieldDefs: { key: keyof Fields; label: string; type?: string; autoComplete
 
 export function ConsultSection() {
   const [fields, setFields] = useState<Fields>({ name: "", email: "", message: "" });
-  const [errors, setErrors] = useState<Errors>({});
+  const [consent, setConsent] = useState(false);
+  const [errors, setErrors] = useState<InquiryErrors>({});
   const [status, setStatus] = useState<Status>("idle");
   const [reason, setReason] = useState("");
 
@@ -57,7 +36,7 @@ export function ConsultSection() {
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const nextErrors = validate(fields);
+    const nextErrors = validateInquiry({ ...fields, consent });
     setErrors(nextErrors);
     if (Object.keys(nextErrors).length > 0) {
       setStatus("idle");
@@ -81,6 +60,7 @@ export function ConsultSection() {
     }
 
     setFields({ name: "", email: "", message: "" });
+    setConsent(false);
     setStatus("done");
     // 측정이 켜져 있을 때만 상담 저장 성공 횟수로 남는다(이름·이메일·내용은 보내지 않는다).
     sendSignal("contact_success");
@@ -129,7 +109,40 @@ export function ConsultSection() {
             })}
           </div>
 
-          <p className="mt-5 text-[12px] leading-[19px] text-[#5f6368]">{consult.consent}</p>
+          {/* 개인정보 수집·이용 동의(필수). 체크하지 않으면 보내지 않는다 (2026-10-26). */}
+          <div className="mt-5 rounded-[6px] bg-[#f9fafb] p-4">
+            <ul className="space-y-1 text-[12px] leading-[19px] text-[#5f6368]">
+              {consult.consentItems.map((item) => (
+                <li key={item} className="break-keep">
+                  {item}
+                </li>
+              ))}
+            </ul>
+            <Link href="/privacy" className="mt-2 inline-block text-[12px] leading-[19px] text-[#5f6368] underline underline-offset-2 hover:text-[#191919]">
+              {consult.privacyLink}
+            </Link>
+            <label htmlFor="consult-consent" className="mt-3 flex cursor-pointer items-center gap-2 text-[14px] font-semibold text-[#191919]">
+              <input
+                id="consult-consent"
+                name="consent"
+                type="checkbox"
+                checked={consent}
+                aria-invalid={Boolean(errors.consent)}
+                aria-describedby={errors.consent ? "consult-consent-error" : undefined}
+                onChange={(e) => {
+                  setConsent(e.target.checked);
+                  setStatus("idle");
+                }}
+                className="size-4 accent-[#fd715b]"
+              />
+              {consult.consentLabel}
+            </label>
+            {errors.consent && (
+              <p id="consult-consent-error" className="mt-1.5 text-[13px] font-medium text-[#c9412f]">
+                {errors.consent}
+              </p>
+            )}
+          </div>
 
           <button
             type="submit"
