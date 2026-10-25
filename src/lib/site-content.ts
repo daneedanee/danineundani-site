@@ -133,14 +133,15 @@ export const offers = {
     cta: "다니레터 구독하기",
     href: "/letter",
   },
-  // 무료 실행 자료(인수인계서 5-2, 제목 미정). 자료가 생기면 이름·설명·주소를 넣는다. 주소가 비어 있으면 고민 찾기 결과에 나오지 않는다.
+  // 다니레터 구독 대가로 주는 무료 워크북 (2026-10-25 대표가 이름·설명 확정). 노션 공개 페이지는 구독 환영 메일로 보낸다.
+  // 홈에서는 다니레터 구독 화면(/letter)으로 보낸다. 주소를 비우면 고민 찾기 결과와 홈 띠에서 빠진다.
   freeTemplate: {
-    name: "무료 글 설계 템플릿",
-    status: "upcoming",
-    summary: "",
+    name: "문의로 이어지는 글쓰기 워크북",
+    status: "content",
+    summary: "고객의 질문에서부터 출발해서 문의 안내까지, 빈칸을 채우면 글 한 편의 뼈대가 나오는 워크북입니다.",
     price: "",
-    cta: "",
-    href: "",
+    cta: "무료로 받기",
+    href: "/letter",
   },
 } satisfies Record<string, Offer>;
 
@@ -405,6 +406,12 @@ export const steps = {
     { text: "직접 해 보고 싶다면 매출로 이어지는 블로그로 이어갑니다.", target: sectionIds.challenge },
     { text: "운영을 맡기고 싶다면 블로그 대행을 상담합니다.", target: sectionIds.agency },
   ],
+} as const;
+
+// 상담 신청 위의 무료 워크북 띠 (2026-10-25 대표 확정). 버튼 주소는 offers.freeTemplate.href 를 따른다.
+export const workbookBand = {
+  title: "문의로 이어지는 글쓰기 워크북",
+  description: "빈칸을 채우면 이번 주에 쓸 글 한 편의 뼈대가 나와요. 다니레터로 무료로 보내 드려요.",
 } as const;
 
 export const consult = {

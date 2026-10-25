@@ -114,3 +114,9 @@ test("고민 찾기: 1순위와 대안이 같은 해결 방법이 되지 않는�
     assert.notEqual(result?.primary, result?.alternative, JSON.stringify(answers));
   }
 });
+
+test("무료 워크북: 주소가 들어가면 진단·입문 결과의 대안으로 보인다", () => {
+  assert.equal(recommend({ q1: "NO_RESULTS", q2: "WHAT_IS_WRONG" })?.alternative, "freeTemplate");
+  assert.equal(recommend({ q1: "NEW_BEGINNER", q2: "LEARN_SELF" })?.alternative, "freeTemplate");
+  assert.equal(offers.freeTemplate.href, "/letter");
+});

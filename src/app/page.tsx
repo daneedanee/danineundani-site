@@ -6,6 +6,7 @@ import { ServicesSection } from "@/components/danineundani-home/services-section
 import { SiteFooter } from "@/components/danineundani-home/site-footer";
 import { SiteHeader } from "@/components/danineundani-home/site-header";
 import { TopBanner } from "@/components/danineundani-home/top-banner";
+import { WorkbookBand } from "@/components/danineundani-home/workbook-band";
 import { YoutubeBand } from "@/components/danineundani-home/youtube-band";
 
 // 홈의 대표 주소. metadataBase(layout.tsx)와 합쳐져 https://www.daneedanee.com/ 이 된다.
@@ -26,6 +27,7 @@ export default function Home() {
         <ProblemFinder />
         <ServicesSection />
         <YoutubeBand />
+        <WorkbookBand />
         <ConsultSection />
       </main>
       <SiteFooter />
