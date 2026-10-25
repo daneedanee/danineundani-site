@@ -1,4 +1,5 @@
 import { Check, ChevronDown } from "lucide-react";
+import Image from "next/image";
 
 import { Container, ExternalButton, SectionTitle } from "@/components/danineundani-home/shared";
 import { SiteFooter } from "@/components/danineundani-home/site-footer";
@@ -71,7 +72,41 @@ export function DiagnosisView() {
           </Container>
         </section>
 
-        <section className={`${sectionClass} bg-[#fff4ea]`}>
+        <section id="diagnosis-sample" className={`${sectionClass} bg-[#fff4ea]`}>
+          <Container className="flex flex-col gap-6">
+            <SectionTitle title={copy.sample.title} subtitle={copy.sample.description} />
+            <div className="grid gap-4 min-[992px]:grid-cols-[300px_1fr] min-[992px]:items-start min-[992px]:gap-6">
+              <div className="rounded-[10px] bg-white p-5">
+                <h3 className="text-[15px] leading-[22px] font-bold text-[#191919]">{copy.sample.tocTitle}</h3>
+                <ol className="mt-3 flex list-decimal flex-col gap-1.5 pl-5 text-[13px] leading-[20px] text-[#5f6368] marker:text-[#c9412f]">
+                  {copy.sample.toc.map((item) => (
+                    <li key={item} className="break-keep">
+                      {item}
+                    </li>
+                  ))}
+                </ol>
+              </div>
+              {copy.sample.images.length > 0 && (
+                <div className="flex flex-col gap-5">
+                  {copy.sample.images.map((image) => (
+                    <figure key={image.src} className="overflow-hidden rounded-[10px] border border-[#eaded4] bg-white">
+                      {/* 모바일에서는 글자가 작아서 누르면 원본 크기로 연다. */}
+                      <a href={image.src} target="_blank" rel="noopener noreferrer" aria-label={`${image.caption} (${copy.sample.zoomHint}, 새 탭)`}>
+                        <Image src={image.src} alt={image.caption} width={image.width} height={image.height} className="h-auto w-full" />
+                      </a>
+                      <figcaption className="flex flex-col gap-1 border-t border-[#eaded4] px-4 py-3 text-[13px] leading-[20px] text-[#5f6368] break-keep">
+                        {image.caption}
+                        <span className="text-[12px] text-[#8a8178]">{copy.sample.zoomHint}</span>
+                      </figcaption>
+                    </figure>
+                  ))}
+                </div>
+              )}
+            </div>
+          </Container>
+        </section>
+
+        <section className={`${sectionClass} bg-[#fbf7f2]`}>
           <Container className="flex max-w-[760px] flex-col gap-6">
             <SectionTitle title={copy.process.title} />
             <ol className="flex flex-col gap-3">
@@ -90,9 +125,22 @@ export function DiagnosisView() {
           </Container>
         </section>
 
-        <section className={`${sectionClass} bg-[#fbf7f2]`}>
+        <section className={`${sectionClass} bg-[#fff4ea]`}>
           <Container className="flex flex-col gap-6">
             <SectionTitle title={copy.reviews.title} subtitle={copy.reviews.note} />
+            <div className="grid gap-4 min-[992px]:grid-cols-2 min-[992px]:items-start">
+              {copy.reviews.captures.map((capture) => (
+                <figure key={capture.src} className="overflow-hidden rounded-[10px] border border-[#eaded4] bg-white">
+                  <a href={capture.src} target="_blank" rel="noopener noreferrer" aria-label={`카카오톡 후기 캡처 (${copy.sample.zoomHint}, 새 탭)`}>
+                    <Image src={capture.src} alt={`카카오톡 후기 캡처: ${capture.quote}`} width={capture.width} height={capture.height} className="h-auto w-full" />
+                  </a>
+                  <figcaption className="flex flex-col gap-1.5 border-t border-[#eaded4] px-4 py-3 break-keep">
+                    <span className="text-[14px] leading-[22px] text-[#2b2421]">&ldquo;{capture.quote}&rdquo;</span>
+                    <span className="text-[12px] leading-[18px] text-[#8a8178]">{capture.caption}</span>
+                  </figcaption>
+                </figure>
+              ))}
+            </div>
             <ul className="grid gap-3 min-[992px]:grid-cols-2 min-[992px]:gap-4">
               {copy.reviews.items.map((review) => (
                 <li key={review.text} className="flex flex-col justify-between gap-3 rounded-[10px] bg-[#fffdf9] p-5 shadow-[0_8px_20px_rgba(112,69,48,0.08)]">
@@ -104,7 +152,7 @@ export function DiagnosisView() {
           </Container>
         </section>
 
-        <section className={`${sectionClass} bg-[#fff4ea]`}>
+        <section className={`${sectionClass} bg-[#fbf7f2]`}>
           <Container className="grid max-w-[900px] gap-6 min-[992px]:grid-cols-2 min-[992px]:gap-8">
             <div className="flex flex-col gap-4">
               <h2 className="text-[20px] leading-[30px] font-extrabold tracking-[-0.5px] text-[#191919] min-[992px]:text-[24px] min-[992px]:leading-[36px]">{copy.terms.title}</h2>
@@ -133,7 +181,7 @@ export function DiagnosisView() {
           </Container>
         </section>
 
-        <section className={`${sectionClass} bg-[#fbf7f2]`}>
+        <section className={`${sectionClass} bg-[#fff4ea]`}>
           <Container className="flex max-w-[760px] flex-col gap-6">
             <SectionTitle title={copy.faq.title} />
             <div className="flex flex-col gap-2.5">
