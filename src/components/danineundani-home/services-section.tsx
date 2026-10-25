@@ -6,7 +6,8 @@ import { Container, ExternalButton, SectionTitle } from "./shared";
 
 const images = [
   { src: "/images/danineundani/real/latpeed-product.png", width: 1024, height: 1024, fit: "object-cover", alt: "블로그 진단 방향 제안 상품 이미지" },
-  { src: "/images/danineundani/real/converted/challenge-wide.png", width: 1280, height: 720, fit: "object-cover", alt: "매출로 이어지는 블로그 챌린지 커버" },
+  // 2026-10-26: "1기"·옛 이름이 든 그림을 기수 번호 없는 지금 상품명 그림으로 바꿈 (대표 요청)
+  { src: "/images/danineundani/challenge-card.png", width: 1280, height: 720, fit: "object-cover", alt: "매출로 이어지는 블로그 챌린지 커버" },
   { src: "/images/danineundani/service-agency.webp", width: 640, height: 354, fit: "object-cover", alt: "복리형 콘텐츠 블로그 관리 대행 영상" },
 ];
 

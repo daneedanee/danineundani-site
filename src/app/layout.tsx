@@ -21,6 +21,9 @@ export const metadata: Metadata = {
   description: hero.description,
   // 검색 노출은 src/lib/seo.ts 의 스위치를 따른다. 대표가 열라고 할 때까지 꺼 둔다.
   robots: robotsMeta(allowIndexing),
+  // 네이버 서치어드바이저 사이트 소유 확인 (2026-10-26, 로그인 계정 marktive). 지우면 소유 확인이 풀린다.
+  // 구글 서치 콘솔은 도메인(DNS)으로 확인돼 여기 태그가 필요 없다.
+  verification: { other: { "naver-site-verification": "a453970c084643394b36ce65fec21a15a7f49f0a" } },
 };
 
 export default function RootLayout({
