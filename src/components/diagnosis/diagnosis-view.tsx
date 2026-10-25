@@ -32,6 +32,13 @@ export function DiagnosisView() {
             <ExternalButton href={links.diagnosis} className="mt-5 rounded-[5px] px-6 py-3 text-[16px] min-[992px]:text-[18px]">
               {copy.hero.cta}
             </ExternalButton>
+            <ul className="mt-5 flex flex-wrap justify-center gap-2">
+              {copy.hero.proof.map((item) => (
+                <li key={item} className="rounded-full border border-white/20 px-3 py-1 text-[13px] leading-[20px] text-white/85">
+                  {item}
+                </li>
+              ))}
+            </ul>
             <a
               href="#diagnosis-includes"
               className="mt-4 inline-flex items-center gap-1 text-[14px] leading-[21px] text-white/75 underline underline-offset-4 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#fd715b]"
@@ -53,22 +60,37 @@ export function DiagnosisView() {
                 </li>
               ))}
             </ul>
-            <p className="text-center text-[15px] leading-[24px] font-semibold text-[#2b2421] break-keep">{copy.checklist.closing}</p>
+            <div className="flex flex-col gap-2 text-center break-keep">
+              <p className="text-[14px] leading-[22px] text-[#5f6368]">{copy.checklist.closingLead}</p>
+              <p className="text-[15px] leading-[24px] font-semibold text-[#2b2421]">{copy.checklist.closing}</p>
+            </div>
           </Container>
         </section>
 
         <section id="diagnosis-includes" className={`${sectionClass} bg-[#fbf7f2]`}>
-          <Container className="flex flex-col gap-6">
+          <Container className="flex flex-col gap-8">
             <SectionTitle title={copy.includes.title} />
-            <ol className="grid gap-3 min-[992px]:grid-cols-2 min-[992px]:gap-4">
-              {copy.includes.items.map((item, index) => (
-                <li key={item.title} className="rounded-[10px] bg-[#fffdf9] p-5 shadow-[0_8px_20px_rgba(112,69,48,0.08)]">
-                  <p className="text-[12px] leading-4 font-bold text-[#c9412f]">{String(index + 1).padStart(2, "0")}</p>
-                  <h3 className="mt-1 text-[17px] leading-[26px] font-bold text-[#191919] break-keep">{item.title}</h3>
-                  <p className="mt-1.5 text-[14px] leading-[22px] text-[#5f6368] break-keep">{item.text}</p>
-                </li>
-              ))}
-            </ol>
+            {copy.includes.groups.map((group, groupIndex) => (
+              <div key={group.label} className="flex flex-col gap-4">
+                <div className="flex flex-col gap-1">
+                  <h3 className="flex items-center gap-2 text-[18px] leading-[28px] font-extrabold text-[#191919] break-keep min-[992px]:text-[20px]">
+                    <span aria-hidden className="flex size-7 shrink-0 items-center justify-center rounded-full bg-[#fd715b] text-[13px] font-bold text-black">
+                      {groupIndex + 1}
+                    </span>
+                    {group.label}
+                  </h3>
+                  <p className="text-[14px] leading-[22px] text-[#5f6368] break-keep">{group.intro}</p>
+                </div>
+                <ul className={`grid gap-3 min-[992px]:gap-4 ${group.items.length === 4 ? "min-[992px]:grid-cols-2" : "min-[992px]:grid-cols-3"}`}>
+                  {group.items.map((item) => (
+                    <li key={item.title} className="rounded-[10px] bg-[#fffdf9] p-5 shadow-[0_8px_20px_rgba(112,69,48,0.08)]">
+                      <h4 className="text-[16px] leading-[24px] font-bold text-[#191919] break-keep">{item.title}</h4>
+                      <p className="mt-1.5 text-[14px] leading-[22px] text-[#5f6368] break-keep">{item.text}</p>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
           </Container>
         </section>
 
@@ -106,26 +128,7 @@ export function DiagnosisView() {
           </Container>
         </section>
 
-        <section className={`${sectionClass} bg-[#fbf7f2]`}>
-          <Container className="flex max-w-[760px] flex-col gap-6">
-            <SectionTitle title={copy.process.title} />
-            <ol className="flex flex-col gap-3">
-              {copy.process.steps.map((step, index) => (
-                <li key={step.title} className="flex gap-4 rounded-[10px] bg-white p-5">
-                  <span aria-hidden className="flex size-8 shrink-0 items-center justify-center rounded-full bg-[#fd715b] text-[14px] font-bold text-black">
-                    {index + 1}
-                  </span>
-                  <div>
-                    <h3 className="text-[16px] leading-6 font-bold text-[#191919]">{step.title}</h3>
-                    <p className="mt-1 text-[14px] leading-[22px] text-[#5f6368] break-keep">{step.text}</p>
-                  </div>
-                </li>
-              ))}
-            </ol>
-          </Container>
-        </section>
-
-        <section id="diagnosis-reviews" className={`${sectionClass} bg-[#fff4ea]`}>
+        <section id="diagnosis-reviews" className={`${sectionClass} bg-[#fbf7f2]`}>
           <Container className="flex flex-col gap-6">
             <SectionTitle title={copy.reviews.title} subtitle={copy.reviews.note} />
             <div className="grid gap-4 min-[992px]:grid-cols-2 min-[992px]:items-start">
@@ -152,7 +155,37 @@ export function DiagnosisView() {
           </Container>
         </section>
 
+        <section className={`${sectionClass} bg-[#fff4ea]`}>
+          <Container className="flex max-w-[760px] flex-col gap-5">
+            <SectionTitle title={copy.about.title} />
+            <div className="flex flex-col gap-3 rounded-[10px] bg-white p-6 text-[15px] leading-[26px] text-[#2b2421] break-keep">
+              {copy.about.paragraphs.map((paragraph) => (
+                <p key={paragraph}>{paragraph}</p>
+              ))}
+            </div>
+          </Container>
+        </section>
+
         <section className={`${sectionClass} bg-[#fbf7f2]`}>
+          <Container className="flex max-w-[760px] flex-col gap-6">
+            <SectionTitle title={copy.process.title} />
+            <ol className="flex flex-col gap-3">
+              {copy.process.steps.map((step, index) => (
+                <li key={step.title} className="flex gap-4 rounded-[10px] bg-white p-5">
+                  <span aria-hidden className="flex size-8 shrink-0 items-center justify-center rounded-full bg-[#fd715b] text-[14px] font-bold text-black">
+                    {index + 1}
+                  </span>
+                  <div>
+                    <h3 className="text-[16px] leading-6 font-bold text-[#191919]">{step.title}</h3>
+                    <p className="mt-1 text-[14px] leading-[22px] text-[#5f6368] break-keep">{step.text}</p>
+                  </div>
+                </li>
+              ))}
+            </ol>
+          </Container>
+        </section>
+
+        <section className={`${sectionClass} bg-[#fff4ea]`}>
           <Container className="grid max-w-[900px] gap-6 min-[992px]:grid-cols-2 min-[992px]:gap-8">
             <div className="flex flex-col gap-4">
               <h2 className="text-[20px] leading-[30px] font-extrabold tracking-[-0.5px] text-[#191919] min-[992px]:text-[24px] min-[992px]:leading-[36px]">{copy.terms.title}</h2>
@@ -168,7 +201,10 @@ export function DiagnosisView() {
             </div>
             <div className="flex flex-col gap-4">
               <h2 className="text-[20px] leading-[30px] font-extrabold tracking-[-0.5px] text-[#191919] min-[992px]:text-[24px] min-[992px]:leading-[36px]">{copy.fit.title}</h2>
-              <p className="rounded-[10px] bg-white p-5 text-[15px] leading-[24px] text-[#2b2421] break-keep">{copy.fit.good}</p>
+              <div className="flex flex-col gap-2 rounded-[10px] bg-white p-5 break-keep">
+                <p className="text-[15px] leading-[24px] text-[#2b2421]">{copy.fit.good}</p>
+                <p className="text-[13px] leading-[20px] text-[#8a8178]">{copy.fit.notFit}</p>
+              </div>
               <div className="flex flex-col items-start gap-3 rounded-[10px] border border-[#eaded4] p-5">
                 <p className="text-[14px] leading-[22px] text-[#5f6368] break-keep">{copy.fit.notYet}</p>
                 {offers.freeTemplate.href && (
@@ -181,7 +217,7 @@ export function DiagnosisView() {
           </Container>
         </section>
 
-        <section className={`${sectionClass} bg-[#fff4ea]`}>
+        <section className={`${sectionClass} bg-[#fbf7f2]`}>
           <Container className="flex max-w-[760px] flex-col gap-6">
             <SectionTitle title={copy.faq.title} />
             <div className="flex flex-col gap-2.5">
@@ -201,10 +237,12 @@ export function DiagnosisView() {
         <section className={`${sectionClass} bg-[#2b2421]`}>
           <Container className="flex flex-col items-center gap-4 text-center">
             <h2 className="text-[22px] leading-[32px] font-bold text-white break-keep min-[992px]:text-[28px] min-[992px]:leading-[40px]">{copy.closing.title}</h2>
+            <p className="max-w-[560px] text-[15px] leading-[24px] text-white/85 break-keep">{copy.closing.description}</p>
             <p className="text-[20px] font-extrabold text-white">{offers.diagnosis.price}</p>
             <ExternalButton href={links.diagnosis} className="rounded-[5px] px-6 py-3 text-[16px]">
               {copy.closing.cta}
             </ExternalButton>
+            <p className="max-w-[520px] text-[13px] leading-[20px] text-white/65 break-keep">{copy.closing.assurance}</p>
             <a
               href={links.kakaoChannel}
               target="_blank"
