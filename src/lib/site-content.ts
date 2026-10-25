@@ -201,7 +201,8 @@ export const finder = {
     WANT_DELEGATION: {
       question: "어떤 사업을 운영하시나요?",
       options: {
-        LOCAL_BUSINESS: "매장·현장 업종 (소상공인)",
+        // 「자영업자」는 2026-10-25 대표 결정 (예전: 매장·현장 업종 (소상공인)).
+        LOCAL_BUSINESS: "자영업자",
         PROFESSIONAL: "전문직 (세무사·변호사 등)",
         OTHER: "기타",
       },
@@ -276,7 +277,7 @@ export const finder = {
       "진단 리포트에 막힌 곳과 무엇부터 고칠지 담아서 보내 드려요.",
     ],
     delegateLocal: [
-      "매장·현장 업종이라면 블로그 관리 대행을 상담해 보세요.",
+      "자영업자라면 블로그 관리 대행을 상담해 보세요.",
       "대행 문의에 업종과 지금 상황을 적어 주세요.",
     ],
     delegatePro: [
