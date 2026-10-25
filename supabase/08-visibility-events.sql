@@ -1,5 +1,5 @@
 -- 기존 문의·게시글 표를 변경하지 않는다. 프로젝트 ykwhdegzqcgtwynedxqv 전용.
--- 서버에만 SUPABASE_SERVICE_ROLE_KEY를 설정한다. NEXT_PUBLIC 접두사를 절대 붙이지 않는다.
+-- 2026-10-26 적용. 쓰기는 09-visibility-record-function.sql 의 함수로만 한다(서비스 키를 쓰는 처음 설계에서 바뀜).
 -- 이 표 생성 후 Vercel Production에서 NEXT_PUBLIC_VISIBILITY_MEASUREMENT=true 로 켠다.
 -- 방문자 식별자, IP, 이메일, 상담 내용, 전체 URL, 임의 UTM 문자열은 저장하지 않는다.
 -- 공개 웹에서 발생한 이벤트이므로 위조/봇을 완전히 배제한 매출 증거가 아니다.
@@ -18,7 +18,7 @@ revoke all on public.cab_visibility_events from anon, authenticated;
 grant insert(event,path,campaign) on public.cab_visibility_events to service_role;
 grant select on public.cab_visibility_events to authenticated;
 drop policy if exists visibility_insert on public.cab_visibility_events;
--- 익명 직접 쓰기 금지. 서버 API만 서버 전용 키로 저장한다.
+-- 익명 직접 쓰기 금지. 기록은 09의 함수로만 한다.
 drop policy if exists visibility_admin_read on public.cab_visibility_events;
 create policy visibility_admin_read on public.cab_visibility_events for select to authenticated using ((auth.jwt()->>'email')='marktive@naver.com');
 commit;

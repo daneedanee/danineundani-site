@@ -69,7 +69,7 @@
 - 끼워 넣은 신청 페이지: `/letter`(다니레터, 스티비 구독 페이지)와 `/agency`(블로그 대행, 네이버 폼)는 바깥 페이지를 상단 메뉴 아래에 끼워 보여 준다 (`src/components/embed/embed-page.tsx`, 2026-10-11). 상대 사이트가 끼워 넣기를 막으면 빈 화면이 되므로 「새 창에서 열기」 링크를 함께 둔다. 결제가 들어가는 래피드 페이지는 끼워 넣지 않는다
 - 검색·AI 관찰과 방문 측정 (2026-10-26 합침, 11/6 강연용. 인수인계서 `~/Documents/Codex/2026-10-22/new-chat-3/outputs/SEO-GEO-코드구현-인수인계서.md`):
   - 홈의 구조화 데이터(WebSite 다니는다니 · Organization 마켓티브)는 `src/app/page.tsx`, 만드는 함수 `src/lib/visibility/brand.ts`. 공개된 정보만 쓴다
-  - 방문·클릭 측정은 `src/components/visibility/site-measurement.tsx` → `/api/visibility/event` → Supabase `cab_visibility_events`(`supabase/08-visibility-events.sql`). Vercel에 `NEXT_PUBLIC_VISIBILITY_MEASUREMENT=true`와 서버 전용 `SUPABASE_SERVICE_ROLE_KEY`가 있어야 켜진다. 없으면 아무것도 보내지 않고 API는 404
+  - 방문·클릭 측정은 `src/components/visibility/site-measurement.tsx` → `/api/visibility/event` → Supabase `cab_visibility_events`(`supabase/08-visibility-events.sql`). 저장은 방문자용 공개 키로 기록 함수 `cab_record_visibility_event` 하나만 부른다(`supabase/09-visibility-record-function.sql`, 서비스 키는 쓰지 않는다). Vercel Production의 `NEXT_PUBLIC_VISIBILITY_MEASUREMENT=true`로 켠다(2026-10-26). 빼고 재배포하면 아무것도 보내지 않고 API는 404
   - 이벤트 이름·경로 허용 목록은 `src/lib/visibility/measurement.ts` 한 곳. SQL check 목록과 같아야 한다(시험이 확인). 진단 상세(/diagnosis)로 가는 클릭은 `diagnosis_page_click`, 래피드 결제 페이지로 가는 클릭은 `diagnosis_click`. 워크북 버튼은 `ExternalButton`의 `measure="workbook_click"` 표시로 다른 /letter 링크와 나눠 센다. 고민 찾기 시작·결과와 상담 저장 성공은 `sendSignal()`로 보낸다
   - 이름·이메일·상담 내용·전체 주소·방문자 ID는 저장하지 않는다. 주소에 `?visibility_test=1`을 붙인 탭은 세지 않는다(운영 점검용)
   - 관찰 도구: `scripts/visibility/`(Python 표준 라이브러리). 매일 돌리는 Codex 예약 `11-6-ai`는 `~/Documents/Codex/2026-10-22/new-chat-3/work/site-seo` 작업 폴더의 사본을 쓴다

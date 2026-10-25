@@ -18,7 +18,7 @@ audit는 수집에 실패해도 기록을 남기고 종료 코드 0으로 끝난
 
 공개 HTTP 접근 점검은 검색엔진 색인 검사와 다르다. 이 도구의 HTML 본문 추출은 브라우저 렌더링을 대체하지 않는다. CSS로 숨겨진 콘텐츠, iframe 안 콘텐츠, JS로 추가한 본문은 별도 확인해야 한다. 직접 URL을 제시한 이해 점검은 비브랜드 자연 추천과 분리한다.
 
-실측 활성화: supabase/08-visibility-events.sql 적용, Vercel 서버 환경 SUPABASE_SERVICE_ROLE_KEY 및 NEXT_PUBLIC_VISIBILITY_MEASUREMENT=true 설정 후 재배포. API는 기본 비활성. 서비스 역할 키를 NEXT_PUBLIC 변수나 클라이언트에 넣지 않는다. SQL은 익명 직접 쓰기를 허용하지 않는다. 브라우저 신호는 위조 가능하므로 결제·검증된 문의 건수로 간주하지 않는다.
+실측 활성화: supabase/08-visibility-events.sql(표)과 09-visibility-record-function.sql(기록 함수) 적용, Vercel Production에 NEXT_PUBLIC_VISIBILITY_MEASUREMENT=true 설정 후 재배포(2026-10-26 적용 끝). API는 기본 비활성. 서버는 방문자용 공개 키로 기록 함수 하나만 부르고, 데이터베이스 전체 권한을 가진 서비스 키는 쓰지 않는다. 표에 익명 직접 쓰기는 허용하지 않는다. 브라우저 신호는 위조 가능하므로 결제·검증된 문의 건수로 간주하지 않는다.
 
 점검 전용 탭은 ?visibility_test=1로 시작한다. 이 탭의 세션 전체를 제외한다. 실제 폼을 운영 DB에 가짜 제출하지 않는다. 고유 방문자 ID를 저장하지 않으므로 고유 방문자 전환율을 계산하지 않는다.
 
