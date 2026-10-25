@@ -55,6 +55,8 @@ export function sitemapFor(
 
   return [
     { url: absoluteUrl("/", base) },
+    // 블로그 진단 상세페이지 (2026-10-25). 결제는 래피드에서 한다.
+    { url: absoluteUrl("/diagnosis", base) },
     { url: absoluteUrl("/notes", base), ...(latest ? { lastModified: new Date(latest) } : {}) },
     ...posts.map((post) => ({
       url: absoluteUrl(`/notes/${post.slug}`, base),

@@ -49,7 +49,7 @@ test("사이트맵: 꺼진 동안 비어 있다", () => {
   assert.deepEqual(sitemapFor(false, [{ slug: "a", updated_at: "2026-10-07T00:00:00Z" }], base), []);
 });
 
-test("사이트맵: 켜지면 홈, 목록, 글이 들어간다", () => {
+test("사이트맵: 켜지면 홈, 진단 상세, 목록, 글이 들어간다", () => {
   const entries = sitemapFor(
     true,
     [
@@ -62,19 +62,20 @@ test("사이트맵: 켜지면 홈, 목록, 글이 들어간다", () => {
     entries.map((e) => e.url),
     [
       "https://www.daneedanee.com/",
+      "https://www.daneedanee.com/diagnosis",
       "https://www.daneedanee.com/notes",
       "https://www.daneedanee.com/notes/old",
       "https://www.daneedanee.com/notes/%EC%83%88-%EA%B8%80",
     ],
   );
   // 목록의 수정 시각은 가장 최근 글을 따른다.
-  assert.equal((entries[1].lastModified as Date).toISOString(), "2026-10-07T00:00:00.000Z");
-  assert.equal((entries[3].lastModified as Date).toISOString(), "2026-10-07T00:00:00.000Z");
+  assert.equal((entries[2].lastModified as Date).toISOString(), "2026-10-07T00:00:00.000Z");
+  assert.equal((entries[4].lastModified as Date).toISOString(), "2026-10-07T00:00:00.000Z");
 });
 
-test("사이트맵: 글이 없어도 홈과 목록은 들어간다", () => {
+test("사이트맵: 글이 없어도 홈, 진단 상세, 목록은 들어간다", () => {
   assert.deepEqual(
     sitemapFor(true, [], base).map((e) => e.url),
-    ["https://www.daneedanee.com/", "https://www.daneedanee.com/notes"],
+    ["https://www.daneedanee.com/", "https://www.daneedanee.com/diagnosis", "https://www.daneedanee.com/notes"],
   );
 });
