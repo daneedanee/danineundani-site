@@ -546,7 +546,6 @@ export const diagnosisPage = {
     // 카카오톡 채널(마켓티브) 1:1 채팅 캡처. 고객 이름·프로필·시간·보낸 사진은 가렸고 날짜는 달까지만 둔다 (2026-10-25 대표 요청).
     captures: [
       { src: "/images/diagnosis/reviews/kakao-2026-09-reindex.png", width: 1200, height: 542, caption: "2026년 9월 · 차량 정비 매장 · 리포트대로 블로그 기본 세팅을 다시 한 뒤", quote: "다니님 말씀대로 단순하게 블로그기본셋팅부터 다시하니까 모든글들이 다시 리랭크??되고있는듯하네요 통검에도 나오고있고" },
-      { src: "/images/diagnosis/reviews/kakao-2025-07-calls.png", width: 1200, height: 530, caption: "2025년 7월 · 현장 시공업 · 채팅으로 진단을 받은 분", quote: "문의 전화가 보통 월요일에 4,5건 있고 그 외 요일은 없는 편이었는데 작지만 매일 3건 정도는 꾸준히 문의 전화가 옵니다" },
       { src: "/images/diagnosis/reviews/kakao-2026-09-education.png", width: 1200, height: 940, caption: "2026년 9월 · 교육업 · 리포트를 받고", quote: "내용 너무 감사합니다. 아팠지만 너무 도움 됩니다. 그대로 적용해볼게요" },
       { src: "/images/diagnosis/reviews/kakao-2026-08-field.png", width: 1200, height: 768, caption: "2026년 8월 · 현장 시공업 · 리포트를 받고", quote: "지금 일하는중이라 잠깐봤는데도 너무 와닿는 내용인거같아요 퇴근하고 정독해서 적용해봐야겠아요!!" },
     ],
