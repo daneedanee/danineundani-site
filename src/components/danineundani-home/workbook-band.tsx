@@ -16,7 +16,7 @@ export function WorkbookBand() {
           </h2>
           <p className="text-[14px] leading-[22px] text-white/80 break-keep min-[992px]:text-[15px]">{workbookBand.description}</p>
         </div>
-        <ExternalButton href={workbook.href} className="shrink-0 rounded-[5px] px-5 py-3 text-[15px]">
+        <ExternalButton href={workbook.href} measure="workbook_click" className="shrink-0 rounded-[5px] px-5 py-3 text-[15px]">
           {workbook.cta}
         </ExternalButton>
       </Container>

@@ -201,7 +201,7 @@ export function DiagnosisView() {
               <div className="flex flex-col items-start gap-3 rounded-[10px] border border-[#eaded4] p-5">
                 <p className="text-[14px] leading-[22px] text-[#5f6368] break-keep">{copy.fit.notYet}</p>
                 {offers.freeTemplate.href && (
-                  <ExternalButton href={offers.freeTemplate.href} tone="dark" className="rounded-[5px] px-4 py-2.5 text-[14px]">
+                  <ExternalButton href={offers.freeTemplate.href} tone="dark" measure="workbook_click" className="rounded-[5px] px-4 py-2.5 text-[14px]">
                     {copy.fit.notYetCta}
                   </ExternalButton>
                 )}

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Gowun_Dodum } from "next/font/google";
 import "./globals.css";
 
+import { SiteMeasurement } from "@/components/visibility/site-measurement";
 import { allowIndexing, robotsMeta, siteName, siteUrl } from "@/lib/seo";
 import { hero } from "@/lib/site-content";
 
@@ -29,7 +30,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko" className={`${gowunDodum.variable} h-full antialiased`}>
-      <body className="flex min-h-full flex-col">{children}</body>
+      <body className="flex min-h-full flex-col">
+        {children}
+        {/* 방문·클릭 횟수 측정. NEXT_PUBLIC_VISIBILITY_MEASUREMENT=true 일 때만 보낸다 (supabase/08-visibility-events.sql). */}
+        <SiteMeasurement />
+      </body>
     </html>
   );
 }

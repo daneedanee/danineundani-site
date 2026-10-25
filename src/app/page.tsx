@@ -9,6 +9,15 @@ import { SiteHeader } from "@/components/danineundani-home/site-header";
 import { TopBanner } from "@/components/danineundani-home/top-banner";
 import { WorkbookBand } from "@/components/danineundani-home/workbook-band";
 import { YoutubeBand } from "@/components/danineundani-home/youtube-band";
+import { serializeJsonLd } from "@/lib/notes/jsonld";
+import { siteName, siteUrl } from "@/lib/seo";
+import { footer, hero, links } from "@/lib/site-content";
+import { brandGraph } from "@/lib/visibility/brand";
+
+// 검색엔진에 알려 주는 사이트·운영 사업자 정보(WebSite·Organization). 새 사실을 만들지 않고 이미 공개된 정보만 쓴다.
+const brandJsonLd = serializeJsonLd(
+  brandGraph(siteUrl, { name: siteName, business: footer.businessInfo[0].value, email: footer.email, description: hero.description, blog: links.blog }),
+);
 
 // 홈의 대표 주소. metadataBase(layout.tsx)와 합쳐져 https://www.daneedanee.com/ 이 된다.
 export const metadata: Metadata = {
@@ -22,6 +31,7 @@ export const metadata: Metadata = {
 export default function Home() {
   return (
     <div className="text-[14px] leading-5 text-[#333]">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: brandJsonLd }} />
       <SiteHeader />
       <main>
         <TopBanner />

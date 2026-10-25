@@ -7,6 +7,7 @@ import { useEffect, useRef, useState } from "react";
 import { nextQuestion, recommend, totalSteps, type Answers, type Q1, type Q2, type Q3, type QuestionId } from "@/lib/finder";
 import { finder, offerStatusLabels, offerStatusNotes, offers, sectionIds, type OfferId } from "@/lib/site-content";
 import { cn } from "@/lib/utils";
+import { sendSignal } from "@/lib/visibility/measurement";
 
 import { Container, ExternalButton, SectionTitle } from "./shared";
 
@@ -43,6 +44,7 @@ function OfferCard({ id, main }: { id: OfferId; main?: boolean }) {
       <ExternalButton
         href={offer.href}
         tone={main ? "coral" : "dark"}
+        measure={id === "freeTemplate" ? "workbook_click" : undefined}
         className={cn("mt-1 rounded-[5px] text-[14px]", main ? "px-5 py-3" : "px-4 py-2.5")}
       >
         {offer.cta}
@@ -69,8 +71,16 @@ export function ProblemFinder() {
     if (moved.current) headingRef.current?.focus();
   }, [step, result?.key]);
 
+  // 측정: 결과를 본 횟수. 고른 답은 보내지 않는다.
+  const resultKey = result?.key;
+  useEffect(() => {
+    if (moved.current && resultKey) sendSignal("finder_result");
+  }, [resultKey]);
+
   function choose(questionId: QuestionId, code: string) {
     moved.current = true;
+    // 측정: 첫 질문에 답한 횟수를 고민 찾기 시작으로 센다.
+    if (questionId === "q1") sendSignal("finder_start");
     setAnswers((prev) =>
       questionId === "q1" ? { q1: code as Q1 } : questionId === "q2" ? { q1: prev.q1, q2: code as Q2 } : { ...prev, q3: code as Q3 },
     );

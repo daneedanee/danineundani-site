@@ -4,6 +4,7 @@ import { useState } from "react";
 
 import { consult, links, sectionIds } from "@/lib/site-content";
 import { inquiriesTable, supabase } from "@/lib/supabase";
+import { sendSignal } from "@/lib/visibility/measurement";
 
 import { SectionTitle } from "./shared";
 
@@ -81,6 +82,8 @@ export function ConsultSection() {
 
     setFields({ name: "", email: "", message: "" });
     setStatus("done");
+    // 측정이 켜져 있을 때만 상담 저장 성공 횟수로 남는다(이름·이메일·내용은 보내지 않는다).
+    sendSignal("contact_success");
   }
 
   return (

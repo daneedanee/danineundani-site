@@ -67,6 +67,12 @@
 - 상담 신청 건수 주소: `src/app/api/inquiry-count/route.ts` — `/api/inquiry-count?hours=24`(또는 `168`)가 건수와 가장 최근 시각만 돌려준다. 이름·이메일·내용은 돌려주지 않는다. 건수는 데이터베이스 함수(`supabase/06-new-inquiry-count.sql`)가 센다 (2026-10-11)
 - 매일 아침 상담 신청 확인 루틴: Claude Code 클라우드 루틴 「랜딩페이지 상담문의 수집」이 매일 오전 8:07(한국 시간)에 위 주소를 불러 새 신청 건수를 보고한다. 지시서는 `routines/inquiry-check.md`. 루틴에는 키·커넥터·쓰기 도구가 없다. 지시서를 고치면 `main`에 올려야 루틴이 새 내용을 읽는다. 관리는 <https://claude.ai/code/routines>
 - 끼워 넣은 신청 페이지: `/letter`(다니레터, 스티비 구독 페이지)와 `/agency`(블로그 대행, 네이버 폼)는 바깥 페이지를 상단 메뉴 아래에 끼워 보여 준다 (`src/components/embed/embed-page.tsx`, 2026-10-11). 상대 사이트가 끼워 넣기를 막으면 빈 화면이 되므로 「새 창에서 열기」 링크를 함께 둔다. 결제가 들어가는 래피드 페이지는 끼워 넣지 않는다
+- 검색·AI 관찰과 방문 측정 (2026-10-26 합침, 11/6 강연용. 인수인계서 `~/Documents/Codex/2026-10-22/new-chat-3/outputs/SEO-GEO-코드구현-인수인계서.md`):
+  - 홈의 구조화 데이터(WebSite 다니는다니 · Organization 마켓티브)는 `src/app/page.tsx`, 만드는 함수 `src/lib/visibility/brand.ts`. 공개된 정보만 쓴다
+  - 방문·클릭 측정은 `src/components/visibility/site-measurement.tsx` → `/api/visibility/event` → Supabase `cab_visibility_events`(`supabase/08-visibility-events.sql`). Vercel에 `NEXT_PUBLIC_VISIBILITY_MEASUREMENT=true`와 서버 전용 `SUPABASE_SERVICE_ROLE_KEY`가 있어야 켜진다. 없으면 아무것도 보내지 않고 API는 404
+  - 이벤트 이름·경로 허용 목록은 `src/lib/visibility/measurement.ts` 한 곳. SQL check 목록과 같아야 한다(시험이 확인). 진단 상세(/diagnosis)로 가는 클릭은 `diagnosis_page_click`, 래피드 결제 페이지로 가는 클릭은 `diagnosis_click`. 워크북 버튼은 `ExternalButton`의 `measure="workbook_click"` 표시로 다른 /letter 링크와 나눠 센다. 고민 찾기 시작·결과와 상담 저장 성공은 `sendSignal()`로 보낸다
+  - 이름·이메일·상담 내용·전체 주소·방문자 ID는 저장하지 않는다. 주소에 `?visibility_test=1`을 붙인 탭은 세지 않는다(운영 점검용)
+  - 관찰 도구: `scripts/visibility/`(Python 표준 라이브러리). 매일 돌리는 Codex 예약 `11-6-ai`는 `~/Documents/Codex/2026-10-22/new-chat-3/work/site-seo` 작업 폴더의 사본을 쓴다
 - 이전 버전(밝은 배경) 컴포넌트: `src/components/site/` — 현재 사용하지 않음 (`consult-form.tsx`는 저장 연결 전 상태 그대로다)
 
 ---

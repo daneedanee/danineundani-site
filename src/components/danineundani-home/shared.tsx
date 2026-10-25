@@ -24,9 +24,11 @@ type ExternalButtonProps = {
   children: React.ReactNode;
   tone?: "coral" | "dark" | "white";
   className?: string;
+  // 측정에서 주소 대신 이 이름으로 센다(예: 워크북 버튼 "workbook_click"). src/lib/visibility/measurement.ts 의 허용 이름만 쓰인다.
+  measure?: "workbook_click";
 };
 
-export function ExternalButton({ href, children, tone = "coral", className }: ExternalButtonProps) {
+export function ExternalButton({ href, children, tone = "coral", className, measure }: ExternalButtonProps) {
   const classes = cn(
     "inline-flex items-center justify-center gap-1 font-semibold tracking-[-0.5px] transition-transform duration-200 hover:scale-[1.01]",
     tone === "coral" && "bg-[#fd715b] text-black",
@@ -37,7 +39,7 @@ export function ExternalButton({ href, children, tone = "coral", className }: Ex
   // 홈의 구역으로 가는 주소(/#구역)는 일반 링크로 둔다. next/link 로 걸면 화면이 내려가지 않는다 (site-header.tsx 와 같은 이유).
   if (href.startsWith("/#")) {
     return (
-      <a href={href} className={classes}>
+      <a href={href} className={classes} data-visibility-event={measure}>
         {children}
       </a>
     );
@@ -48,6 +50,7 @@ export function ExternalButton({ href, children, tone = "coral", className }: Ex
       <Link
         href={href}
         className={classes}
+        data-visibility-event={measure}
       >
         {children}
       </Link>
@@ -59,6 +62,7 @@ export function ExternalButton({ href, children, tone = "coral", className }: Ex
       target="_blank"
       rel="noopener noreferrer"
       className={classes}
+      data-visibility-event={measure}
     >
       {children}
       <ArrowUpRight aria-hidden className="size-4 shrink-0" />
