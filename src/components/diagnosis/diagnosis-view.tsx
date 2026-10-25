@@ -32,13 +32,6 @@ export function DiagnosisView() {
             <ExternalButton href={links.diagnosis} className="mt-5 rounded-[5px] px-6 py-3 text-[16px] min-[992px]:text-[18px]">
               {copy.hero.cta}
             </ExternalButton>
-            <ul className="mt-5 flex flex-wrap justify-center gap-2">
-              {copy.hero.proof.map((item) => (
-                <li key={item} className="rounded-full border border-white/20 px-3 py-1 text-[13px] leading-[20px] text-white/85">
-                  {item}
-                </li>
-              ))}
-            </ul>
             <a
               href="#diagnosis-includes"
               className="mt-4 inline-flex items-center gap-1 text-[14px] leading-[21px] text-white/75 underline underline-offset-4 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#fd715b]"
