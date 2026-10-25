@@ -1,3 +1,5 @@
+import { ArrowDown, ArrowUpRight } from "lucide-react";
+
 import { hero, links, sectionIds } from "@/lib/site-content";
 
 import { ExternalButton } from "./shared";
@@ -31,14 +33,23 @@ export function TopBanner() {
             <p className="mt-2 text-[14px] leading-[21px] font-light text-white/60 break-keep min-[992px]:text-[16px]">
               {hero.subDescription}
             </p>
-            <ExternalButton href={links.diagnosis} className="mt-6 rounded-[5px] px-5 py-3 text-[15px] min-[992px]:mt-8 min-[992px]:px-6 min-[992px]:text-[18px]">
+            {/* 주 버튼은 고민 찾기, 진단은 바로 가는 보조 링크 (2026-10-25 대표 결정). */}
+            <ExternalButton
+              href={`/#${sectionIds.finder}`}
+              className="mt-6 rounded-[5px] px-5 py-3 text-[15px] min-[992px]:mt-8 min-[992px]:px-6 min-[992px]:text-[18px]"
+            >
               {hero.cta}
+              <ArrowDown aria-hidden className="size-4 shrink-0" />
             </ExternalButton>
             <a
-              href={`#${sectionIds.finder}`}
-              className="mt-4 text-[14px] leading-[21px] text-white/75 underline underline-offset-4 break-keep hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#fd715b] min-[992px]:text-[15px]"
+              href={links.diagnosis}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-4 inline-flex items-center gap-1 text-[14px] leading-[21px] text-white/75 underline underline-offset-4 break-keep hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#fd715b] min-[992px]:text-[15px]"
             >
-              {hero.finderLink}
+              {hero.diagnosisLink}
+              <ArrowUpRight aria-hidden className="size-3.5 shrink-0" />
+              <span className="sr-only">(새 탭에서 열림)</span>
             </a>
           </div>
         </div>
