@@ -43,12 +43,32 @@ export function AboutView() {
         <section className={`${sectionClass} bg-[#fff4ea]`}>
           <Container className="flex max-w-[760px] flex-col gap-5">
             <SectionTitle title={copy.story.title} />
-            <div className="flex flex-col gap-3 rounded-[10px] bg-white p-6 text-[15px] leading-[26px] text-[#2b2421] break-keep min-[992px]:p-8">
-              {copy.story.paragraphs.map((paragraph) => (
-                <p key={paragraph}>
-                  <Emphasis text={paragraph} />
-                </p>
+            <div className="flex flex-col gap-8 rounded-[10px] bg-white p-6 text-[15px] leading-[26px] text-[#2b2421] break-keep min-[992px]:p-8">
+              {copy.story.chapters.map((chapter) => (
+                <div key={chapter.heading} className="flex flex-col gap-3">
+                  <h3 className="text-[17px] leading-[26px] font-bold text-[#c9412f]">{chapter.heading}</h3>
+                  {chapter.paragraphs.map((paragraph) => (
+                    <p key={paragraph}>
+                      <Emphasis text={paragraph} />
+                    </p>
+                  ))}
+                </div>
               ))}
+              <div className="flex flex-wrap gap-x-5 gap-y-2 border-t border-[#f1e6dc] pt-5">
+                {copy.story.more.map((item) => (
+                  <a
+                    key={item.href}
+                    href={item.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 text-[14px] font-semibold text-[#191919] underline decoration-[#fd715b] underline-offset-4"
+                  >
+                    {item.label}
+                    <ArrowUpRight aria-hidden className="size-3.5 text-[#c9412f]" />
+                    <span className="sr-only">(새 탭에서 열림)</span>
+                  </a>
+                ))}
+              </div>
             </div>
           </Container>
         </section>
@@ -151,6 +171,7 @@ export function AboutView() {
         <section className={`${sectionClass} bg-[#2b2421]`}>
           <Container className="flex flex-col items-center gap-4 text-center">
             <h2 className="text-[22px] leading-[32px] font-bold text-white break-keep min-[992px]:text-[28px] min-[992px]:leading-[40px]">{copy.closing.title}</h2>
+            <p className="text-[15px] leading-[24px] text-white/80 break-keep">{copy.closing.text}</p>
             <ExternalButton href={copy.closing.href} className="rounded-[5px] px-6 py-3 text-[16px]">
               {copy.closing.cta}
             </ExternalButton>
