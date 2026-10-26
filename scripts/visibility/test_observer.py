@@ -18,12 +18,12 @@ class ObserverTests(unittest.TestCase):
 
     def test_parser_excludes_script_style_and_hidden_text(self):
         m = self.load()
-        parsed = m.parse_html('<title>A</title><h1>사업</h1><script>가짜 문구</script><style>숨김</style><div hidden>비공개</div><p>진단 서비스</p><a href="/notes">칼럼</a><meta name="robots" content="index,follow"><link rel="canonical" href="https://www.daneedanee.com/">')
+        parsed = m.parse_html('<title>A</title><h1>사업</h1><script>가짜 문구</script><style>숨김</style><div hidden>비공개</div><p>진단 서비스</p><a href="/blog">블로그</a><meta name="robots" content="index,follow"><link rel="canonical" href="https://www.daneedanee.com/">')
         self.assertEqual(parsed['h1'], ['사업'])
         self.assertNotIn('가짜', parsed['text'])
         self.assertNotIn('비공개', parsed['text'])
         self.assertIn('진단 서비스', parsed['text'])
-        self.assertEqual(parsed['links'], ['/notes'])
+        self.assertEqual(parsed['links'], ['/blog'])
         self.assertEqual(parsed['robots'], 'index,follow')
 
     def test_observation_requires_raw_answer_and_recommendation_quote(self):

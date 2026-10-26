@@ -186,7 +186,8 @@ def last_success(out):
 def audit(out):
     now=datetime.now(KST); folder=out/'runs'/now.strftime('%Y%m%d-%H%M%S-%f');folder.mkdir(parents=True)
     report={'observed_at':now.isoformat(),'scope':'public-http-not-index-inspection','pages':[],'resources':{}}
-    for path in ('/','/notes','/agency','/letter'):
+    # 게시판 주소가 /notes 에서 /blog 로 바뀜 (2026-10-26). 그 전 기록에는 notes.html 로 남아 있다.
+    for path in ('/','/blog','/agency','/letter'):
         result=fetch_public(BASE+path); body=result.pop('body',None)
         if body is not None:
             filename=('home' if path=='/' else path.strip('/'))+'.html'
