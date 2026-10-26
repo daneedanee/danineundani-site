@@ -59,6 +59,8 @@ export function sitemapFor(
     { url: absoluteUrl("/", base) },
     // 블로그 진단 상세페이지 (2026-10-25). 결제는 래피드에서 한다.
     { url: absoluteUrl("/diagnosis", base) },
+    // 소개 페이지 (2026-10-26). 메뉴 이름은 "다니는다니는".
+    { url: absoluteUrl("/about", base) },
     { url: absoluteUrl("/notes", base), ...(latest ? { lastModified: new Date(latest) } : {}) },
     // 기둥 허브. 발행 글이 하나 이상 있는 기둥만 넣고, 수정 시각은 넣지 않는다.
     ...PILLARS.filter((pillar) => posts.some((post) => post.pillar === pillar.key)).map((pillar) => ({ url: absoluteUrl(hubPath(pillar.key), base) })),

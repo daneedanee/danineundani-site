@@ -1,30 +1,13 @@
 import { Check, ChevronDown } from "lucide-react";
 import Image from "next/image";
 
-import { Container, ExternalButton, SectionTitle } from "@/components/danineundani-home/shared";
+import { Container, Emphasis, ExternalButton, SectionTitle } from "@/components/danineundani-home/shared";
 import { SiteFooter } from "@/components/danineundani-home/site-footer";
 import { SiteHeader } from "@/components/danineundani-home/site-header";
 import { diagnosisPage as copy, links, offers } from "@/lib/site-content";
 
 const sectionClass = "px-5 py-14 min-[992px]:px-0 min-[992px]:py-[88px]";
 const cardClass = "rounded-[10px] bg-[#fffdf9] shadow-[0_8px_20px_rgba(112,69,48,0.08)]";
-
-// 문구 안의 **굵게** 를 굵은 글씨로 바꾼다. 문구는 site-content.ts 의 diagnosisPage 에 있다.
-function Emphasis({ text }: { text: string }) {
-  return (
-    <>
-      {text.split("**").map((part, index) =>
-        index % 2 === 1 ? (
-          <strong key={index} className="font-bold text-[#191919]">
-            {part}
-          </strong>
-        ) : (
-          part
-        ),
-      )}
-    </>
-  );
-}
 
 // 블로그 진단 상세페이지. 설명은 여기서 하고 결제는 래피드(새 탭)에서 한다.
 // 2026-10-26 래피드 노션 상세 v3와 같은 흐름으로 맞췄다(순서는 site-content.ts 의 diagnosisPage 머리 주석).

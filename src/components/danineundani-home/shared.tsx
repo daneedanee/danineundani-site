@@ -70,3 +70,20 @@ export function ExternalButton({ href, children, tone = "coral", className, meas
     </a>
   );
 }
+
+// 문구 안의 **굵게** 를 굵은 글씨로 바꾼다 (진단 상세페이지·소개 페이지, 2026-10-26).
+export function Emphasis({ text }: { text: string }) {
+  return (
+    <>
+      {text.split("**").map((part, index) =>
+        index % 2 === 1 ? (
+          <strong key={index} className="font-bold text-[#191919]">
+            {part}
+          </strong>
+        ) : (
+          part
+        ),
+      )}
+    </>
+  );
+}

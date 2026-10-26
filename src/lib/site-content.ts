@@ -21,6 +21,8 @@ export const links = {
   youtubeChannel: "https://www.youtube.com/@다니는다니",
   threads: "https://www.threads.net/@danee_marktive",
   blog: "https://blog.naver.com/marktive",
+  // 네이버 카페 "다니는다니 | 블로그마케팅" (챌린지 진행 공간). 소개 페이지에서 쓴다 (2026-10-26).
+  cafe: "https://cafe.naver.com/daneedanee",
 } as const;
 
 // 유튜브 채널 @다니는다니 의 ID. 홈의 영상 띠가 최근 영상을 읽는 데 쓴다.
@@ -306,6 +308,8 @@ export const finder = {
 // external 이 true 면 바깥 사이트라 새 탭으로 연다.
 export const navItems: { label: string; href: string; external: boolean }[] = [
   { label: "고민 찾기", href: `/#${sectionIds.finder}`, external: false },
+  // 소개 페이지. 메뉴 이름 "다니는다니는"은 대표 결정 (2026-10-26).
+  { label: "다니는다니는", href: "/about", external: false },
   { label: "블로그 진단", href: "/diagnosis", external: false },
   ...(isOpen(offers.challenge.status)
     ? [{ label: "매출로 이어지는 블로그", href: offers.challenge.href, external: !offers.challenge.href.startsWith("/") }]
@@ -837,4 +841,85 @@ export const homeReviews = {
       moreHref: offers.challenge.href,
     },
   ],
+} as const;
+
+// 소개 페이지(/about, 메뉴 "다니는다니는"). 2026-10-26 대표 결정: 제조업은 사실 한 줄만(블로그와 원인·결과로 잇지 않음),
+// 숫자는 넣지 않음, 사진은 프로필 사진. 바탕: 유튜브 채널 브랜딩 워크북 답변(브랜드 로드맵·한 줄 정리, 대표가 참고하라고 함),
+// 채널 PROFILE 의 한 줄 메시지, 네이버 블로그 소개글, 진단 페이지 "저도 그 막막함을 겪었습니다"(대표 문장).
+// 문장 안의 **굵게** 는 화면에서 굵은 글씨로 바뀐다.
+export const aboutPage = {
+  metaTitle: "다니는다니 소개",
+  metaDescription:
+    "다니는다니는 매출이 막혀 막막한 자영업자·1인 사업가가 광고비 없이 콘텐츠로 문의가 들어오는 구조를 직접 만들 수 있도록 블로그마케팅을 알려 주고 돕습니다. 마켓티브 대표 다니.",
+  hero: {
+    eyebrow: "다니는다니는",
+    // 브랜드 한 줄 정리(워크북 섹션 5)를 다니 말투로 옮겼다.
+    // 휴대폰 폭에서 한 줄이 넘치지 않게 네 줄로 나눴다.
+    titleLines: ["매출이 막혀 막막한 대표님이", "광고비 없이도", "문의가 들어오는 구조를", "직접 만들 수 있게 돕습니다."],
+    name: "다니 · 마켓티브 대표",
+    photo: { src: "/images/danineundani/profile-photo.webp", width: 640, height: 640, alt: "다니는다니 대표 다니" },
+  },
+  story: {
+    title: "다니 이야기",
+    // 제조업은 이력 한 줄만 둔다. 블로그와 원인·결과로 잇지 않는다 (2026-10-26 다니님 결정).
+    paragraphs: [
+      "안녕하세요, 다니는다니입니다. 다니는다니가 되기 전, 10년 동안 제조업을 운영했습니다.",
+      "지금은 1인 마케팅 대행사 마켓티브를 운영하며 고객사 블로그를 직접 기획하고 관리합니다. 마켓티브 블로그를 보고 연락해 온 회계법인과 일하게 된 것처럼, 마켓티브의 일도 블로그를 보고 들어오는 문의로 시작됩니다.",
+      "블로그를 하는 대표님들을 만나 보면 가장 답답해하시는 건 무엇을 더 해야 하는지보다 **지금 가는 방향이 맞는지 알 수 없다는 것**입니다.",
+      "그래서 유튜브 다니는다니 채널에서는 직접 해 보며 알게 된 블로그 마케팅을 나누고, 블로그 진단과 챌린지로 대표님들이 방향을 잡고 직접 할 수 있게 돕습니다.",
+    ],
+  },
+  message: {
+    title: "다니는다니가 하고 싶은 일",
+    lead: "복리형 콘텐츠가 쌓일 때, 홀로서는 힘이 만들어집니다.",
+    paragraphs: [
+      "광고비를 계속 붓거나 매일 발품을 팔지 않아도, 한 번 쓴 글이 쌓여 문의를 데려오는 구조. 다니는다니는 그 구조를 대표님이 자기 손으로 만들 수 있게 돕습니다.",
+      "매출 걱정 없이 하고 싶은 일에 집중하는 사업이 많은 분들의 이야기가 되었으면 합니다.",
+    ],
+  },
+  principles: {
+    title: "이렇게 일합니다",
+    items: [
+      { title: "블로그를 문의가 들어오는 흐름으로 봅니다", text: "글 한 편이 잘 쓰였는지보다, 고객이 검색해서 들어오고, 읽고, 믿고, 문의하기까지 어디서 끊기는지를 먼저 봅니다." },
+      { title: "쌓이는 콘텐츠를 만듭니다", text: "광고는 끄면 문의도 끊깁니다. 한 번 쓴 글이 계속 일하도록, 고객의 질문에서 시작하는 글을 쌓습니다." },
+      { title: "대표님이 판단할 기준을 남깁니다", text: "진단과 챌린지에서는 대표님이 스스로 판단할 기준을 남기는 데 힘을 씁니다. 직접 하기 어려운 분께는 마켓티브가 운영을 맡습니다." },
+      { title: "지어내지 않습니다", text: "없는 후기나 숫자를 만들지 않고, 결과를 약속하지 않습니다. 실제로 본 것과 해 본 것만 이야기합니다." },
+    ],
+  },
+  // 모객 동선(워크북 섹션 4 HOW): 진단부터 → 진단 / 배워서 직접 → 챌린지 / 시간이 없으면 → 대행. 무료로 먼저 → 워크북.
+  paths: {
+    title: "어디서부터 시작할지 고르세요",
+    items: [
+      { who: "지금 블로그가 어디서 막혔는지 알고 싶다면", name: offers.diagnosis.name, href: "/diagnosis", cta: "진단 자세히 보기", measure: undefined },
+      { who: "제대로 배워서 직접 하고 싶다면", name: `${offers.challenge.name} 챌린지`, href: offers.challenge.href, cta: offers.challenge.cta, measure: undefined },
+      { who: "직접 하기 어렵거나 시간이 없다면", name: offers.agency.name, href: "/agency", cta: "대행 문의하기", measure: undefined },
+      { who: "가볍게 먼저 시작하고 싶다면", name: offers.freeTemplate.name, href: offers.freeTemplate.href, cta: offers.freeTemplate.cta, measure: "workbook_click" },
+    ] as { who: string; name: string; href: string; cta: string; measure: "workbook_click" | undefined }[],
+  },
+  reviewsTitle: "함께한 대표님들",
+  channels: {
+    title: "다니는다니를 만나는 곳",
+    items: [
+      { name: "유튜브 다니는다니_블로그마케팅", href: links.youtubeChannel },
+      { name: "네이버 블로그", href: links.blog },
+      { name: "네이버 카페 다니는다니 | 블로그마케팅", href: links.cafe },
+      { name: "스레드", href: links.threads },
+      { name: "다니레터 (매주 월요일 아침)", href: "/letter" },
+      { name: "카카오톡 채널 마켓티브", href: links.kakaoChannel },
+    ],
+  },
+  closing: {
+    title: "어디서 막혔는지부터 같이 찾아요",
+    cta: "내 상황에 맞는 방법 찾기",
+    href: `/#${sectionIds.finder}`,
+    secondary: "상담 신청하기",
+    secondaryHref: `/#${sectionIds.consult}`,
+  },
+  // 구조화 데이터(Person)에 넣는 정보. 공개된 사실만 쓴다.
+  jsonLd: {
+    name: "다니",
+    alternateName: "다니는다니",
+    jobTitle: "마켓티브 대표",
+    knowsAbout: ["블로그마케팅", "네이버 블로그", "자영업자 마케팅", "콘텐츠 마케팅"],
+  },
 } as const;
