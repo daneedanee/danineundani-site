@@ -33,3 +33,9 @@ test("두 페이지 모두 긴 줄표와 결과 보장 말을 쓰지 않는다",
     assert.ok(!/(최고|1위|유일|100%|무조건|완벽|최저가)/.test(말), 말);
   }
 });
+
+test("다니레터 첫 화면: C안 - 다니레터가 먼저, 워크북은 첫 메일로", () => {
+  assert.deepEqual(letterPage.hero.titleLines, ["블로그로 문의를 만드는 이야기,", "다니가 매주 편지로 보내 드려요"]);
+  assert.match(letterPage.hero.description, /레터에서만 나눠요/);
+  assert.equal(letterPage.hero.formTitle, "첫 메일로 워크북을 보내 드려요");
+});

@@ -18,7 +18,11 @@ export function LetterView() {
           <div className="mx-auto flex max-w-[900px] flex-col items-center px-5 pt-16 pb-28 text-center min-[992px]:pb-32">
             <p className="mb-5 text-[12px] font-bold tracking-[0.2em] text-[#fd715b]">{copy.hero.eyebrow}</p>
             <h1 id="letter-heading" className="text-[26px] leading-[36px] font-bold tracking-[-0.5px] text-white break-keep min-[992px]:text-[38px] min-[992px]:leading-[52px]">
-              {copy.hero.title}
+              {copy.hero.titleLines.map((line) => (
+                <span key={line} className="block">
+                  {line}
+                </span>
+              ))}
             </h1>
             <p className="mt-4 max-w-[620px] text-[15px] leading-[24px] font-light text-white/90 break-keep min-[992px]:text-[17px] min-[992px]:leading-[28px]">
               {copy.hero.description}
