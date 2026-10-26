@@ -733,15 +733,33 @@ export const diagnosisPage = {
   },
 } as const;
 
-// 홈의 진단 후기 (고민 찾기 바로 아래, 2026-10-26 대표 결정). 진단 상세페이지 후기에서 세 개를 골라 쓴다.
+// 홈 후기 (고민 찾기 바로 아래). 2026-10-26 대표 결정: 진단 세 장 + 블로그 챌린지 1기 세 장.
+// 진단 세 장은 진단 상세페이지 후기에서 고른다. 챌린지 세 장은 2기 모집 페이지(노션, 2026-10-15 공개)에 대표가 이미 올린 1기 후기에서
+// 업종 표기 그대로 옮긴다 - 문의·손님·검색 노출이 한 장씩. 대행 후기는 동의 자료가 없어 넣지 않는다(기획 문서 「대행 고객사 사례: 제외」).
 export const homeReviews = {
-  title: diagnosisPage.reviews.title,
-  note: "블로그 진단을 받은 분들이 보내 주신 후기입니다. 개인의 경험이며, 결과는 블로그마다 다를 수 있습니다.",
-  items: [
-    { text: diagnosisPage.reviews.captures[0].quote, source: diagnosisPage.reviews.captures[0].caption },
-    { text: diagnosisPage.reviews.items[0].text, source: diagnosisPage.reviews.items[0].source },
-    { text: diagnosisPage.reviews.items[2].text, source: diagnosisPage.reviews.items[2].source },
+  title: "다니는다니와 함께한 대표님들의 이야기",
+  note: "블로그 진단을 받은 분들과 블로그 챌린지 1기 대표님들이 보내 주신 후기를 원문 그대로 옮기고, 이름·상호는 가렸습니다. 개인의 경험이며, 결과는 블로그마다 다를 수 있습니다.",
+  groups: [
+    {
+      name: "블로그 진단",
+      items: [
+        { text: diagnosisPage.reviews.captures[0].quote, source: diagnosisPage.reviews.captures[0].caption },
+        { text: diagnosisPage.reviews.items[0].text, source: diagnosisPage.reviews.items[0].source },
+        { text: diagnosisPage.reviews.items[2].text, source: diagnosisPage.reviews.items[2].source },
+      ],
+      more: "진단 후기 더 보기",
+      moreHref: "/diagnosis#diagnosis-reviews",
+    },
+    {
+      name: "매출로 이어지는 블로그 챌린지 1기",
+      items: [
+        { text: "일단 전화가 많이 오고, 그다음에 실제로 공사로 이어진 것도 한 3개 4개는 있어요.", source: "2026년 9월 · 시공 업종 · 4주 차 1:1 피드백에서" },
+        { text: "저 오늘도 블로그 보고 손님 오셨어요....!! ㅜㅜ 진정성은 통한다는걸 다니님과 함께한 후에 진짜 몸소 느끼고 있습니다..!!", source: "2026년 9월 · 뷰티 업종 · 챌린지 카톡방에서" },
+        { text: "계속발행하도 통누락에 반포기상태였는데 네이버 개편이후 처음 상위 노출 되니 기쁘네요..", source: "2026년 9월 · 방수 업종 · 4주 차 챌린지 카톡방에서" },
+      ],
+      // 링크는 모집 상태(offers.challenge)를 따른다. 모집 전에는 다음 기수 소식(다니레터)으로 보낸다.
+      more: offers.challenge.cta,
+      moreHref: offers.challenge.href,
+    },
   ],
-  more: "후기 더 보기",
-  moreHref: "/diagnosis#diagnosis-reviews",
 } as const;
