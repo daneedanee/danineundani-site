@@ -14,9 +14,14 @@ test("홈 후기: 진단 세 장과 챌린지 1기 세 장으로 나뉜다", () 
   );
 });
 
-test("홈 후기: 진단 세 장은 진단 상세페이지 후기에서 그대로 가져온다", () => {
+// 2026-10-26 상세페이지 흐름 개편으로 차량 정비 후기는 후기 구역에서 비포 & 애프터로 옮겼다. 같은 페이지 안이라 둘 다 출처로 본다.
+test("홈 후기: 진단 세 장은 진단 상세페이지 후기(비포 & 애프터 포함)에서 그대로 가져온다", () => {
   const 진단 = homeReviews.groups[0].items.map((x) => x.text);
-  const 상세 = [...diagnosisPage.reviews.captures.map((x) => x.quote), ...diagnosisPage.reviews.items.map((x) => x.text)];
+  const 상세 = [
+    ...diagnosisPage.beforeAfter.cases.map((x) => x.after),
+    ...diagnosisPage.reviews.captures.map((x) => x.quote),
+    ...diagnosisPage.reviews.items.map((x) => x.text),
+  ];
   for (const 말 of 진단) assert.ok(상세.includes(말), 말);
   assert.equal(homeReviews.groups[0].moreHref, "/diagnosis#diagnosis-reviews");
 });

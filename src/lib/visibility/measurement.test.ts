@@ -16,7 +16,7 @@ test('사이트 안 진단 상세·다니레터 이동을 따로 센다 (2026-10
  assert.equal(classifyLink('/letter',base),'letter_click');
 });
 test('진단 상세 안에서 같은 페이지 구역으로 가는 링크는 이동으로 세지 않는다',()=>{
- assert.equal(classifyLink('#diagnosis-includes',base+'/diagnosis'),null);
+ assert.equal(classifyLink('#diagnosis-steps',base+'/diagnosis'),null);
  assert.equal(classifyLink('/diagnosis#diagnosis-reviews',base+'/diagnosis'),null);
  // 홈 안의 상담 구역 링크는 지금처럼 상담 시작으로 센다.
  assert.equal(classifyLink('/#consult',base+'/'),'contact_start');

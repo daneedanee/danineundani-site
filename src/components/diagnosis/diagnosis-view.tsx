@@ -7,9 +7,27 @@ import { SiteHeader } from "@/components/danineundani-home/site-header";
 import { diagnosisPage as copy, links, offers } from "@/lib/site-content";
 
 const sectionClass = "px-5 py-14 min-[992px]:px-0 min-[992px]:py-[88px]";
+const cardClass = "rounded-[10px] bg-[#fffdf9] shadow-[0_8px_20px_rgba(112,69,48,0.08)]";
+
+// 문구 안의 **굵게** 를 굵은 글씨로 바꾼다. 문구는 site-content.ts 의 diagnosisPage 에 있다.
+function Emphasis({ text }: { text: string }) {
+  return (
+    <>
+      {text.split("**").map((part, index) =>
+        index % 2 === 1 ? (
+          <strong key={index} className="font-bold text-[#191919]">
+            {part}
+          </strong>
+        ) : (
+          part
+        ),
+      )}
+    </>
+  );
+}
 
 // 블로그 진단 상세페이지. 설명은 여기서 하고 결제는 래피드(새 탭)에서 한다.
-// 문구는 site-content.ts 의 diagnosisPage 에 있다.
+// 2026-10-26 래피드 노션 상세 v3와 같은 흐름으로 맞췄다(순서는 site-content.ts 의 diagnosisPage 머리 주석).
 export function DiagnosisView() {
   return (
     <div className="text-[14px] leading-5 text-[#333]">
@@ -18,7 +36,7 @@ export function DiagnosisView() {
         <section aria-labelledby="diagnosis-heading" className="mt-20 bg-[#2b2421] bg-[radial-gradient(circle_at_80%_30%,rgba(253,113,91,0.3),transparent_45%)]">
           <div className="mx-auto flex max-w-[900px] flex-col items-center px-5 py-16 text-center min-[992px]:min-h-[440px] min-[992px]:justify-center">
             <p className="mb-5 text-[12px] font-bold tracking-[0.2em] text-[#fd715b]">{copy.hero.eyebrow}</p>
-            <h1 id="diagnosis-heading" className="text-[24px] leading-[34px] font-bold tracking-[-0.5px] text-white break-keep min-[992px]:text-[36px] min-[992px]:leading-[50px]">
+            <h1 id="diagnosis-heading" className="text-[26px] leading-[36px] font-bold tracking-[-0.5px] text-white break-keep min-[992px]:text-[38px] min-[992px]:leading-[52px]">
               {copy.hero.titleLines.map((line) => (
                 <span key={line} className="block">
                   {line}
@@ -33,13 +51,76 @@ export function DiagnosisView() {
               {copy.hero.cta}
             </ExternalButton>
             <a
-              href="#diagnosis-includes"
+              href="#diagnosis-steps"
               className="mt-4 inline-flex items-center gap-1 text-[14px] leading-[21px] text-white/75 underline underline-offset-4 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#fd715b]"
             >
               {copy.hero.secondary}
               <ChevronDown aria-hidden className="size-4" />
             </a>
           </div>
+        </section>
+
+        {/* 비포 & 애프터: 고객이 보낸 원문 그대로 */}
+        <section className={`${sectionClass} bg-[#fff4ea]`}>
+          <Container className="flex max-w-[760px] flex-col gap-6">
+            <SectionTitle title={copy.beforeAfter.title} subtitle={copy.beforeAfter.note} />
+            <div className="flex flex-col gap-5">
+              {copy.beforeAfter.cases.map((item) => (
+                <article key={item.tag} className={`${cardClass} overflow-hidden`}>
+                  <p className="bg-[#2b2421] px-5 py-3 text-[14px] leading-[21px] font-bold text-white">{item.tag}</p>
+                  <dl className="flex flex-col gap-3 p-5 break-keep">
+                    <div>
+                      <dt className="text-[12px] leading-[18px] font-bold text-[#8a8178]">{copy.beforeAfter.labels.before}</dt>
+                      <dd className="mt-0.5 text-[15px] leading-[24px] text-[#5f6368]">{item.before}</dd>
+                    </div>
+                    <div>
+                      <dt className="text-[12px] leading-[18px] font-bold text-[#8a8178]">{copy.beforeAfter.labels.point}</dt>
+                      <dd className="mt-0.5 text-[15px] leading-[24px] text-[#2b2421]">{item.point}</dd>
+                    </div>
+                    <div className="rounded-[8px] bg-[#fff1ec] p-4">
+                      <dt className="text-[12px] leading-[18px] font-bold text-[#c9412f]">{copy.beforeAfter.labels.after}</dt>
+                      <dd className="mt-1 text-[16px] leading-[26px] font-semibold text-[#191919]">&ldquo;{item.after}&rdquo;</dd>
+                    </div>
+                  </dl>
+                  {item.capture && (
+                    <a
+                      href={item.capture.src}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={`${item.capture.alt} (${copy.sample.zoomHint}, 새 탭)`}
+                      className="block border-t border-[#eaded4]"
+                    >
+                      <Image src={item.capture.src} alt={item.capture.alt} width={item.capture.width} height={item.capture.height} className="h-auto w-full" />
+                    </a>
+                  )}
+                </article>
+              ))}
+            </div>
+          </Container>
+        </section>
+
+        {/* 노출이 떨어진 블로그가 흘러가는 과정 */}
+        <section className={`${sectionClass} bg-[#fbf7f2]`}>
+          <Container className="flex max-w-[680px] flex-col gap-6">
+            <SectionTitle title={copy.fallPath.title} />
+            <ol className="flex flex-col items-stretch gap-1">
+              {copy.fallPath.steps.map((step, index) => (
+                <li key={step} className="flex flex-col items-center gap-1">
+                  <div className="flex w-full items-start gap-3 rounded-[8px] bg-[#2b2421] px-4 py-3.5 text-[15px] leading-[23px] text-white break-keep">
+                    <span aria-hidden className="flex size-6 shrink-0 items-center justify-center rounded-full bg-[#fd715b] text-[12px] font-bold text-black">
+                      {index + 1}
+                    </span>
+                    {step}
+                  </div>
+                  {index < copy.fallPath.steps.length - 1 && <ChevronDown aria-hidden className="size-4 text-[#c9412f]" />}
+                </li>
+              ))}
+            </ol>
+            <div className="flex flex-col gap-2 text-center break-keep">
+              <p className="text-[14px] leading-[22px] text-[#5f6368]">{copy.fallPath.lead}</p>
+              <p className="text-[16px] leading-[25px] font-bold text-[#191919]">{copy.fallPath.closing}</p>
+            </div>
+          </Container>
         </section>
 
         <section className={`${sectionClass} bg-[#fff4ea]`}>
@@ -53,37 +134,24 @@ export function DiagnosisView() {
                 </li>
               ))}
             </ul>
-            <div className="flex flex-col gap-2 text-center break-keep">
-              <p className="text-[14px] leading-[22px] text-[#5f6368]">{copy.checklist.closingLead}</p>
-              <p className="text-[15px] leading-[24px] font-semibold text-[#2b2421]">{copy.checklist.closing}</p>
-            </div>
+            <p className="text-center text-[15px] leading-[24px] font-semibold text-[#2b2421] break-keep">{copy.checklist.closing}</p>
           </Container>
         </section>
 
-        <section id="diagnosis-includes" className={`${sectionClass} bg-[#fbf7f2]`}>
-          <Container className="flex flex-col gap-8">
-            <SectionTitle title={copy.includes.title} />
-            {copy.includes.groups.map((group, groupIndex) => (
-              <div key={group.label} className="flex flex-col gap-4">
-                <div className="flex flex-col gap-1">
-                  <h3 className="flex items-center gap-2 text-[18px] leading-[28px] font-extrabold text-[#191919] break-keep min-[992px]:text-[20px]">
-                    <span aria-hidden className="flex size-7 shrink-0 items-center justify-center rounded-full bg-[#fd715b] text-[13px] font-bold text-black">
-                      {groupIndex + 1}
-                    </span>
-                    {group.label}
-                  </h3>
-                  <p className="text-[14px] leading-[22px] text-[#5f6368] break-keep">{group.intro}</p>
-                </div>
-                <ul className={`grid gap-3 min-[992px]:gap-4 ${group.items.length === 4 ? "min-[992px]:grid-cols-2" : "min-[992px]:grid-cols-3"}`}>
-                  {group.items.map((item) => (
-                    <li key={item.title} className="rounded-[10px] bg-[#fffdf9] p-5 shadow-[0_8px_20px_rgba(112,69,48,0.08)]">
-                      <h4 className="text-[16px] leading-[24px] font-bold text-[#191919] break-keep">{item.title}</h4>
-                      <p className="mt-1.5 text-[14px] leading-[22px] text-[#5f6368] break-keep">{item.text}</p>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
+        {/* 막힌 곳을 찾는 3단계: 1·2단계가 지금의 문제, 3단계가 앞으로의 방향 */}
+        <section id="diagnosis-steps" className={`${sectionClass} bg-[#fbf7f2]`}>
+          <Container className="flex flex-col gap-6">
+            <SectionTitle title={copy.steps.title} subtitle={copy.steps.intro} />
+            <ol className="grid gap-3 min-[992px]:grid-cols-3 min-[992px]:gap-4">
+              {copy.steps.items.map((step, index) => (
+                <li key={step.title} className={`${cardClass} p-5`}>
+                  <p className="text-[12px] leading-4 font-bold text-[#c9412f]">{index + 1}단계</p>
+                  <h3 className="mt-1 text-[17px] leading-[26px] font-bold text-[#191919] break-keep">{step.title}</h3>
+                  <p className="mt-1.5 text-[14px] leading-[22px] text-[#5f6368] break-keep">{step.text}</p>
+                </li>
+              ))}
+            </ol>
+            <p className="text-center text-[16px] leading-[25px] font-bold text-[#191919] break-keep">{copy.steps.closing}</p>
           </Container>
         </section>
 
@@ -121,7 +189,40 @@ export function DiagnosisView() {
           </Container>
         </section>
 
-        <section id="diagnosis-reviews" className={`${sectionClass} bg-[#fbf7f2]`}>
+        {/* 망설이는 이유와 답 */}
+        <section className={`${sectionClass} bg-[#fbf7f2]`}>
+          <Container className="flex max-w-[860px] flex-col gap-10">
+            <div className="flex flex-col gap-5">
+              <SectionTitle title={copy.worries.title} />
+              <ul className="flex flex-col gap-2.5">
+                {copy.worries.items.map((worry, index) => (
+                  <li
+                    key={worry}
+                    className={`max-w-[440px] rounded-[18px] bg-white px-4 py-3 text-[15px] leading-[23px] text-[#2b2421] shadow-[0_4px_12px_rgba(112,69,48,0.08)] break-keep ${index % 2 === 1 ? "self-end" : "self-start"}`}
+                  >
+                    &ldquo;{worry}&rdquo;
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="flex flex-col gap-5">
+              <SectionTitle title={copy.differences.title} />
+              <ul className="grid gap-3 min-[992px]:grid-cols-2 min-[992px]:gap-4">
+                {copy.differences.items.map((item) => (
+                  <li key={item.title} className={`${cardClass} flex gap-3 p-5`}>
+                    <Check aria-hidden className="mt-1 size-5 shrink-0 text-[#c9412f]" />
+                    <div className="break-keep">
+                      <h3 className="text-[16px] leading-[24px] font-bold text-[#191919]">{item.title}</h3>
+                      <p className="mt-1 text-[14px] leading-[22px] text-[#5f6368]">{item.text}</p>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </Container>
+        </section>
+
+        <section id="diagnosis-reviews" className={`${sectionClass} bg-[#fff4ea]`}>
           <Container className="flex flex-col gap-6">
             <SectionTitle title={copy.reviews.title} subtitle={copy.reviews.note} />
             <div className="grid gap-4 min-[992px]:grid-cols-2 min-[992px]:items-start">
@@ -139,7 +240,7 @@ export function DiagnosisView() {
             </div>
             <ul className="grid gap-3 min-[992px]:grid-cols-2 min-[992px]:gap-4">
               {copy.reviews.items.map((review) => (
-                <li key={review.text} className="flex flex-col justify-between gap-3 rounded-[10px] bg-[#fffdf9] p-5 shadow-[0_8px_20px_rgba(112,69,48,0.08)]">
+                <li key={review.text} className={`${cardClass} flex flex-col justify-between gap-3 p-5`}>
                   <blockquote className="text-[15px] leading-[24px] text-[#2b2421] break-keep">&ldquo;{review.text}&rdquo;</blockquote>
                   <p className="text-[12px] leading-[18px] text-[#8a8178]">{review.source}</p>
                 </li>
@@ -148,18 +249,29 @@ export function DiagnosisView() {
           </Container>
         </section>
 
-        <section className={`${sectionClass} bg-[#fff4ea]`}>
+        {/* 저도 그 막막함을 겪었습니다: 대표가 직접 쓴 문장 */}
+        <section className={`${sectionClass} bg-[#fbf7f2]`}>
           <Container className="flex max-w-[760px] flex-col gap-5">
-            <SectionTitle title={copy.about.title} />
-            <div className="flex flex-col gap-3 rounded-[10px] bg-white p-6 text-[15px] leading-[26px] text-[#2b2421] break-keep">
-              {copy.about.paragraphs.map((paragraph) => (
-                <p key={paragraph}>{paragraph}</p>
+            <SectionTitle title={copy.founder.title} />
+            <div className="flex flex-col gap-3 rounded-[10px] bg-white p-6 text-[15px] leading-[26px] text-[#2b2421] break-keep min-[992px]:p-8">
+              {copy.founder.paragraphs.map((paragraph) => (
+                <p key={paragraph}>
+                  <Emphasis text={paragraph} />
+                </p>
+              ))}
+              <blockquote className="my-2 rounded-[8px] border-l-4 border-[#fd715b] bg-[#fff4ea] px-4 py-3 text-[16px] leading-[26px] font-bold text-[#191919]">
+                &ldquo;{copy.founder.quote}&rdquo;
+              </blockquote>
+              {copy.founder.after.map((paragraph) => (
+                <p key={paragraph}>
+                  <Emphasis text={paragraph} />
+                </p>
               ))}
             </div>
           </Container>
         </section>
 
-        <section className={`${sectionClass} bg-[#fbf7f2]`}>
+        <section className={`${sectionClass} bg-[#fff4ea]`}>
           <Container className="flex max-w-[760px] flex-col gap-6">
             <SectionTitle title={copy.process.title} />
             <ol className="flex flex-col gap-3">
@@ -178,7 +290,7 @@ export function DiagnosisView() {
           </Container>
         </section>
 
-        <section className={`${sectionClass} bg-[#fff4ea]`}>
+        <section className={`${sectionClass} bg-[#fbf7f2]`}>
           <Container className="grid max-w-[900px] gap-6 min-[992px]:grid-cols-2 min-[992px]:gap-8">
             <div className="flex flex-col gap-4">
               <h2 className="text-[20px] leading-[30px] font-extrabold tracking-[-0.5px] text-[#191919] min-[992px]:text-[24px] min-[992px]:leading-[36px]">{copy.terms.title}</h2>
@@ -207,6 +319,28 @@ export function DiagnosisView() {
                 )}
               </div>
             </div>
+          </Container>
+        </section>
+
+        {/* 지금 확인해야 하는 이유: 대표가 예전 래피드 상세에 쓴 세 가지 */}
+        <section className={`${sectionClass} bg-[#fff4ea]`}>
+          <Container className="flex max-w-[760px] flex-col gap-6">
+            <SectionTitle title={copy.reasons.title} />
+            <ol className="flex flex-col gap-3">
+              {copy.reasons.items.map((reason, index) => (
+                <li key={reason.title} className={`${cardClass} flex gap-4 p-5`}>
+                  <span aria-hidden className="text-[22px] leading-[28px] font-extrabold text-[#fd715b]">
+                    {index + 1}
+                  </span>
+                  <div className="break-keep">
+                    <h3 className="text-[16px] leading-[24px] font-bold text-[#191919]">{reason.title}</h3>
+                    <p className="mt-1.5 text-[14px] leading-[23px] text-[#5f6368]">
+                      <Emphasis text={reason.text} />
+                    </p>
+                  </div>
+                </li>
+              ))}
+            </ol>
           </Container>
         </section>
 
