@@ -54,3 +54,7 @@ test("블로그 대행: 외주 작가·알바 문장은 쓰지 않는다 (2026-1
   for (const 말 of 글자들(agencyPage)) assert.ok(!/외주 작가|알바/.test(말), 말);
   assert.match(agencyPage.principles.direct, /결이 다른 글을 씁니다/);
 });
+
+test("블로그 대행: 맡기시면 보는 것에 월간 성과 리포트는 넣지 않는다 (2026-10-26 대표 「삭제」)", () => {
+  assert.ok(!agencyPage.scope.chips.some((x) => x.includes("월간 성과 리포트")));
+});
