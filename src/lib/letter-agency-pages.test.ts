@@ -3,7 +3,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { agencyPage, letterPage, links } from "./site-content.ts";
+import { agencyPage, letterPage, links, offers } from "./site-content.ts";
 
 const 글자들 = (x: unknown): string[] =>
   typeof x === "string" ? [x] : Array.isArray(x) ? x.flatMap(글자들) : x && typeof x === "object" ? Object.values(x).flatMap(글자들) : [];
@@ -21,10 +21,20 @@ test("다니레터: 구독하면 받는 것 세 가지 - 워크북, 매주 월�
   assert.match(letterPage.benefits.items[1].title, /월요일/);
 });
 
-test("블로그 대행: 신청은 네이버 폼(새 탭), 진행 순서 네 단계, 소수 업체 안내", () => {
+test("블로그 대행: 누구의 어떤 고민인지, 다섯 가지 원칙, 다섯 단계 진행 (2026-10-26 대표 블로그 글 두 편을 반영)", () => {
   assert.equal(agencyPage.hero.ctaHref, links.agencyFormDirect);
-  assert.equal(agencyPage.process.steps.length, 4);
+  assert.deepEqual(agencyPage.hero.titleLines, ["사람 냄새 나는 글을,", "전략적으로 설계합니다"]);
+  assert.ok(agencyPage.fit.items.length >= 4, "이런 대표님께");
+  assert.equal(agencyPage.worries.quotes.length, 4);
+  assert.equal(agencyPage.principles.items.length, 5);
+  assert.equal(agencyPage.process.steps.length, 5);
+  assert.match(agencyPage.process.note, /장기 계약을 강요하지 않습니다/);
   assert.match(agencyPage.note, /소수 업체/);
+});
+
+test("블로그 대행: 직접 하실 분께는 진단과 다음 기수 소식으로 안내하고, 가격은 적지 않는다", () => {
+  assert.deepEqual(agencyPage.selfCheck.links.map((x) => x.href), ["/diagnosis", offers.challenge.href]);
+  for (const 말 of 글자들(agencyPage)) assert.ok(!/\d+\s*만\s*원|\d{1,3}(,\d{3})+\s*원/.test(말), 말);
 });
 
 test("두 페이지 모두 긴 줄표와 결과 보장 말을 쓰지 않는다", () => {
