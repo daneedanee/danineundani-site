@@ -4,9 +4,11 @@ import { notFound } from "next/navigation";
 import { cache } from "react";
 
 import { JsonLd } from "@/components/notes/json-ld";
+import { BlogHeader } from "@/components/notes/blog-header";
 import { NotesShell } from "@/components/notes/notes-shell";
 import { PostList } from "@/components/notes/post-list";
 import { breadcrumbJsonLd } from "@/lib/notes/jsonld";
+import { BLOG_PATH } from "@/lib/notes/paths";
 import { listPublishedInPillar } from "@/lib/notes/queries";
 import { hubPath, isPillarKey, PILLARS, type PillarKey } from "@/lib/notes/topics";
 import { absoluteUrl, siteName } from "@/lib/seo";
@@ -52,35 +54,37 @@ export default async function TopicHubPage({ params }: Props) {
   const posts = await loadPosts(key);
 
   return (
-    <NotesShell>
+    <NotesShell wide>
       <JsonLd
         data={breadcrumbJsonLd([
           { name: notes.breadcrumbHome, url: absoluteUrl("/") },
-          { name: notes.breadcrumbList, url: absoluteUrl("/notes") },
+          { name: notes.breadcrumbList, url: absoluteUrl(BLOG_PATH) },
           { name: topic.title, url: absoluteUrl(hubPath(key)) },
         ])}
       />
 
-      <nav aria-label="현재 위치" className="text-[13px] text-[#8a7d75]">
-        <ol className="flex flex-wrap items-center gap-1.5">
-          <li>
-            <Link href="/" className="hover:text-[#fd715b]">
-              {notes.breadcrumbHome}
-            </Link>
-          </li>
-          <li aria-hidden>›</li>
-          <li>
-            <Link href="/notes" className="hover:text-[#fd715b]">
-              {notes.breadcrumbList}
-            </Link>
-          </li>
-        </ol>
-      </nav>
-
-      <h1 className="mt-6 text-[28px] leading-[1.3] font-extrabold tracking-[-0.5px] text-[#2b2421] min-[992px]:text-[36px]">
-        {topic.title}
-      </h1>
-      <p className="mt-3 text-[16px] leading-7 text-[#5c514b]">{topic.intro}</p>
+      <BlogHeader
+        title={topic.title}
+        intro={topic.intro}
+        active={key}
+        breadcrumb={
+          <nav aria-label="현재 위치" className="mb-5 text-[13px] text-[#8a7d75]">
+            <ol className="flex flex-wrap items-center gap-1.5">
+              <li>
+                <Link href="/" className="hover:text-[#fd715b]">
+                  {notes.breadcrumbHome}
+                </Link>
+              </li>
+              <li aria-hidden>›</li>
+              <li>
+                <Link href={BLOG_PATH} className="hover:text-[#fd715b]">
+                  {notes.breadcrumbList}
+                </Link>
+              </li>
+            </ol>
+          </nav>
+        }
+      />
 
       {posts.length === 0 ? (
         <p className="mt-10 text-[16px] leading-7 text-[#5c514b]">{notes.empty}</p>

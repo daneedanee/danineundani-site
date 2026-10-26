@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { test } from 'node:test';
-import { classifyLink, sanitizeEvent, campaignFrom, publicPath, pickLinkEvent, signalEvent, eventNames, measuredPaths } from './measurement.ts';
+import { classifyLink, sanitizeEvent, campaignFrom, publicPath, pickLinkEvent, signalEvent, eventNames, measuredPaths, retiredPaths } from './measurement.ts';
 const base='https://www.daneedanee.com';
 test('상품 이동과 상담 시작을 구분한다',()=>{
  assert.equal(classifyLink('https://www.latpeed.com/products/bxdTq',base),'diagnosis_click');
@@ -49,7 +49,11 @@ test('허용된 캠페인만 인식하며 원래 검색어·이메일을 보관�
 });
 test('비공개 경로는 측정하지 않고 글 주소는 일반화한다',()=>{
  assert.equal(publicPath('/admin/notes'),null);
- assert.equal(publicPath('/notes/private-name'),'/notes/[slug]');
+ assert.equal(publicPath('/blog/private-name'),'/blog/[slug]');
+ assert.equal(publicPath('/about'),'/about');
+ // 옛 주소(/notes)는 /blog 로 넘어가므로 세지 않는다.
+ assert.equal(publicPath('/notes/private-name'),null);
+ assert.equal(publicPath('/blog/topic/blog-marketing'),null);
  assert.equal(publicPath('/agency'),'/agency');
  assert.equal(publicPath('/diagnosis'),'/diagnosis');
 });
@@ -61,13 +65,15 @@ test('운영 점검 제외는 다음 페이지까지 유지한다',async()=>{
  assert.equal(m.excludeMeasurement('',false),false);
 });
 
+const sqlList=(m:RegExpMatchArray|null,label:string)=>{
+ assert.ok(m,label+' 목록을 찾지 못함');
+ return m![1].split(',').map(s=>s.trim().replace(/^'|'$/g,''));
+};
+
 test('측정 SQL의 허용 목록이 코드의 이벤트·경로와 같다',()=>{
- const sql=readFileSync(new URL('../../../supabase/08-visibility-events.sql',import.meta.url),'utf8');
- const listIn=(column:string)=>{
-  const m=sql.match(new RegExp(column+"\\s+text not null check \\("+column+" in \\(([^)]*)\\)\\)"));
-  assert.ok(m,column+' 목록을 찾지 못함');
-  return m[1].split(',').map(s=>s.trim().replace(/^'|'$/g,''));
- };
- assert.deepEqual(listIn('event'),[...eventNames]);
- assert.deepEqual(listIn('path'),[...measuredPaths]);
+ const sql08=readFileSync(new URL('../../../supabase/08-visibility-events.sql',import.meta.url),'utf8');
+ assert.deepEqual(sqlList(sql08.match(/event\s+text not null check \(event in \(([^)]*)\)\)/),'event'),[...eventNames]);
+ // 경로 목록은 10번에서 새로 정했다(/notes → /blog, /about 추가). 옛 경로는 쌓인 기록 때문에 표에만 남긴다.
+ const sql10=readFileSync(new URL('../../../supabase/10-visibility-blog-paths.sql',import.meta.url),'utf8');
+ assert.deepEqual(sqlList(sql10.match(/check \(path in \(([^)]*)\)\)/),'path'),[...measuredPaths,...retiredPaths]);
 });

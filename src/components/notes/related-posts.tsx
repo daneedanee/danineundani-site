@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { formatDate } from "@/lib/notes/format";
+import { postPath } from "@/lib/notes/paths";
 import type { PostSummary } from "@/lib/notes/types";
 import { notes } from "@/lib/site-content";
 
@@ -17,7 +18,7 @@ export function RelatedPosts({ posts }: { posts: PostSummary[] }) {
         {posts.map((post) => (
           <li key={post.slug} className="py-4">
             <Link
-              href={`/notes/${encodeURIComponent(post.slug)}`}
+              href={postPath(post.slug)}
               className="text-[16px] leading-[1.5] font-bold text-[#2b2421] hover:text-[#fd715b]"
             >
               {post.title}

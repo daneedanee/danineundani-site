@@ -26,7 +26,7 @@ export function SiteFooter() {
               <span className="sr-only">(새 탭에서 열림)</span>
             </a>
             <a href={links.blog} target="_blank" rel="noopener noreferrer" className="underline decoration-[#fd715b] underline-offset-4">
-              블로그
+              네이버 블로그
               <span className="sr-only">(새 탭에서 열림)</span>
             </a>
           </nav>

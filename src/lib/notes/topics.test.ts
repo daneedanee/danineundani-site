@@ -24,4 +24,4 @@ test("pillarName 은 모르는 키와 null 에 null", () => {
   assert.equal(pillarName(null), null);
 });
 
-test("hubPath", () => assert.equal(hubPath("blog-marketing"), "/notes/topic/blog-marketing"));
+test("hubPath", () => assert.equal(hubPath("blog-marketing"), "/blog/topic/blog-marketing"));

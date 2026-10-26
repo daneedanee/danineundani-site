@@ -4,6 +4,7 @@
 // 열지 말지는 대표가 정한다. (CLAUDE.md)
 import type { MetadataRoute } from "next";
 
+import { BLOG_PATH } from "./notes/paths.ts";
 import { PILLARS, hubPath } from "./notes/topics.ts";
 
 export const siteName = "다니는다니";
@@ -61,11 +62,11 @@ export function sitemapFor(
     { url: absoluteUrl("/diagnosis", base) },
     // 소개 페이지 (2026-10-26). 메뉴 이름은 "다니는다니는".
     { url: absoluteUrl("/about", base) },
-    { url: absoluteUrl("/notes", base), ...(latest ? { lastModified: new Date(latest) } : {}) },
+    { url: absoluteUrl(BLOG_PATH, base), ...(latest ? { lastModified: new Date(latest) } : {}) },
     // 기둥 허브. 발행 글이 하나 이상 있는 기둥만 넣고, 수정 시각은 넣지 않는다.
     ...PILLARS.filter((pillar) => posts.some((post) => post.pillar === pillar.key)).map((pillar) => ({ url: absoluteUrl(hubPath(pillar.key), base) })),
     ...posts.map((post) => ({
-      url: absoluteUrl(`/notes/${post.slug}`, base),
+      url: absoluteUrl(`${BLOG_PATH}/${post.slug}`, base),
       lastModified: new Date(post.updated_at),
     })),
   ];

@@ -9,12 +9,12 @@ export async function POST(request: Request) {
   const admin = await requireAdmin(request);
   if (admin instanceof Response) return admin;
 
-  revalidatePath("/notes");
-  revalidatePath("/notes/page/[page]", "page");
+  revalidatePath("/blog");
+  revalidatePath("/blog/page/[page]", "page");
   // 글이 많지 않아서 글 페이지는 통째로 버린다. 한글 주소의 인코딩을 여기서 맞출 필요도 없어진다.
-  revalidatePath("/notes/[slug]", "page");
+  revalidatePath("/blog/[slug]", "page");
   // 발행·내림·삭제·주제 변경이 모음 페이지에 바로 보이게 한다.
-  revalidatePath("/notes/topic/[pillar]", "page");
+  revalidatePath("/blog/topic/[pillar]", "page");
   revalidatePath("/sitemap.xml");
 
   return Response.json({ ok: true });

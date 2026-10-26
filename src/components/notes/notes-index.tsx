@@ -1,14 +1,12 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { notesPagePath, totalPages } from "@/lib/notes/paging";
 import { countPublished, listPublishedPage } from "@/lib/notes/queries";
 import { absoluteUrl, siteName } from "@/lib/seo";
-import { hubPath, PILLARS } from "@/lib/notes/topics";
 import { notes } from "@/lib/site-content";
 
-import { AdminWriteLink } from "./admin-write-link";
+import { BlogHeader } from "./blog-header";
 import { NotesShell } from "./notes-shell";
 import { Pagination } from "./pagination";
 import { PostList } from "./post-list";
@@ -19,12 +17,13 @@ export function notesIndexMetadata(page: number): Metadata {
   const url = absoluteUrl(notesPagePath(page));
   return {
     title,
+    description: notes.metaDescription,
     alternates: { canonical: url },
-    openGraph: { type: "website", url, title, siteName, locale: "ko_KR" },
+    openGraph: { type: "website", url, title, description: notes.metaDescription, siteName, locale: "ko_KR" },
   };
 }
 
-// 글 목록. /notes 와 /notes/page/[page] 가 같이 쓴다.
+// 글 목록. /blog 와 /blog/page/[page] 가 같이 쓴다.
 export async function NotesIndex({ page }: { page: number }) {
   const total = await countPublished();
   const pages = totalPages(total);
@@ -33,26 +32,8 @@ export async function NotesIndex({ page }: { page: number }) {
   const posts = total === 0 ? [] : await listPublishedPage(page);
 
   return (
-    <NotesShell>
-      <div className="flex items-center justify-between gap-4">
-        <h1 className="text-[28px] leading-[1.3] font-extrabold tracking-[-0.5px] text-[#2b2421] min-[992px]:text-[36px]">
-          {notes.title}
-        </h1>
-        <AdminWriteLink />
-      </div>
-
-      <nav aria-label={notes.topicsLabel} className="mt-4 flex flex-wrap items-center gap-2 text-[14px]">
-        <span className="text-[#8a7d75]">{notes.topicsLabel}</span>
-        {PILLARS.map((pillar) => (
-          <Link
-            key={pillar.key}
-            href={hubPath(pillar.key)}
-            className="rounded-full border border-[#eaded4] px-3 py-1 font-semibold text-[#2b2421] hover:border-[#fd715b] hover:text-[#fd715b]"
-          >
-            {pillar.name}
-          </Link>
-        ))}
-      </nav>
+    <NotesShell wide>
+      <BlogHeader title={notes.title} intro={notes.intro} active="all" />
 
       {posts.length === 0 ? (
         <p className="mt-10 text-[16px] leading-7 text-[#5c514b]">{notes.empty}</p>

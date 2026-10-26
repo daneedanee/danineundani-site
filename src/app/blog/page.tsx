@@ -7,6 +7,6 @@ export const revalidate = 3600;
 
 export const metadata: Metadata = notesIndexMetadata(1);
 
-export default function NotesPage() {
+export default function BlogPage() {
   return <NotesIndex page={1} />;
 }

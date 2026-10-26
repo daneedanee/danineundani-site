@@ -5,7 +5,10 @@ export const eventNames = [
   'diagnosis_page_click','letter_click','workbook_click','finder_start','finder_result',
 ] as const;
 export const campaigns = ['none','youtube_a','youtube_b','youtube_c'] as const;
-export const measuredPaths = ['/','/notes','/notes/[slug]','/agency','/letter','/diagnosis'] as const;
+// 경로 목록은 supabase/10-visibility-blog-paths.sql 의 check 와 같아야 한다(테스트가 확인).
+export const measuredPaths = ['/','/blog','/blog/[slug]','/agency','/letter','/diagnosis','/about'] as const;
+// 게시판을 /notes 에서 /blog 로 옮기기 전(2026-10-26)에 쌓인 기록의 경로. 표에는 남기고 새로 세지는 않는다.
+export const retiredPaths = ['/notes','/notes/[slug]'] as const;
 // 링크에 data-visibility-event 로 붙여 다른 이름으로 셀 수 있는 이벤트. 같은 /letter 라도 워크북 버튼만 따로 센다.
 const linkOverrides = ['workbook_click'] as const;
 // 링크가 아닌 화면 안 신호(window 의 danee-measure 이벤트)로 받는 것.
@@ -14,7 +17,7 @@ export type EventRow = {event: string; path: string; campaign: string};
 
 export function publicPath(path: string): string | null {
   if ((measuredPaths as readonly string[]).includes(path)) return path;
-  return /^\/notes\/[^/]+$/.test(path) ? '/notes/[slug]' : null;
+  return /^\/blog\/[^/]+$/.test(path) ? '/blog/[slug]' : null;
 }
 export function campaignFrom(search: string): string {
   const p=new URLSearchParams(search);

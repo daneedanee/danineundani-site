@@ -11,13 +11,14 @@ import { AdminGate } from "@/components/admin/admin-gate";
 import { NoteEditor } from "@/components/admin/note-editor";
 import { listAllPosts } from "@/lib/notes/admin-api";
 import { formatDate } from "@/lib/notes/format";
+import { postPath } from "@/lib/notes/paths";
 import type { Post } from "@/lib/notes/types";
 
 function NotesAdmin({ session }: { session: Session }) {
   const [posts, setPosts] = useState<Post[] | null>(null);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
-  // 칼럼 페이지의 「글쓰기」 버튼(/admin/notes?new=1)으로 들어오면 새 글 화면을 바로 연다.
+  // 블로그 페이지의 「글쓰기」 버튼(/admin/notes?new=1)으로 들어오면 새 글 화면을 바로 연다.
   const [editing, setEditing] = useState<Post | "new" | null>(() =>
     typeof window !== "undefined" && new URLSearchParams(window.location.search).get("new") === "1" ? "new" : null,
   );
@@ -123,13 +124,13 @@ function NotesAdmin({ session }: { session: Session }) {
                     {post.title}
                   </p>
                   <p className="mt-1 text-[13px] break-all text-[#5f6368]">
-                    /notes/{post.slug} · {formatDate(post.updated_at)} 수정
+                    /blog/{post.slug} · {formatDate(post.updated_at)} 수정
                   </p>
                 </div>
                 <div className="flex gap-2">
                   {post.status === "published" && (
                     <Link
-                      href={`/notes/${encodeURIComponent(post.slug)}`}
+                      href={postPath(post.slug)}
                       target="_blank"
                       className="flex h-[40px] items-center rounded-[4px] border border-[#d1d5db] bg-white px-4 text-[14px] font-semibold text-[#191919]"
                     >

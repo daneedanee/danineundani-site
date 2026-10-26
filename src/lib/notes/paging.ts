@@ -1,5 +1,8 @@
+import { BLOG_PATH } from "./paths.ts";
+
 // 목록 쪽 넘김. 무한 스크롤을 쓰지 않는다 — 검색 로봇은 스크롤을 내리지 않는다.
-export const PAGE_SIZE = 10;
+// 목록이 세 칸 카드라 한 쪽에 12개(3×4)를 둔다 (2026-10-26).
+export const PAGE_SIZE = 12;
 
 export function totalPages(count: number): number {
   return Math.max(1, Math.ceil(count / PAGE_SIZE));
@@ -16,5 +19,5 @@ export function parsePageParam(raw: string): number | null {
 }
 
 export function notesPagePath(page: number): string {
-  return page <= 1 ? "/notes" : `/notes/page/${page}`;
+  return page <= 1 ? BLOG_PATH : `${BLOG_PATH}/page/${page}`;
 }

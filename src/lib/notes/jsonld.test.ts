@@ -19,7 +19,7 @@ const post = {
 };
 
 test("BlogPosting: 필수 항목과 글쓴이(사람)·발행처(조직)", () => {
-  const data = blogPostingJsonLd(post, "https://www.daneedanee.com/notes/a", site);
+  const data = blogPostingJsonLd(post, "https://www.daneedanee.com/blog/a", site);
   assert.equal(data["@context"], "https://schema.org");
   assert.equal(data["@type"], "BlogPosting");
   assert.equal(data.headline, "제목");
@@ -27,18 +27,18 @@ test("BlogPosting: 필수 항목과 글쓴이(사람)·발행처(조직)", () =>
   assert.equal(data.datePublished, "2026-10-07T01:00:00Z");
   assert.equal(data.dateModified, "2026-10-08T02:00:00Z");
   assert.deepEqual(data.image, ["https://img.example/a.png"]);
-  assert.deepEqual(data.mainEntityOfPage, { "@type": "WebPage", "@id": "https://www.daneedanee.com/notes/a" });
+  assert.deepEqual(data.mainEntityOfPage, { "@type": "WebPage", "@id": "https://www.daneedanee.com/blog/a" });
   assert.deepEqual(data.author, { "@type": "Person", name: "다니", sameAs: ["https://www.youtube.com/@x"] });
   assert.deepEqual(data.publisher, { "@type": "Organization", name: "다니는다니", url: "https://www.daneedanee.com/" });
 });
 
 test("BlogPosting: 대표 이미지가 없으면 image 를 넣지 않는다", () => {
-  const data = blogPostingJsonLd({ ...post, cover_image_url: null }, "https://x/notes/a", site);
+  const data = blogPostingJsonLd({ ...post, cover_image_url: null }, "https://x/blog/a", site);
   assert.equal("image" in data, false);
 });
 
 test("BlogPosting: 발행 시각이 없으면 수정 시각을 쓴다", () => {
-  const data = blogPostingJsonLd({ ...post, published_at: null }, "https://x/notes/a", site);
+  const data = blogPostingJsonLd({ ...post, published_at: null }, "https://x/blog/a", site);
   assert.equal(data.datePublished, "2026-10-08T02:00:00Z");
 });
 

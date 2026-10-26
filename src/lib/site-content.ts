@@ -122,13 +122,14 @@ export const offers = {
     cta: "상담 신청하기",
     href: `/#${sectionIds.consult}`,
   },
+  // 사이트 게시판. 이름을 "칼럼"에서 "블로그"로 바꿨다 (2026-10-26 대표 요청).
   notes: {
-    name: "칼럼",
+    name: "블로그",
     status: "content",
-    summary: "블로그로 문의를 만드는 방법을 칼럼으로 먼저 읽어 보세요.",
+    summary: "블로그로 문의를 만드는 방법을 글로 먼저 읽어 보세요.",
     price: "",
-    cta: "칼럼 읽기",
-    href: "/notes",
+    cta: "블로그 글 읽기",
+    href: "/blog",
   },
   newsletter: {
     name: "다니레터",
@@ -231,7 +232,7 @@ export const finder = {
   alternativeLabel: "이런 방법도 있어요",
   back: "이전 질문",
   restart: "처음부터 다시 고르기",
-  readNotes: "칼럼 먼저 읽기",
+  readNotes: "블로그 글 먼저 읽기",
   // 챌린지를 권하는 이유(challengeKnowFix·challengeExecution·later)는 모집 전 기준이다. 모집을 열면 함께 고친다.
   reasons: {
     diagnose: [
@@ -315,8 +316,8 @@ export const navItems: { label: string; href: string; external: boolean }[] = [
     ? [{ label: "매출로 이어지는 블로그", href: offers.challenge.href, external: !offers.challenge.href.startsWith("/") }]
     : []),
   { label: "블로그 대행", href: "/agency", external: false },
-  // 게시판(/notes). 메뉴 이름 "칼럼"은 대표 결정 (2026-10-08).
-  { label: "칼럼", href: "/notes", external: false },
+  // 게시판(/blog). 메뉴 이름 "칼럼"(2026-10-08)을 "블로그"로 바꿈 (2026-10-26 대표 요청).
+  { label: "블로그", href: "/blog", external: false },
   ...(links.newsletter ? [{ label: "다니레터", href: "/letter", external: false }] : []),
   { label: "상담 신청", href: `/#${sectionIds.consult}`, external: false },
 ];
@@ -528,16 +529,19 @@ export const privacyPolicy = {
   ],
 } as const;
 
-// 게시판(/notes).
-// 메뉴 이름 "칼럼"은 대표가 정했다 (2026-10-08). 나머지 문구는 대표가 맡겨서 "칼럼"에 맞췄다 (같은 날).
+// 게시판(/blog). 2026-10-26 대표 요청으로 이름을 "칼럼"에서 "블로그"로, 목록을 avcd.kr/blog 처럼 카드형으로 바꿨다.
+// intro 는 지금 하는 일(고객사 블로그 직접 운영)에서만 쓴다.
 export const notes = {
-  title: "칼럼",
+  title: "블로그",
+  metaDescription: "블로그로 문의와 매출을 만드는 방법, 광고비에 기대지 않고 손님이 찾아오게 하는 방법을 정리합니다. 마켓티브 대표 다니가 씁니다.",
+  intro: "블로그로 문의가 들어오는 구조, 광고비에 기대지 않고 손님이 찾아오게 하는 방법. 고객사 블로그를 직접 운영하며 확인한 것들을 대표님 눈높이로 기록합니다.",
   breadcrumbHome: "홈",
-  breadcrumbList: "칼럼",
+  breadcrumbList: "블로그",
   empty: "아직 올라온 글이 없습니다.",
-  backToList: "칼럼 목록으로",
+  backToList: "블로그 목록으로",
   relatedTitle: "같은 주제 글",
   topicsLabel: "주제",
+  allTopics: "전체",
 } as const;
 
 // 기둥 허브 문구. 대표 확인 (2026-10-17).

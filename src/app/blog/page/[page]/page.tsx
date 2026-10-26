@@ -3,6 +3,7 @@ import { notFound, permanentRedirect } from "next/navigation";
 
 import { NotesIndex, notesIndexMetadata } from "@/components/notes/notes-index";
 import { parsePageParam } from "@/lib/notes/paging";
+import { BLOG_PATH } from "@/lib/notes/paths";
 
 type Props = { params: Promise<{ page: string }> };
 
@@ -21,7 +22,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function NotesPagedPage({ params }: Props) {
   const page = parsePageParam((await params).page);
   if (page === null) notFound();
-  // 1쪽의 주소는 /notes 하나뿐이다. 같은 내용이 두 주소로 잡히지 않게 넘긴다.
-  if (page === 1) permanentRedirect("/notes");
+  // 1쪽의 주소는 /blog 하나뿐이다. 같은 내용이 두 주소로 잡히지 않게 넘긴다.
+  if (page === 1) permanentRedirect(BLOG_PATH);
   return <NotesIndex page={page} />;
 }

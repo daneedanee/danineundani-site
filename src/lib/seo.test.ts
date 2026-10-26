@@ -25,8 +25,8 @@ test("색인 스위치: 정확히 true 일 때만 켜진다", () => {
 
 test("절대 주소: 한글 경로를 인코딩한다", () => {
   assert.equal(absoluteUrl("/", base), "https://www.daneedanee.com/");
-  assert.equal(absoluteUrl("/notes", base), "https://www.daneedanee.com/notes");
-  assert.equal(absoluteUrl("/notes/블로그", base), "https://www.daneedanee.com/notes/%EB%B8%94%EB%A1%9C%EA%B7%B8");
+  assert.equal(absoluteUrl("/blog", base), "https://www.daneedanee.com/blog");
+  assert.equal(absoluteUrl("/blog/블로그", base), "https://www.daneedanee.com/blog/%EB%B8%94%EB%A1%9C%EA%B7%B8");
 });
 
 test("robots 메타: 꺼지면 noindex, 켜지면 index", () => {
@@ -64,10 +64,10 @@ test("사이트맵: 켜지면 홈, 진단 상세, 목록, 글이 들어가고 �
       "https://www.daneedanee.com/",
       "https://www.daneedanee.com/diagnosis",
       "https://www.daneedanee.com/about",
-      "https://www.daneedanee.com/notes",
-      "https://www.daneedanee.com/notes/topic/small-business-marketing",
-      "https://www.daneedanee.com/notes/old",
-      "https://www.daneedanee.com/notes/%EC%83%88-%EA%B8%80",
+      "https://www.daneedanee.com/blog",
+      "https://www.daneedanee.com/blog/topic/small-business-marketing",
+      "https://www.daneedanee.com/blog/old",
+      "https://www.daneedanee.com/blog/%EC%83%88-%EA%B8%80",
     ],
   );
   // 목록의 수정 시각은 가장 최근 글을 따른다.
@@ -85,17 +85,17 @@ test("사이트맵: 두 기둥에 글이 있으면 기둥 순서대로 목록 �
     base,
   ).map((e) => e.url);
   assert.deepEqual(urls.slice(4, 6), [
-    "https://www.daneedanee.com/notes/topic/blog-marketing",
-    "https://www.daneedanee.com/notes/topic/small-business-marketing",
+    "https://www.daneedanee.com/blog/topic/blog-marketing",
+    "https://www.daneedanee.com/blog/topic/small-business-marketing",
   ]);
 });
 
 test("사이트맵: 글이 없거나 기둥이 모두 비어 있으면 허브는 빠진다", () => {
   // 소개 페이지 /about (2026-10-26)
-  const home = ["https://www.daneedanee.com/", "https://www.daneedanee.com/diagnosis", "https://www.daneedanee.com/about", "https://www.daneedanee.com/notes"];
+  const home = ["https://www.daneedanee.com/", "https://www.daneedanee.com/diagnosis", "https://www.daneedanee.com/about", "https://www.daneedanee.com/blog"];
   assert.deepEqual(sitemapFor(true, [], base).map((e) => e.url), home);
   assert.deepEqual(
     sitemapFor(true, [{ slug: "a", updated_at: "2026-10-01T00:00:00Z", pillar: null }], base).map((e) => e.url),
-    [...home, "https://www.daneedanee.com/notes/a"],
+    [...home, "https://www.daneedanee.com/blog/a"],
   );
 });

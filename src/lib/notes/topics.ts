@@ -1,3 +1,5 @@
+import { BLOG_PATH } from "./paths.ts";
+
 // 칼럼 기둥(주제 묶음). 기둥은 코드에 고정해 두고, 글은 기둥 하나와 자유 입력 가지를 가질 수 있다.
 export const PILLARS = [
   { key: "blog-marketing", name: "블로그마케팅" },
@@ -19,5 +21,5 @@ export function pillarName(key: string | null): string | null {
 
 // 기둥 허브 페이지 주소.
 export function hubPath(key: PillarKey): string {
-  return `/notes/topic/${key}`;
+  return `${BLOG_PATH}/topic/${key}`;
 }

@@ -198,7 +198,7 @@ export function NoteEditor({ post, accessToken, onDone, onCancel }: Props) {
               className={inputClass}
             />
             <p className={hintClass}>
-              /notes/{input.slug || "…"}
+              /blog/{input.slug || "…"}
               <br />
               {slugLocked
                 ? "한 번 발행한 글의 주소는 바꿀 수 없습니다. 주소가 바뀌면 검색에 쌓인 것이 끊깁니다."

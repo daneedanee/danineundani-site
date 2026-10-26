@@ -1,5 +1,7 @@
 import type { NextConfig } from "next";
 
+import { legacyRedirects } from "./src/lib/notes/paths";
+
 // 글의 대표 이미지는 Supabase 보관함(cab-post-images)에서 온다. next/image 는 허용한 주소만 받는다.
 const supabaseHost = process.env.NEXT_PUBLIC_SUPABASE_URL
   ? new URL(process.env.NEXT_PUBLIC_SUPABASE_URL).hostname
@@ -10,6 +12,10 @@ const nextConfig: NextConfig = {
   // Vercel은 자체 방식으로 묶기 때문에 이 설정이 켜져 있으면 빌드가 깨진다.
   // 그래서 Vercel에서 빌드할 때(VERCEL 환경 변수가 있을 때)만 끈다.
   ...(process.env.VERCEL ? {} : { output: "standalone" as const }),
+  // 게시판을 /notes 에서 /blog 로 옮겼다 (2026-10-26). 옛 주소로 들어와도 같은 글로 간다.
+  async redirects() {
+    return legacyRedirects();
+  },
   images: {
     remotePatterns: [
       // 홈의 유튜브 영상 띠 썸네일
