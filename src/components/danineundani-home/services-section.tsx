@@ -2,7 +2,7 @@ import Image from "next/image";
 
 import { services } from "@/lib/site-content";
 
-import { Container, ExternalButton, SectionTitle } from "./shared";
+import { Container, ExternalButton, SectionTitle, Sentences } from "./shared";
 
 const images = [
   { src: "/images/danineundani/real/latpeed-product.png", width: 1024, height: 1024, fit: "object-cover", alt: "블로그 진단 방향 제안 상품 이미지" },
@@ -43,7 +43,7 @@ export function ServicesSection() {
                 </div>
                 <div className="mx-4 mt-4 flex flex-1 flex-col items-start gap-1 pb-2.5">
                   <h3 className="text-[16px] leading-6 font-semibold text-[#333] break-keep">{service.name}</h3>
-                  <p className="mb-1 text-[14px] leading-[21px] text-[#333] break-keep">{service.description}</p>
+                  <p className="mb-1 text-[14px] leading-[21px] text-[#333] break-keep"><Sentences text={service.description} /></p>
                   <span className="mt-1 -ml-0.5 rounded-[4px] bg-[#ffe5e1] px-2 py-1 text-[11px] leading-[15px] font-semibold text-[#c9412f]">
                     {service.badge}
                   </span>

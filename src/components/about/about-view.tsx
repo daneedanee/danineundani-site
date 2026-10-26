@@ -2,7 +2,7 @@ import { ArrowUpRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
-import { Container, Emphasis, ExternalButton, SectionTitle } from "@/components/danineundani-home/shared";
+import { Container, Emphasis, ExternalButton, SectionTitle, Sentences } from "@/components/danineundani-home/shared";
 import { SiteFooter } from "@/components/danineundani-home/site-footer";
 import { SiteHeader } from "@/components/danineundani-home/site-header";
 import { aboutPage as copy, homeReviews } from "@/lib/site-content";
@@ -77,11 +77,11 @@ export function AboutView() {
           <Container className="flex max-w-[760px] flex-col items-center gap-5 text-center">
             <SectionTitle title={copy.message.title} />
             <p className="text-[20px] leading-[32px] font-extrabold tracking-[-0.5px] text-[#c9412f] break-keep min-[992px]:text-[26px] min-[992px]:leading-[40px]">
-              {copy.message.lead}
+              <Sentences text={copy.message.lead} />
             </p>
             {copy.message.paragraphs.map((paragraph) => (
               <p key={paragraph} className="max-w-[620px] text-[15px] leading-[26px] text-[#2b2421] break-keep">
-                {paragraph}
+                <Sentences text={paragraph} />
               </p>
             ))}
           </Container>
@@ -95,7 +95,7 @@ export function AboutView() {
                 <li key={item.title} className={`${cardClass} p-5`}>
                   <p className="text-[12px] leading-4 font-bold text-[#c9412f]">{String(index + 1).padStart(2, "0")}</p>
                   <h3 className="mt-1 text-[17px] leading-[26px] font-bold text-[#191919] break-keep">{item.title}</h3>
-                  <p className="mt-1.5 text-[14px] leading-[22px] text-[#5f6368] break-keep">{item.text}</p>
+                  <p className="mt-1.5 text-[14px] leading-[22px] text-[#5f6368] break-keep"><Sentences text={item.text} /></p>
                 </li>
               ))}
             </ul>
@@ -130,7 +130,7 @@ export function AboutView() {
                   <ul className="flex flex-col gap-3">
                     {group.items.map((review) => (
                       <li key={review.text} className={`${cardClass} flex flex-col gap-2 p-5`}>
-                        <blockquote className="text-[15px] leading-[24px] text-[#2b2421] break-keep">&ldquo;{review.text}&rdquo;</blockquote>
+                        <blockquote className="text-[15px] leading-[24px] text-[#2b2421] break-keep">&ldquo;<Sentences text={review.text} />&rdquo;</blockquote>
                         <p className="text-[12px] leading-[18px] text-[#8a8178]">{review.source}</p>
                       </li>
                     ))}
@@ -171,7 +171,7 @@ export function AboutView() {
         <section className={`${sectionClass} bg-[#2b2421]`}>
           <Container className="flex flex-col items-center gap-4 text-center">
             <h2 className="text-[22px] leading-[32px] font-bold text-white break-keep min-[992px]:text-[28px] min-[992px]:leading-[40px]">{copy.closing.title}</h2>
-            <p className="text-[15px] leading-[24px] text-white/80 break-keep">{copy.closing.text}</p>
+            <p className="text-[15px] leading-[24px] text-white/80 break-keep"><Sentences text={copy.closing.text} /></p>
             <ExternalButton href={copy.closing.href} className="rounded-[5px] px-6 py-3 text-[16px]">
               {copy.closing.cta}
             </ExternalButton>

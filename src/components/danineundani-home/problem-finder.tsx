@@ -9,7 +9,7 @@ import { finder, offerStatusLabels, offerStatusNotes, offers, sectionIds, type O
 import { cn } from "@/lib/utils";
 import { sendSignal } from "@/lib/visibility/measurement";
 
-import { Container, ExternalButton, SectionTitle } from "./shared";
+import { Container, ExternalButton, SectionTitle, Sentences } from "./shared";
 
 type Choice = { code: string; label: string };
 
@@ -38,7 +38,7 @@ function OfferCard({ id, main }: { id: OfferId; main?: boolean }) {
         <span className="text-[16px] leading-6 font-semibold break-keep">{offer.name}</span>
         <span className="rounded-[4px] bg-[#ffe5e1] px-2 py-1 text-[11px] leading-[15px] font-semibold text-[#c9412f]">{offerStatusLabels[offer.status]}</span>
       </div>
-      <p className={cn("text-[14px] leading-[21px] break-keep", main ? "text-white/85" : "text-[#5f6368]")}>{offer.summary}</p>
+      <p className={cn("text-[14px] leading-[21px] break-keep", main ? "text-white/85" : "text-[#5f6368]")}><Sentences text={offer.summary} /></p>
       {offer.price && <p className="text-[18px] leading-[26px] font-extrabold">{offer.price}</p>}
       {note && <p className={cn("text-[12px] leading-[18px] break-keep", main ? "text-white/60" : "text-[#5f6368]")}>{note}</p>}
       <ExternalButton
@@ -158,7 +158,7 @@ export function ProblemFinder() {
         </h3>
         <div className="flex flex-col gap-1 text-[14px] leading-[22px] text-[#333] break-keep">
           {finder.reasons[result.key].map((line) => (
-            <p key={line}>{line}</p>
+            <p key={line}><Sentences text={line} /></p>
           ))}
         </div>
         <OfferCard id={result.primary} main />

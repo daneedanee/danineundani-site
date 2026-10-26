@@ -8,7 +8,7 @@ import { inquiriesTable, supabase } from "@/lib/supabase";
 import { validateInquiry, type InquiryErrors } from "@/lib/inquiries/validate";
 import { sendSignal } from "@/lib/visibility/measurement";
 
-import { SectionTitle } from "./shared";
+import { SectionTitle, Sentences } from "./shared";
 
 type Fields = { name: string; email: string; message: string };
 type Status = "idle" | "sending" | "done" | "failed";
@@ -114,7 +114,7 @@ export function ConsultSection() {
             <ul className="space-y-1 text-[12px] leading-[19px] text-[#5f6368]">
               {consult.consentItems.map((item) => (
                 <li key={item} className="break-keep">
-                  {item}
+                  <Sentences text={item} />
                 </li>
               ))}
             </ul>

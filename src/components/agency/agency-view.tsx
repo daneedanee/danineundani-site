@@ -2,7 +2,7 @@ import { Check } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
-import { Container, ExternalButton, SectionTitle } from "@/components/danineundani-home/shared";
+import { Container, ExternalButton, SectionTitle, Sentences } from "@/components/danineundani-home/shared";
 import { SiteFooter } from "@/components/danineundani-home/site-footer";
 import { SiteHeader } from "@/components/danineundani-home/site-header";
 import { agencyPage as copy, links } from "@/lib/site-content";
@@ -36,7 +36,7 @@ export function AgencyView() {
               ))}
             </h1>
             <p className="mt-4 max-w-[620px] text-[15px] leading-[24px] font-light text-white/90 break-keep min-[992px]:text-[17px] min-[992px]:leading-[28px]">
-              {copy.hero.description}
+              <Sentences text={copy.hero.description} />
             </p>
             <ExternalButton href={copy.hero.ctaHref} className="mt-6 rounded-[5px] px-6 py-3 text-[16px] min-[992px]:text-[18px]">
               {copy.hero.cta}
@@ -49,7 +49,7 @@ export function AgencyView() {
           <Container className="flex max-w-[860px] flex-col gap-6 min-[992px]:flex-row min-[992px]:items-center min-[992px]:gap-10">
             <div className="flex flex-1 flex-col gap-4">
               <h2 className="text-[20px] leading-[30px] font-extrabold tracking-[-0.5px] text-[#191919] break-keep min-[992px]:text-[24px] min-[992px]:leading-[36px]">{copy.way.title}</h2>
-              <p className="text-[15px] leading-[24px] text-[#5f6368] break-keep">{copy.way.lead}</p>
+              <p className="text-[15px] leading-[24px] text-[#5f6368] break-keep"><Sentences text={copy.way.lead} /></p>
               <ul className="flex flex-col gap-3">
                 {copy.way.items.map((item) => (
                   <li key={item} className={`${cardClass} flex gap-3 p-4`}>
@@ -73,7 +73,7 @@ export function AgencyView() {
                 </li>
               ))}
             </ul>
-            <p className="max-w-[600px] text-[14px] leading-[22px] text-[#8a8178] break-keep">{copy.scope.industries}</p>
+            <p className="max-w-[600px] text-[14px] leading-[22px] text-[#8a8178] break-keep"><Sentences text={copy.scope.industries} /></p>
           </Container>
         </section>
 
@@ -88,12 +88,12 @@ export function AgencyView() {
                   </span>
                   <div className="break-keep">
                     <h3 className="text-[16px] leading-[24px] font-bold text-[#191919]">{step.title}</h3>
-                    <p className="mt-1.5 text-[14px] leading-[23px] text-[#5f6368]">{step.text}</p>
+                    <p className="mt-1.5 text-[14px] leading-[23px] text-[#5f6368]"><Sentences text={step.text} /></p>
                   </div>
                 </li>
               ))}
             </ol>
-            <p className="rounded-[10px] border border-[#f0d9c8] bg-[#fffdf9] p-4 text-[14px] leading-[22px] text-[#5f6368] break-keep">{copy.note}</p>
+            <p className="rounded-[10px] border border-[#f0d9c8] bg-[#fffdf9] p-4 text-[14px] leading-[22px] text-[#5f6368] break-keep"><Sentences text={copy.note} /></p>
           </Container>
         </section>
 
@@ -101,7 +101,7 @@ export function AgencyView() {
           <Container className="max-w-[760px]">
             <div className={`${cardClass} flex flex-col items-start gap-3 p-6`}>
               <h2 className="text-[17px] leading-[26px] font-bold text-[#191919] break-keep">{copy.diagnosis.title}</h2>
-              <p className="text-[14px] leading-[23px] text-[#5f6368] break-keep">{copy.diagnosis.text}</p>
+              <p className="text-[14px] leading-[23px] text-[#5f6368] break-keep"><Sentences text={copy.diagnosis.text} /></p>
               <Link href={copy.diagnosis.href} className="text-[14px] font-semibold text-[#2b2421] underline decoration-[#fd715b] decoration-2 underline-offset-4 hover:text-[#c9412f]">
                 {copy.diagnosis.cta}
               </Link>

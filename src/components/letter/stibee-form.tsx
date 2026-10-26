@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 
 import { letterPage } from "@/lib/site-content";
+import { Sentences } from "@/components/danineundani-home/shared";
 
 const form = letterPage.form;
 
@@ -41,7 +42,7 @@ export function StibeeForm() {
           <div className="stb_form_modal stb_form_policy_text blind" id="stb_form_policy_modal">
             <div className="stb_form_modal_body">
               <h1 className="stb_form_modal_title">{form.policy.modalTitle}</h1>
-              <div className="stb_form_modal_text">{form.policy.modalText}</div>
+              <div className="stb_form_modal_text"><Sentences text={form.policy.modalText} /></div>
               <div className="stb_form_modal_btn">
                 <button id="stb_form_modal_close" className="stb_form_modal_close_btn" data-modal="stb_form_policy_modal" type="button">
                   {form.close}
@@ -64,7 +65,7 @@ export function StibeeForm() {
           <div className="stb_form_modal stb_form_policy_text blind" id="stb_form_ad_agreemnet_modal">
             <div className="stb_form_modal_body">
               <h1 className="stb_form_modal_title">{form.ad.modalTitle}</h1>
-              <div className="stb_form_modal_text">{form.ad.modalText}</div>
+              <div className="stb_form_modal_text"><Sentences text={form.ad.modalText} /></div>
               <div className="stb_form_modal_btn">
                 <button id="stb_form_ad_modal_close" className="stb_form_modal_close_btn" data-modal="stb_form_ad_agreemnet_modal" type="button">
                   {form.close}

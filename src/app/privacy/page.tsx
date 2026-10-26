@@ -4,6 +4,7 @@ import { SiteFooter } from "@/components/danineundani-home/site-footer";
 import { SiteHeader } from "@/components/danineundani-home/site-header";
 import { absoluteUrl, siteName } from "@/lib/seo";
 import { privacyPolicy } from "@/lib/site-content";
+import { Sentences } from "@/components/danineundani-home/shared";
 
 export const metadata: Metadata = {
   title: `${privacyPolicy.title} · ${siteName}`,
@@ -21,7 +22,7 @@ export default function PrivacyPage() {
           <header className="flex flex-col gap-2">
             <h1 className="text-[24px] leading-[34px] font-extrabold tracking-[-0.5px] text-[#191919]">{privacyPolicy.title}</h1>
             <p className="text-[13px] text-[#8a8178]">시행일: {privacyPolicy.effectiveDate}</p>
-            <p className="mt-2 text-[15px] leading-[25px] text-[#2b2421] break-keep">{privacyPolicy.intro}</p>
+            <p className="mt-2 text-[15px] leading-[25px] text-[#2b2421] break-keep"><Sentences text={privacyPolicy.intro} /></p>
           </header>
           {privacyPolicy.sections.map((section) => (
             <section key={section.title} className="flex flex-col gap-2">
@@ -29,7 +30,7 @@ export default function PrivacyPage() {
               <ul className="flex list-disc flex-col gap-1.5 pl-5 text-[14px] leading-[23px] text-[#4b4540] marker:text-[#c9412f]">
                 {section.items.map((item) => (
                   <li key={item} className="break-keep">
-                    {item}
+                    <Sentences text={item} />
                   </li>
                 ))}
               </ul>

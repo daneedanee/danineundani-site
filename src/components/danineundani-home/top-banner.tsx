@@ -2,7 +2,7 @@ import { ArrowDown } from "lucide-react";
 
 import { hero, sectionIds } from "@/lib/site-content";
 
-import { ExternalButton } from "./shared";
+import { ExternalButton, Sentences } from "./shared";
 
 export function TopBanner() {
   return (
@@ -31,7 +31,7 @@ export function TopBanner() {
               ))}
             </p>
             <p className="mt-2 text-[14px] leading-[21px] font-light text-white/60 break-keep min-[992px]:text-[16px]">
-              {hero.subDescription}
+              <Sentences text={hero.subDescription} />
             </p>
             {/* 주 버튼은 고민 찾기, 진단은 바로 가는 보조 링크 (2026-10-25 대표 결정). */}
             <ExternalButton

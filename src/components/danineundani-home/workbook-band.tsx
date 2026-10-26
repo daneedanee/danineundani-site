@@ -1,6 +1,6 @@
 import { offerStatusLabels, offers, workbookBand } from "@/lib/site-content";
 
-import { Container, ExternalButton } from "./shared";
+import { Container, ExternalButton, Sentences } from "./shared";
 
 // 상담 신청 바로 위: 무료 워크북으로 다니레터 구독을 받는 띠. 주소가 비면 띠를 숨긴다.
 export function WorkbookBand() {
@@ -14,7 +14,7 @@ export function WorkbookBand() {
           <h2 id="workbook-heading" className="text-[20px] leading-[30px] font-bold tracking-[-0.5px] break-keep min-[992px]:text-[24px] min-[992px]:leading-[34px]">
             {workbookBand.title}
           </h2>
-          <p className="text-[14px] leading-[22px] text-white/80 break-keep min-[992px]:text-[15px]">{workbookBand.description}</p>
+          <p className="text-[14px] leading-[22px] text-white/80 break-keep min-[992px]:text-[15px]"><Sentences text={workbookBand.description} /></p>
         </div>
         <ExternalButton href={workbook.href} measure="workbook_click" className="shrink-0 rounded-[5px] px-5 py-3 text-[15px]">
           {workbook.cta}

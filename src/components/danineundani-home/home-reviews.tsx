@@ -2,7 +2,7 @@ import Link from "next/link";
 
 import { homeReviews } from "@/lib/site-content";
 
-import { Container, SectionTitle } from "./shared";
+import { Container, SectionTitle, Sentences } from "./shared";
 
 // 고민 찾기 바로 아래: 진단 후기 세 장과 블로그 챌린지 1기 후기 세 장, 묶음마다 더 보기 링크 (2026-10-26)
 export function HomeReviews() {
@@ -17,7 +17,7 @@ export function HomeReviews() {
               <ul className="grid gap-3 min-[992px]:grid-cols-3 min-[992px]:gap-4">
                 {group.items.map((review) => (
                   <li key={review.text} className="flex flex-col justify-between gap-3 rounded-[10px] bg-[#fffdf9] p-5 shadow-[0_8px_20px_rgba(112,69,48,0.08)]">
-                    <blockquote className="text-[15px] leading-[24px] text-[#2b2421] break-keep">&ldquo;{review.text}&rdquo;</blockquote>
+                    <blockquote className="text-[15px] leading-[24px] text-[#2b2421] break-keep">&ldquo;<Sentences text={review.text} />&rdquo;</blockquote>
                     <p className="text-[12px] leading-[18px] text-[#8a8178] break-keep">{review.source}</p>
                   </li>
                 ))}

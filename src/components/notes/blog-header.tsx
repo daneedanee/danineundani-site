@@ -6,6 +6,7 @@ import { hubPath, PILLARS, type PillarKey } from "@/lib/notes/topics";
 import { aboutPage, author, notes } from "@/lib/site-content";
 
 import { AdminWriteLink } from "./admin-write-link";
+import { Sentences } from "@/components/danineundani-home/shared";
 
 const pillClass = "rounded-full border px-4 py-2 text-[14px] leading-5 font-semibold transition-colors";
 const pillIdle = "border-[#e5d9ce] bg-white text-[#2b2421] hover:border-[#fd715b] hover:text-[#c9412f]";
@@ -30,7 +31,7 @@ export function BlogHeader({
       <div className="flex items-start justify-between gap-6">
         <div className="max-w-[640px]">
           <h1 className="text-[32px] leading-[1.25] font-extrabold tracking-[-0.8px] text-[#2b2421] min-[992px]:text-[44px]">{title}</h1>
-          <p className="mt-4 text-[16px] leading-[1.75] text-[#5c514b] break-keep">{intro}</p>
+          <p className="mt-4 text-[16px] leading-[1.75] text-[#5c514b] break-keep"><Sentences text={intro} /></p>
           <Link href="/about" className="mt-5 inline-flex items-center gap-2 text-[14px] font-semibold text-[#2b2421] hover:text-[#c9412f]">
             <Image src={aboutPage.hero.photo.src} alt="" width={28} height={28} className="size-7 rounded-full object-cover" />
             {author.name} · {aboutPage.jsonLd.jobTitle}

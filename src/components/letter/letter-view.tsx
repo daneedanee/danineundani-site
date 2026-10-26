@@ -1,4 +1,4 @@
-import { Container, SectionTitle } from "@/components/danineundani-home/shared";
+import { Container, SectionTitle, Sentences } from "@/components/danineundani-home/shared";
 import { SiteFooter } from "@/components/danineundani-home/site-footer";
 import { SiteHeader } from "@/components/danineundani-home/site-header";
 import { letterPage as copy } from "@/lib/site-content";
@@ -25,7 +25,7 @@ export function LetterView() {
               ))}
             </h1>
             <p className="mt-4 max-w-[620px] text-[15px] leading-[24px] font-light text-white/90 break-keep min-[992px]:text-[17px] min-[992px]:leading-[28px]">
-              {copy.hero.description}
+              <Sentences text={copy.hero.description} />
             </p>
           </div>
         </section>
@@ -51,7 +51,7 @@ export function LetterView() {
                     {index + 1}
                   </span>
                   <h3 className="text-[16px] leading-[24px] font-bold text-[#191919] break-keep">{item.title}</h3>
-                  <p className="text-[14px] leading-[23px] text-[#5f6368] break-keep">{item.text}</p>
+                  <p className="text-[14px] leading-[23px] text-[#5f6368] break-keep"><Sentences text={item.text} /></p>
                 </li>
               ))}
             </ol>

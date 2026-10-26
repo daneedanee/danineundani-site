@@ -1,7 +1,7 @@
 import { Check, ChevronDown } from "lucide-react";
 import Image from "next/image";
 
-import { Container, Emphasis, ExternalButton, SectionTitle } from "@/components/danineundani-home/shared";
+import { Container, Emphasis, ExternalButton, SectionTitle, Sentences } from "@/components/danineundani-home/shared";
 import { SiteFooter } from "@/components/danineundani-home/site-footer";
 import { SiteHeader } from "@/components/danineundani-home/site-header";
 import { diagnosisPage as copy, links, offers } from "@/lib/site-content";
@@ -27,7 +27,7 @@ export function DiagnosisView() {
               ))}
             </h1>
             <p className="mt-4 max-w-[620px] text-[15px] leading-[24px] font-light text-white/90 break-keep min-[992px]:text-[17px] min-[992px]:leading-[28px]">
-              {copy.hero.description}
+              <Sentences text={copy.hero.description} />
             </p>
             <p className="mt-5 text-[22px] leading-[30px] font-extrabold text-white">{offers.diagnosis.price}</p>
             <ExternalButton href={links.diagnosis} className="mt-5 rounded-[5px] px-6 py-3 text-[16px] min-[992px]:text-[18px]">
@@ -54,15 +54,15 @@ export function DiagnosisView() {
                   <dl className="flex flex-col gap-3 p-5 break-keep">
                     <div>
                       <dt className="text-[12px] leading-[18px] font-bold text-[#8a8178]">{copy.beforeAfter.labels.before}</dt>
-                      <dd className="mt-0.5 text-[15px] leading-[24px] text-[#5f6368]">{item.before}</dd>
+                      <dd className="mt-0.5 text-[15px] leading-[24px] text-[#5f6368]"><Sentences text={item.before} /></dd>
                     </div>
                     <div>
                       <dt className="text-[12px] leading-[18px] font-bold text-[#8a8178]">{copy.beforeAfter.labels.point}</dt>
-                      <dd className="mt-0.5 text-[15px] leading-[24px] text-[#2b2421]">{item.point}</dd>
+                      <dd className="mt-0.5 text-[15px] leading-[24px] text-[#2b2421]"><Sentences text={item.point} /></dd>
                     </div>
                     <div className="rounded-[8px] bg-[#fff1ec] p-4">
                       <dt className="text-[12px] leading-[18px] font-bold text-[#c9412f]">{copy.beforeAfter.labels.after}</dt>
-                      <dd className="mt-1 text-[16px] leading-[26px] font-semibold text-[#191919]">&ldquo;{item.after}&rdquo;</dd>
+                      <dd className="mt-1 text-[16px] leading-[26px] font-semibold text-[#191919]">&ldquo;<Sentences text={item.after} />&rdquo;</dd>
                     </div>
                   </dl>
                   {item.capture && (
@@ -93,14 +93,14 @@ export function DiagnosisView() {
                     <span aria-hidden className="flex size-6 shrink-0 items-center justify-center rounded-full bg-[#fd715b] text-[12px] font-bold text-black">
                       {index + 1}
                     </span>
-                    {step}
+                    <span><Sentences text={step} /></span>
                   </div>
                   {index < copy.fallPath.steps.length - 1 && <ChevronDown aria-hidden className="size-4 text-[#c9412f]" />}
                 </li>
               ))}
             </ol>
             <div className="flex flex-col gap-2 text-center break-keep">
-              <p className="text-[14px] leading-[22px] text-[#5f6368]">{copy.fallPath.lead}</p>
+              <p className="text-[14px] leading-[22px] text-[#5f6368]"><Sentences text={copy.fallPath.lead} /></p>
               <p className="text-[16px] leading-[25px] font-bold text-[#191919]">{copy.fallPath.closing}</p>
             </div>
           </Container>
@@ -130,7 +130,7 @@ export function DiagnosisView() {
                 <li key={step.title} className={`${cardClass} p-5`}>
                   <p className="text-[12px] leading-4 font-bold text-[#c9412f]">{index + 1}단계</p>
                   <h3 className="mt-1 text-[17px] leading-[26px] font-bold text-[#191919] break-keep">{step.title}</h3>
-                  <p className="mt-1.5 text-[14px] leading-[22px] text-[#5f6368] break-keep">{step.text}</p>
+                  <p className="mt-1.5 text-[14px] leading-[22px] text-[#5f6368] break-keep"><Sentences text={step.text} /></p>
                 </li>
               ))}
             </ol>
@@ -196,7 +196,7 @@ export function DiagnosisView() {
                     <Check aria-hidden className="mt-1 size-5 shrink-0 text-[#c9412f]" />
                     <div className="break-keep">
                       <h3 className="text-[16px] leading-[24px] font-bold text-[#191919]">{item.title}</h3>
-                      <p className="mt-1 text-[14px] leading-[22px] text-[#5f6368]">{item.text}</p>
+                      <p className="mt-1 text-[14px] leading-[22px] text-[#5f6368]"><Sentences text={item.text} /></p>
                     </div>
                   </li>
                 ))}
@@ -215,7 +215,7 @@ export function DiagnosisView() {
                     <Image src={capture.src} alt={`카카오톡 후기 캡처: ${capture.quote}`} width={capture.width} height={capture.height} className="h-auto w-full" />
                   </a>
                   <figcaption className="flex flex-col gap-1.5 border-t border-[#eaded4] px-4 py-3 break-keep">
-                    <span className="text-[14px] leading-[22px] text-[#2b2421]">&ldquo;{capture.quote}&rdquo;</span>
+                    <span className="text-[14px] leading-[22px] text-[#2b2421]">&ldquo;<Sentences text={capture.quote} />&rdquo;</span>
                     <span className="text-[12px] leading-[18px] text-[#8a8178]">{capture.caption}</span>
                   </figcaption>
                 </figure>
@@ -224,7 +224,7 @@ export function DiagnosisView() {
             <ul className="grid gap-3 min-[992px]:grid-cols-2 min-[992px]:gap-4">
               {copy.reviews.items.map((review) => (
                 <li key={review.text} className={`${cardClass} flex flex-col justify-between gap-3 p-5`}>
-                  <blockquote className="text-[15px] leading-[24px] text-[#2b2421] break-keep">&ldquo;{review.text}&rdquo;</blockquote>
+                  <blockquote className="text-[15px] leading-[24px] text-[#2b2421] break-keep">&ldquo;<Sentences text={review.text} />&rdquo;</blockquote>
                   <p className="text-[12px] leading-[18px] text-[#8a8178]">{review.source}</p>
                 </li>
               ))}
@@ -243,7 +243,7 @@ export function DiagnosisView() {
                 </p>
               ))}
               <blockquote className="my-2 rounded-[8px] border-l-4 border-[#fd715b] bg-[#fff4ea] px-4 py-3 text-[16px] leading-[26px] font-bold text-[#191919]">
-                &ldquo;{copy.founder.quote}&rdquo;
+                &ldquo;<Sentences text={copy.founder.quote} />&rdquo;
               </blockquote>
               {copy.founder.after.map((paragraph) => (
                 <p key={paragraph}>
@@ -265,7 +265,7 @@ export function DiagnosisView() {
                   </span>
                   <div>
                     <h3 className="text-[16px] leading-6 font-bold text-[#191919]">{step.title}</h3>
-                    <p className="mt-1 text-[14px] leading-[22px] text-[#5f6368] break-keep">{step.text}</p>
+                    <p className="mt-1 text-[14px] leading-[22px] text-[#5f6368] break-keep"><Sentences text={step.text} /></p>
                   </div>
                 </li>
               ))}
@@ -281,11 +281,11 @@ export function DiagnosisView() {
                 {copy.terms.rows.map((row) => (
                   <div key={row.label} className="flex gap-4 py-3 text-[14px] leading-[22px]">
                     <dt className="w-[64px] shrink-0 font-semibold text-[#191919]">{row.label}</dt>
-                    <dd className="text-[#333] break-keep">{row.value}</dd>
+                    <dd className="text-[#333] break-keep"><Sentences text={row.value} /></dd>
                   </div>
                 ))}
               </dl>
-              <p className="text-[13px] leading-[20px] text-[#5f6368] break-keep">{copy.terms.note}</p>
+              <p className="text-[13px] leading-[20px] text-[#5f6368] break-keep"><Sentences text={copy.terms.note} /></p>
             </div>
             <div className="flex flex-col gap-4">
               <h2 className="text-[20px] leading-[30px] font-extrabold tracking-[-0.5px] text-[#191919] min-[992px]:text-[24px] min-[992px]:leading-[36px]">{copy.fit.title}</h2>
@@ -337,7 +337,7 @@ export function DiagnosisView() {
                     {item.q}
                     <ChevronDown aria-hidden className="size-4 shrink-0 text-[#c9412f] transition-transform group-open:rotate-180" />
                   </summary>
-                  <p className="mt-3 text-[14px] leading-[22px] text-[#5f6368] break-keep">{item.a}</p>
+                  <p className="mt-3 text-[14px] leading-[22px] text-[#5f6368] break-keep"><Sentences text={item.a} /></p>
                 </details>
               ))}
             </div>
@@ -347,12 +347,12 @@ export function DiagnosisView() {
         <section className={`${sectionClass} bg-[#2b2421]`}>
           <Container className="flex flex-col items-center gap-4 text-center">
             <h2 className="text-[22px] leading-[32px] font-bold text-white break-keep min-[992px]:text-[28px] min-[992px]:leading-[40px]">{copy.closing.title}</h2>
-            <p className="max-w-[560px] text-[15px] leading-[24px] text-white/85 break-keep">{copy.closing.description}</p>
+            <p className="max-w-[560px] text-[15px] leading-[24px] text-white/85 break-keep"><Sentences text={copy.closing.description} /></p>
             <p className="text-[20px] font-extrabold text-white">{offers.diagnosis.price}</p>
             <ExternalButton href={links.diagnosis} className="rounded-[5px] px-6 py-3 text-[16px]">
               {copy.closing.cta}
             </ExternalButton>
-            <p className="max-w-[520px] text-[13px] leading-[20px] text-white/65 break-keep">{copy.closing.assurance}</p>
+            <p className="max-w-[520px] text-[13px] leading-[20px] text-white/65 break-keep"><Sentences text={copy.closing.assurance} /></p>
             <a
               href={links.kakaoChannel}
               target="_blank"
