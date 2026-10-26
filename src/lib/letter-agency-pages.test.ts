@@ -49,3 +49,8 @@ test("다니레터 첫 화면: C안 - 다니레터가 먼저, 워크북은 첫 �
   assert.match(letterPage.hero.description, /레터에서만 나눠요/);
   assert.equal(letterPage.hero.formTitle, "첫 메일로 워크북을 보내 드려요");
 });
+
+test("블로그 대행: 외주 작가·알바 문장은 쓰지 않는다 (2026-10-26 대표 「이 문구만 빼줘」)", () => {
+  for (const 말 of 글자들(agencyPage)) assert.ok(!/외주 작가|알바/.test(말), 말);
+  assert.match(agencyPage.principles.direct, /결이 다른 글을 씁니다/);
+});
