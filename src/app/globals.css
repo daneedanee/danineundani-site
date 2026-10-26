@@ -254,3 +254,29 @@
     overflow-x: auto;
   }
 }
+
+/* 다니레터 구독 칸 (2026-10-26): 스티비 공식 설치 코드의 마크업에 홈페이지 톤을 입힌다. 스티비 스크립트가 오류 문구·결과·안내 창을 직접 켜므로 기본은 숨긴다. */
+#stb_subscribe .stb_form { display: flex; flex-direction: column; gap: 12px; }
+#stb_subscribe fieldset { border: 0; margin: 0; padding: 0; }
+#stb_subscribe .stb_form_set_label { display: block; margin-bottom: 6px; font-size: 13px; font-weight: 700; color: #2b2421; }
+#stb_subscribe .stb_asterisk { margin-left: 2px; color: #c9412f; }
+#stb_subscribe .stb_form_set_input { width: 100%; height: 48px; border: 1px solid #e3d6cb; border-radius: 6px; background: #fff; padding: 0 14px; font-size: 16px; color: #191919; }
+#stb_subscribe .stb_form_set_input:focus { outline: 2px solid #fd715b; outline-offset: 1px; border-color: #fd715b; }
+#stb_subscribe .stb_form_policy label { display: flex; align-items: center; gap: 6px; font-size: 13px; line-height: 20px; color: #5f6368; cursor: pointer; }
+#stb_subscribe .stb_form_policy input[type="checkbox"] { width: 18px; height: 18px; accent-color: #fd715b; flex-shrink: 0; }
+#stb_subscribe .stb_form_modal_open_btn { border: 0; background: none; padding: 0; font-size: 13px; color: #2b2421; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+#stb_subscribe .stb_form_msg_error { display: none; margin-top: 4px; font-size: 12px; color: #c9412f; }
+#stb_subscribe .stb_form_result { display: none; border-radius: 6px; padding: 12px 14px; font-size: 14px; line-height: 21px; background: #fff4ea; color: #2b2421; }
+#stb_subscribe .stb_form_result.fail { background: #fdecec; color: #b42318; }
+#stb_subscribe .stb_form_submit_button { width: 100%; min-height: 52px; border: 0; border-radius: 6px; background: #fd715b; color: #000; font-size: 16px; font-weight: 700; letter-spacing: -0.5px; cursor: pointer; transition: transform 0.2s; }
+#stb_subscribe .stb_form_submit_button:hover { transform: scale(1.01); }
+#stb_subscribe .stb_form_submit_button:disabled { opacity: 0.6; cursor: default; }
+#stb_subscribe .blind { display: none; }
+#stb_subscribe .stb_form_modal { position: fixed; inset: 0; z-index: 60; display: flex; align-items: center; justify-content: center; padding: 20px; }
+#stb_subscribe .stb_form_modal.blind { display: none; }
+#stb_subscribe .stb_form_modal_bg, #stb_subscribe .stb_form_ad_modal_bg { position: absolute; inset: 0; background: rgba(0, 0, 0, 0.45); }
+#stb_subscribe .stb_form_modal_body { position: relative; z-index: 1; max-width: 420px; border-radius: 10px; background: #fffdf9; padding: 22px; }
+#stb_subscribe .stb_form_modal_title { font-size: 16px; font-weight: 700; color: #191919; }
+#stb_subscribe .stb_form_modal_text { margin-top: 10px; font-size: 14px; line-height: 22px; color: #5f6368; }
+#stb_subscribe .stb_form_modal_btn { margin-top: 16px; text-align: right; }
+#stb_subscribe .stb_form_modal_close_btn { border: 0; border-radius: 5px; background: #2b2421; color: #fff; padding: 8px 16px; font-size: 14px; cursor: pointer; }
