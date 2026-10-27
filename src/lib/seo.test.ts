@@ -1,7 +1,9 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { absoluteUrl, isIndexingAllowed, resolveSiteUrl, robotsFor, robotsMeta, sitemapFor } from "./seo.ts";
+import { readFileSync } from "node:fs";
+
+import { absoluteUrl, defaultOgImage, isIndexingAllowed, resolveSiteUrl, robotsFor, robotsMeta, sitemapFor } from "./seo.ts";
 
 const base = "https://www.daneedanee.com";
 
@@ -98,4 +100,13 @@ test("사이트맵: 글이 없거나 기둥이 모두 비어 있으면 허브는
     sitemapFor(true, [{ slug: "a", updated_at: "2026-10-01T00:00:00Z", pillar: null }], base).map((e) => e.url),
     [...home, "https://www.daneedanee.com/blog/a"],
   );
+});
+
+// 링크를 붙여 넣으면 뜨는 미리보기 그림. 페이지에 og:image 가 없으면 카카오톡이 본문 그림을 아무거나 골라 진단 썸네일이 떴다 (2026-10-27).
+test("기본 미리보기 그림: public 에 있는 JPG 프로필 사진", () => {
+  assert.equal(defaultOgImage.url, "/images/og/dani-profile.jpg");
+  const bytes = readFileSync(new URL(`../../public${defaultOgImage.url}`, import.meta.url));
+  assert.deepEqual([...bytes.subarray(0, 3)], [0xff, 0xd8, 0xff]);
+  assert.equal(defaultOgImage.width, 640);
+  assert.equal(defaultOgImage.height, 640);
 });

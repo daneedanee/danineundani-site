@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 
 import { notesPagePath, totalPages } from "@/lib/notes/paging";
 import { countPublished, listPublishedPage } from "@/lib/notes/queries";
-import { absoluteUrl, siteName } from "@/lib/seo";
+import { absoluteUrl, defaultOgImage, siteName } from "@/lib/seo";
 import { notes } from "@/lib/site-content";
 
 import { BlogHeader } from "./blog-header";
@@ -19,7 +19,7 @@ export function notesIndexMetadata(page: number): Metadata {
     title,
     description: notes.metaDescription,
     alternates: { canonical: url },
-    openGraph: { type: "website", url, title, description: notes.metaDescription, siteName, locale: "ko_KR" },
+    openGraph: { type: "website", url, title, description: notes.metaDescription, siteName, locale: "ko_KR", images: [defaultOgImage] },
   };
 }
 

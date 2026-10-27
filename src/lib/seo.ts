@@ -9,6 +9,11 @@ import { PILLARS, hubPath } from "./notes/topics.ts";
 
 export const siteName = "다니는다니";
 
+// 링크를 붙여 넣었을 때 뜨는 기본 미리보기 그림 (2026-10-27 대표 요청: 프로필 사진으로).
+// og:image 가 없으면 카카오톡이 본문 그림을 아무거나 골라 진단 썸네일이 떴다. 카카오가 webp 를 못 읽을 수 있어 JPG 로 둔다.
+// 대표 이미지가 있는 블로그 글은 그 그림을 쓴다.
+export const defaultOgImage = { url: "/images/og/dani-profile.jpg", width: 640, height: 640, alt: "다니는다니 대표 다니" };
+
 const defaultSiteUrl = "https://www.daneedanee.com";
 
 export function resolveSiteUrl(value: string | undefined): string {

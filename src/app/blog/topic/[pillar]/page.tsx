@@ -11,7 +11,7 @@ import { breadcrumbJsonLd } from "@/lib/notes/jsonld";
 import { BLOG_PATH } from "@/lib/notes/paths";
 import { listPublishedInPillar } from "@/lib/notes/queries";
 import { hubPath, isPillarKey, PILLARS, type PillarKey } from "@/lib/notes/topics";
-import { absoluteUrl, siteName } from "@/lib/seo";
+import { absoluteUrl, defaultOgImage, siteName } from "@/lib/seo";
 import { notes, topics } from "@/lib/site-content";
 
 type Props = { params: Promise<{ pillar: string }> };
@@ -42,7 +42,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     description: topics[key].intro,
     alternates: { canonical: url },
     ...(empty ? { robots: { index: false, follow: true } } : {}),
-    openGraph: { type: "website", url, title, description: topics[key].intro, siteName, locale: "ko_KR" },
+    openGraph: { type: "website", url, title, description: topics[key].intro, siteName, locale: "ko_KR", images: [defaultOgImage] },
   };
 }
 

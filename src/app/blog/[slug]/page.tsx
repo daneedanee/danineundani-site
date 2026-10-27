@@ -16,7 +16,7 @@ import { pickRelated } from "@/lib/notes/related";
 import { decodeSlugParam } from "@/lib/notes/slug";
 import { BLOG_PATH } from "@/lib/notes/paths";
 import { hubPath, pillarName } from "@/lib/notes/topics";
-import { absoluteUrl, siteName } from "@/lib/seo";
+import { absoluteUrl, defaultOgImage, siteName } from "@/lib/seo";
 import { author, notes } from "@/lib/site-content";
 
 type Props = { params: Promise<{ slug: string }> };
@@ -62,13 +62,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       locale: "ko_KR",
       publishedTime: post.published_at ?? undefined,
       modifiedTime: post.updated_at,
-      images,
+      // 대표 이미지가 없는 글은 기본 프로필 사진을 쓴다.
+      images: images ?? [defaultOgImage],
     },
     twitter: {
       card: images ? "summary_large_image" : "summary",
       title: post.title,
       description: post.description,
-      images,
+      images: images ?? [defaultOgImage.url],
     },
   };
 }
