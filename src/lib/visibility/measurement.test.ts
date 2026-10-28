@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { test } from 'node:test';
-import { classifyLink, sanitizeEvent, campaignFrom, publicPath, pickLinkEvent, signalEvent, eventNames, measuredPaths, retiredPaths } from './measurement.ts';
+import { classifyLink, sanitizeEvent, campaignFrom, publicPath, pickLinkEvent, signalEvent, eventNames, measuredPaths, retiredPaths, isCampaign, videoCampaignPattern } from './measurement.ts';
 const base='https://www.daneedanee.com';
 test('상품 이동과 상담 시작을 구분한다',()=>{
  assert.equal(classifyLink('https://www.latpeed.com/products/bxdTq',base),'diagnosis_click');
@@ -76,4 +76,22 @@ test('측정 SQL의 허용 목록이 코드의 이벤트·경로와 같다',()=>
  // 경로 목록은 10번에서 새로 정했다(/notes → /blog, /about 추가). 옛 경로는 쌓인 기록 때문에 표에만 남긴다.
  const sql10=readFileSync(new URL('../../../supabase/10-visibility-blog-paths.sql',import.meta.url),'utf8');
  assert.deepEqual(sqlList(sql10.match(/check \(path in \(([^)]*)\)\)/),'path'),[...measuredPaths,...retiredPaths]);
+});
+
+// 2026-10-28 대표 결정: 유튜브 영상마다 올린 날짜로 이름을 붙여 홈페이지 방문과 신청 클릭을 영상별로 센다.
+test('영상별 캠페인: utm_campaign=yt_올린날짜(같은 날 둘째부터 b, c…)',()=>{
+ assert.equal(campaignFrom('?utm_source=youtube&utm_medium=video&utm_campaign=yt_20261028'),'yt_20261028');
+ assert.equal(campaignFrom('?utm_source=youtube&utm_campaign=yt_20261028b'),'yt_20261028b');
+ assert.equal(campaignFrom('?utm_source=youtube&utm_campaign=yt_2026102'),'none');
+ assert.equal(campaignFrom('?utm_source=youtube&utm_campaign=yt_20261028_private@example.com'),'none');
+ assert.equal(campaignFrom('?utm_source=threads&utm_campaign=yt_20261028'),'none');
+ // 강연용 세 영상은 그대로
+ assert.equal(campaignFrom('?utm_source=youtube&utm_campaign=innercircle_20261106&utm_content=video_b'),'youtube_b');
+ assert.equal(isCampaign('yt_20261028'),true);assert.equal(isCampaign('youtube_c'),true);assert.equal(isCampaign('yt_x'),false);
+ assert.deepEqual(sanitizeEvent({event:'diagnosis_click',path:'/diagnosis',campaign:'yt_20261028'}),{event:'diagnosis_click',path:'/diagnosis',campaign:'yt_20261028'});
+});
+
+test('영상별 캠페인 SQL 제약이 코드의 꼴과 같다',()=>{
+ const sql11=readFileSync(new URL('../../../supabase/11-visibility-video-campaigns.sql',import.meta.url),'utf8');
+ assert.ok(sql11.includes("campaign ~ '"+videoCampaignPattern+"'"),'SQL 11 에 같은 정규식이 있어야 한다');
 });

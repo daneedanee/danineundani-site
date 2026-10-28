@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import { usePathname } from 'next/navigation';
-import { campaignFrom, campaigns, pickLinkEvent, publicPath, excludeMeasurement, signalEvent } from '@/lib/visibility/measurement';
+import { campaignFrom, isCampaign, pickLinkEvent, publicPath, excludeMeasurement, signalEvent } from '@/lib/visibility/measurement';
 
 // 쿠키·고객 입력·전체 URL·방문자 식별자를 저장하지 않는다. 세션에 허용된 캠페인 이름만 둔다.
 let excludedTab=false;
@@ -24,7 +24,7 @@ export function SiteMeasurement() {
     let campaign=campaignFrom(location.search);
     try {
       if(campaign!=='none') sessionStorage.setItem('visibility-campaign',campaign);
-      else {const stored=sessionStorage.getItem('visibility-campaign');if(stored && (campaigns as readonly string[]).includes(stored)) campaign=stored;}
+      else {const stored=sessionStorage.getItem('visibility-campaign');if(stored && isCampaign(stored)) campaign=stored;}
     } catch { /* 저장이 차단되어도 페이지와 링크는 정상 동작한다. */ }
     const send=(event:string)=>{
       void fetch('/api/visibility/event',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({event,path,campaign}),keepalive:true}).catch(()=>{});

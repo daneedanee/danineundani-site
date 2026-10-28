@@ -5,6 +5,13 @@ export const eventNames = [
   'diagnosis_page_click','letter_click','workbook_click','finder_start','finder_result',
 ] as const;
 export const campaigns = ['none','youtube_a','youtube_b','youtube_c'] as const;
+// 영상별 캠페인 (2026-10-28 대표 결정): 유튜브 설명란 링크에 utm_campaign=yt_올린날짜 를 붙인다. 같은 날 둘째 영상부터 b, c….
+// 날짜라서 영상을 올리기 전에 설명란을 만들 수 있다. supabase/11-visibility-video-campaigns.sql 의 제약과 같은 꼴이어야 한다(테스트가 확인).
+export const videoCampaignPattern = '^yt_[0-9]{8}[a-z]?$';
+const videoCampaign = new RegExp(videoCampaignPattern);
+export function isCampaign(value: string): boolean {
+  return (campaigns as readonly string[]).includes(value) || videoCampaign.test(value);
+}
 // 경로 목록은 supabase/10-visibility-blog-paths.sql 의 check 와 같아야 한다(테스트가 확인).
 export const measuredPaths = ['/','/blog','/blog/[slug]','/agency','/letter','/diagnosis','/about'] as const;
 // 게시판을 /notes 에서 /blog 로 옮기기 전(2026-10-26)에 쌓인 기록의 경로. 표에는 남기고 새로 세지는 않는다.
@@ -21,7 +28,9 @@ export function publicPath(path: string): string | null {
 }
 export function campaignFrom(search: string): string {
   const p=new URLSearchParams(search);
-  if(p.get('utm_source')!=='youtube'||p.get('utm_campaign')!=='innercircle_20261106') return 'none';
+  const named=p.get('utm_campaign')??'';
+  if(p.get('utm_source')==='youtube'&&videoCampaign.test(named)) return named;
+  if(p.get('utm_source')!=='youtube'||named!=='innercircle_20261106') return 'none';
   const content=p.get('utm_content');
   return content==='video_a'?'youtube_a':content==='video_b'?'youtube_b':content==='video_c'?'youtube_c':'none';
 }
@@ -56,7 +65,7 @@ export function sanitizeEvent(value: unknown): EventRow | null {
   const v=value as Record<string,unknown>;
   if(typeof v.event!=='string'||!(eventNames as readonly string[]).includes(v.event)) return null;
   if(typeof v.path!=='string'||!(measuredPaths as readonly string[]).includes(v.path)) return null;
-  if(typeof v.campaign!=='string'||!(campaigns as readonly string[]).includes(v.campaign)) return null;
+  if(typeof v.campaign!=='string'||!isCampaign(v.campaign)) return null;
   return {event:v.event,path:v.path,campaign:v.campaign};
 }
 
