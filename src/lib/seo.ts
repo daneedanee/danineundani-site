@@ -67,6 +67,10 @@ export function sitemapFor(
     { url: absoluteUrl("/diagnosis", base) },
     // 소개 페이지 (2026-10-26). 메뉴 이름은 "다니는다니는".
     { url: absoluteUrl("/about", base) },
+    // 블로그 대행 문의와 다니레터 (2026-10-29). 처음부터 빠져 있어 구글에는 10/14 noindex 때 기록만 남아 있었다.
+    // 개인정보처리방침 /privacy 는 검색으로 찾을 페이지가 아니라 넣지 않는다.
+    { url: absoluteUrl("/agency", base) },
+    { url: absoluteUrl("/letter", base) },
     { url: absoluteUrl(BLOG_PATH, base), ...(latest ? { lastModified: new Date(latest) } : {}) },
     // 기둥 허브. 발행 글이 하나 이상 있는 기둥만 넣고, 수정 시각은 넣지 않는다.
     ...PILLARS.filter((pillar) => posts.some((post) => post.pillar === pillar.key)).map((pillar) => ({ url: absoluteUrl(hubPath(pillar.key), base) })),
