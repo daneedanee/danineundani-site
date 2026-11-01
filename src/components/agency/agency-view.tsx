@@ -162,7 +162,7 @@ export function AgencyView() {
               </p>
               <div className="mt-1 flex flex-col gap-2">
                 {copy.selfCheck.links.map((link) => (
-                  <Link key={link.href} href={link.href} className="text-[14px] font-semibold text-[#2b2421] underline decoration-[#fd715b] decoration-2 underline-offset-4 hover:text-[#c9412f] break-keep">
+                  <Link key={link.href} href={link.href} target={link.href.startsWith("/") ? undefined : "_blank"} rel={link.href.startsWith("/") ? undefined : "noopener noreferrer"} className="text-[14px] font-semibold text-[#2b2421] underline decoration-[#fd715b] decoration-2 underline-offset-4 hover:text-[#c9412f] break-keep">
                     {link.label}
                   </Link>
                 ))}

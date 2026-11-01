@@ -135,7 +135,7 @@ export function AboutView() {
                       </li>
                     ))}
                   </ul>
-                  <Link href={group.moreHref} className="self-start text-[14px] font-semibold text-[#191919] underline decoration-[#fd715b] underline-offset-4">
+                  <Link href={group.moreHref} target={group.moreHref.startsWith("/") ? undefined : "_blank"} rel={group.moreHref.startsWith("/") ? undefined : "noopener noreferrer"} className="self-start text-[14px] font-semibold text-[#191919] underline decoration-[#fd715b] underline-offset-4">
                     {group.more}
                   </Link>
                 </div>

@@ -5,8 +5,9 @@ import type { PillarKey } from "./notes/topics";
 
 export const links = {
   diagnosis: "https://www.latpeed.com/products/bxdTq",
+  // 챌린지 3기 사전대기 구글폼 (2026-11-01, 2기 폼 사본). 뉴스레터 동의자는 Apps Script 로 스티비에 자동 등록된다.
   challengePreRegister:
-    "https://docs.google.com/forms/d/e/1FAIpQLScndQ2oAWyhw5F3fw5g-pu33s6VvgbL4FibeTZlkhRyR7EDRg/viewform?usp=header",
+    "https://docs.google.com/forms/d/e/1FAIpQLSey4wtVijEzTkHXnaM0xd87vS-nfCqZmykmHA2Z4Wbot5D8hg/viewform",
   // 「매출로 이어지는 블로그」 래피드 판매 페이지. 2기 정식 모집 (대표가 준 주소, 2026-10-16).
   // 상단 메뉴·서비스 카드·시작 순서가 여기로 간다. 비우면 상단 메뉴는 홈의 소개 구역으로 간다.
   challengeSales: "https://www.latpeed.com/products/RjkkI",
@@ -14,7 +15,7 @@ export const links = {
   agencyForm: "https://naver.me/5AgoKebv",
   // 위 짧은 주소가 가리키는 네이버 폼의 실제 주소. /agency 페이지에 끼워 넣을 때 쓴다 (짧은 주소는 거쳐 가는 주소라 끼워 넣기에 맞지 않는다).
   agencyFormDirect: "https://form.naver.com/response/QkP-rfH77PD5gSf93n3cNA",
-  // 뉴스레터 구독 신청 페이지(스티비). 상단 메뉴 「다니레터」가 여기로 간다 (이름은 대표 결정).
+  // 뉴스레터 구독 신청 페이지(스티비). 상단 메뉴 「프롬다니」가 여기로 간다 (이름은 대표 결정).
   // 지난 호를 보여 주는 공유 주소(stibee.com/api/.../emails/share/...)는 넣지 않는다. 구독자용 자료 링크가 들어 있다.
   newsletter: "https://page.stibee.com/subscriptions/512971",
   kakaoChannel: "https://pf.kakao.com/_bYIBn",
@@ -48,7 +49,7 @@ export type OfferStatus = "available" | "waitlist" | "upcoming" | "consult" | "c
 
 export const offerStatusLabels: Record<OfferStatus, string> = {
   available: "지금 신청 가능",
-  waitlist: "다음 기수 준비 중",
+  waitlist: "3기 사전대기 중",
   upcoming: "준비 중",
   consult: "상담 후 진행",
   content: "무료",
@@ -56,7 +57,7 @@ export const offerStatusLabels: Record<OfferStatus, string> = {
 
 // 모집 전·준비 중인 해결 방법 카드 아래에 붙는 안내.
 export const offerStatusNotes: Partial<Record<OfferStatus, string>> = {
-  waitlist: "지금은 모집하지 않습니다.",
+  waitlist: "3기는 2027년 1월 오픈 예정입니다.",
   upcoming: "아직 판매하지 않는 서비스입니다.",
 };
 
@@ -73,16 +74,16 @@ export const offers = {
     cta: "진단 자세히 보기",
     href: "/diagnosis",
   },
-  // 2기 판매는 래피드에서 2026-10-18 마감, 2기 사전대기 구글폼도 응답 마감 (2026-10-24 확인).
-  // 다음 기수 대기 명단이 따로 없어 다니레터로 보낸다 (대표 결정). 모집을 열면 status 를 available, href 를 links.challengeSales 로 바꾼다.
+  // 2기 판매는 래피드에서 2026-10-18 마감. 3기는 2027년 1월 오픈 예정이라 사전대기 구글폼으로 보낸다 (2026-11-01 대표 결정).
+  // 모집을 열면 status 를 available, href 를 links.challengeSales 로 바꾼다.
   challenge: {
     name: "매출로 이어지는 블로그",
     status: "waitlist",
     summary:
       "블로그는 쓰고 있는데 문의가 끊긴 사업자를 위한 4주 과정입니다. 세팅, 키워드, 구조화된 글, 문의 받는 공지글까지 직접 발행하며 익힙니다.",
     price: "",
-    cta: "다음 기수 소식 받기",
-    href: "/letter",
+    cta: "3기 사전대기 신청",
+    href: links.challengePreRegister,
   },
   // 범위·가격·출시 시기 미정 (인수인계서 2장 [기획]). 구매 버튼을 달지 않는다.
   // 출시 전까지 고민 찾기는 이 자리에 블로그 진단을 보여 준다 (finder.ts 의 feedbackForNow).
@@ -132,16 +133,16 @@ export const offers = {
     href: "/blog",
   },
   newsletter: {
-    name: "다니레터",
+    name: "프롬다니",
     status: "content",
     // 2026-10-26 대표 결정: 격주에서 매주 월요일 아침 6시로 (첫 발행 11/2). 스티비 구독 페이지·환영 메일과 같게.
     summary: "다니의 블로그 마케팅 이야기를 매주 월요일 아침 메일로 받아 보세요.",
     price: "",
-    cta: "다니레터 구독하기",
+    cta: "프롬다니 구독하기",
     href: "/letter",
   },
-  // 다니레터 구독 대가로 주는 무료 워크북 (2026-10-25 대표가 이름·설명 확정). 노션 공개 페이지는 구독 환영 메일로 보낸다.
-  // 홈에서는 다니레터 구독 화면(/letter)으로 보낸다. 주소를 비우면 고민 찾기 결과와 홈 띠에서 빠진다.
+  // 프롬다니 구독 대가로 주는 무료 워크북 (2026-10-25 대표가 이름·설명 확정). 노션 공개 페이지는 구독 환영 메일로 보낸다.
+  // 홈에서는 프롬다니 구독 화면(/letter)으로 보낸다. 주소를 비우면 고민 찾기 결과와 홈 띠에서 빠진다.
   freeTemplate: {
     name: "문의로 이어지는 글쓰기 워크북",
     status: "content",
@@ -257,7 +258,7 @@ export const finder = {
     ],
     later: [
       "지금 일정이 안 맞으면 무리하지 않으셔도 돼요.",
-      "다음 기수 소식을 받아 두셨다가 일정이 맞을 때 함께해요.",
+      "3기 사전대기를 신청해 두셨다가 일정이 맞을 때 함께해요.",
     ],
     delegateNoResults: [
       "직접 고칠 시간이 없다면 운영을 맡기시는 쪽이 현실적이에요.",
@@ -304,7 +305,7 @@ export const finder = {
 //   · 블로그 진단 → 래피드 상세페이지 (새 탭)
 //   · 매출로 이어지는 블로그 → 모집 중(offers.challenge.status 가 available)일 때만 메뉴에 둔다
 //   · 블로그 대행 → /agency (네이버 폼을 메뉴 아래에 끼워 보여 준다)
-//   · 다니레터 → /letter (스티비 구독 페이지를 메뉴 아래에 끼워 보여 준다)
+//   · 프롬다니 → /letter (스티비 구독 페이지를 메뉴 아래에 끼워 보여 준다)
 // 주소 앞의 "/" : 홈이 아닌 페이지(/notes)에서도 홈의 해당 구역으로 가게 한다.
 // external 이 true 면 바깥 사이트라 새 탭으로 연다.
 export const navItems: { label: string; href: string; external: boolean }[] = [
@@ -318,7 +319,7 @@ export const navItems: { label: string; href: string; external: boolean }[] = [
   { label: "블로그 대행", href: "/agency", external: false },
   // 게시판(/blog). 메뉴 이름 "칼럼"(2026-10-08)을 "블로그"로 바꿈 (2026-10-26 대표 요청).
   { label: "블로그", href: "/blog", external: false },
-  ...(links.newsletter ? [{ label: "다니레터", href: "/letter", external: false }] : []),
+  ...(links.newsletter ? [{ label: "프롬다니", href: "/letter", external: false }] : []),
   { label: "상담 신청", href: `/#${sectionIds.consult}`, external: false },
 ];
 
@@ -377,7 +378,7 @@ export const services = {
     {
       id: sectionIds.challenge,
       name: offers.challenge.name,
-      // 배지·안내·버튼·주소는 모집 상태(offers.challenge)를 따른다. 2기 판매 마감(2026-10-18) 뒤로 「다음 기수 준비 중」.
+      // 배지·안내·버튼·주소는 모집 상태(offers.challenge)를 따른다. 2기 판매 마감(2026-10-18) 뒤로 3기 사전대기.
       badge: offerStatusLabels[offers.challenge.status],
       description: offers.challenge.summary,
       includes: ["시작 전 개인 블로그 진단", "라이브 다시보기", "제출 글마다 1,000자 안팎 피드백", "주차별 워크시트·템플릿", "종료 후 30일 콘텐츠 계획"],
@@ -421,7 +422,7 @@ export const steps = {
 // 상담 신청 위의 무료 워크북 띠 (2026-10-25 대표 확정). 버튼 주소는 offers.freeTemplate.href 를 따른다.
 export const workbookBand = {
   title: "문의로 이어지는 글쓰기 워크북",
-  description: "빈칸을 채우면 이번 주에 쓸 글 한 편의 뼈대가 나와요. 다니레터로 무료로 보내 드려요.",
+  description: "빈칸을 채우면 이번 주에 쓸 글 한 편의 뼈대가 나와요. 프롬다니로 무료로 보내 드려요.",
 } as const;
 
 export const consult = {
@@ -517,7 +518,7 @@ export const privacyPolicy = {
       items: [
         "광고나 추적을 위한 쿠키를 쓰지 않습니다.",
         "방문 측정은 쿠키 대신 브라우저 탭의 임시 저장 공간에 유입 안내 이름만 잠시 둡니다. 탭을 닫으면 사라집니다.",
-        "다니레터 구독(스티비)과 블로그 대행 문의(네이버 폼)는 각 서비스의 개인정보처리방침을 따릅니다.",
+        "프롬다니 구독(스티비), 챌린지 사전대기 신청(구글 설문지), 블로그 대행 문의(네이버 폼)는 각 서비스의 개인정보처리방침을 따릅니다.",
       ],
     },
     { title: "9. 개인정보 보호책임자", items: ["류수민(대표), marktive@naver.com"] },
@@ -556,13 +557,13 @@ export const author = {
   sameAs: [links.youtubeChannel, links.threads, links.blog],
 } as const;
 
-// 다니레터 설명 페이지 /letter (2026-10-26 대표 「각각의 설명 페이지를 넣고, 거기에 링크를」). 스티비 화면을 통째로 끼우지 않고
+// 프롬다니 설명 페이지 /letter (2026-10-26 대표 「각각의 설명 페이지를 넣고, 거기에 링크를」). 스티비 화면을 통째로 끼우지 않고
 // 설명은 홈페이지 톤으로, 구독 칸만 스티비 공식 설치 코드(구독 화면 → 코드로 설치하기)로 넣는다. [원문]은 대표가 스티비 구독 페이지에 쓴 문장, [새로]는 대표 확인 전 초안.
 // 광고성 정보 수신 동의(선택)는 5일 뒤 진단 안내 자동 메일(3666557)의 받는 사람 기준이라 빼지 않는다.
 export const letterPage = {
-  // 첫 화면: 2026-10-26 대표 선택 C안 (다니레터를 앞에, 워크북은 첫 메일 선물로).
+  // 첫 화면: 2026-10-26 대표 선택 C안 (프롬다니를 앞에, 워크북은 첫 메일 선물로).
   hero: {
-    eyebrow: "다니레터 · 매주 월요일 아침",
+    eyebrow: "프롬다니 · 매주 월요일 아침",
     titleLines: ["블로그로 문의를 만드는 이야기,", "다니가 매주 편지로 보내 드려요"],
     // 2026-10-26 대표 「여기에서만 나누는 진한 이야기라는 느낌도」. 워크북은 아래 구독 칸 제목이 말한다.
     description: "블로그와 유튜브에는 다 담지 못한 진한 이야기를 레터에서만 나눠요. 고객사 블로그를 직접 운영하고 수강생 글을 매주 읽으며 알게 된 것을, 대표님이 그 주에 바로 써먹을 수 있게 정리해 보내요.",
@@ -582,7 +583,7 @@ export const letterPage = {
     title: "구독하면 이렇게 받아요", // [새로]
     items: [
       { title: "워크북을 바로 보내 드려요", text: "고객 고민, 제목, 첫 세 줄, 믿을 근거, 문의 안내까지. 빈칸을 채우면 글 한 편의 뼈대가 나오는 워크북을 예시와 함께 보내드려요." }, // [원문]
-      { title: "매주 월요일 아침 6시, 다니레터", text: "광고나 대행에만 기대지 않고 내 콘텐츠로 고객을 만날 수 있는 블로그 마케팅 이야기를 다니는다니 레터로 함께 전해드릴게요." }, // [원문]
+      { title: "매주 월요일 아침 6시, 프롬다니", text: "광고나 대행에만 기대지 않고 내 콘텐츠로 고객을 만날 수 있는 블로그 마케팅 이야기를 프롬다니로 함께 전해드릴게요." }, // [원문]
       { title: "다음 기수와 새 서비스 소식을 먼저", text: "매출로 이어지는 블로그 챌린지 다음 기수, 준비 중인 글 피드백과 입문 강의 소식도 레터로 먼저 알려 드려요." }, // [새로]
     ],
   },
@@ -660,7 +661,7 @@ export const agencyPage = {
     text: "브랜드를 가장 잘 아는 사람은 대표님 본인입니다. 직접 배우고 써서 사업을 키우는 것이 가장 이상적이라고 생각합니다. 시간이 부족하거나 실행이 어려울 때, 전략부터 설계하는 파트너를 만나시면 됩니다.", // [대행글] 줄임
     links: [
       { label: "맡기기 전에, 지금 블로그 상태부터 확인하기", href: "/diagnosis" }, // [새로] 블로그 진단
-      { label: "직접 배워 보고 싶다면, 블로그 챌린지 다음 기수 소식 받기", href: offers.challenge.href }, // [새로] 모집 상태를 따른다
+      { label: "직접 배워 보고 싶다면, 블로그 챌린지 3기 사전대기 신청하기", href: offers.challenge.href }, // [새로] 모집 상태를 따른다
     ],
   },
   closing: {
@@ -673,7 +674,7 @@ export const agencyPage = {
 export const embeds = {
   fallbackHint: "화면이 보이지 않으면",
   openInNewTab: "새 창에서 열기",
-  letter: { title: "다니레터", frameTitle: "다니레터 구독 신청 (스티비)" },
+  letter: { title: "프롬다니", frameTitle: "프롬다니 구독 신청 (스티비)" },
   agency: { title: "블로그 대행 문의", frameTitle: "블로그 대행 상담 신청서 (네이버 폼)" },
 } as const;
 
@@ -953,7 +954,7 @@ export const homeReviews = {
         { text: "저 오늘도 블로그 보고 손님 오셨어요....!! ㅜㅜ 진정성은 통한다는걸 다니님과 함께한 후에 진짜 몸소 느끼고 있습니다..!!", source: "2026년 9월 · 뷰티 업종 · 챌린지 카톡방에서" },
         { text: "계속발행하도 통누락에 반포기상태였는데 네이버 개편이후 처음 상위 노출 되니 기쁘네요..", source: "2026년 9월 · 방수 업종 · 4주 차 챌린지 카톡방에서" },
       ],
-      // 링크는 모집 상태(offers.challenge)를 따른다. 모집 전에는 다음 기수 소식(다니레터)으로 보낸다.
+      // 링크는 모집 상태(offers.challenge)를 따른다. 모집 전에는 사전대기 구글폼으로 보낸다.
       more: offers.challenge.cta,
       moreHref: offers.challenge.href,
     },
@@ -1055,7 +1056,7 @@ export const aboutPage = {
       { name: "네이버 블로그", href: links.blog },
       { name: "네이버 카페 다니는다니 | 블로그마케팅", href: links.cafe },
       { name: "스레드", href: links.threads },
-      { name: "다니레터 (매주 월요일 아침)", href: "/letter" },
+      { name: "프롬다니 (매주 월요일 아침)", href: "/letter" },
       { name: "카카오톡 채널 마켓티브", href: links.kakaoChannel },
     ],
   },

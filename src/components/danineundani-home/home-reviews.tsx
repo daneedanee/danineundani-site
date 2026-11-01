@@ -24,6 +24,8 @@ export function HomeReviews() {
               </ul>
               <Link
                 href={group.moreHref}
+                target={group.moreHref.startsWith("/") ? undefined : "_blank"}
+                rel={group.moreHref.startsWith("/") ? undefined : "noopener noreferrer"}
                 className="mt-1 self-center text-[14px] font-semibold text-[#2b2421] underline decoration-[#fd715b] decoration-2 underline-offset-4 hover:text-[#c9412f]"
               >
                 {group.more}
