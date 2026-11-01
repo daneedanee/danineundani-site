@@ -317,8 +317,8 @@ export const navItems: { label: string; href: string; external: boolean }[] = [
     ? [{ label: "매출로 이어지는 블로그", href: offers.challenge.href, external: !offers.challenge.href.startsWith("/") }]
     : []),
   { label: "블로그 대행", href: "/agency", external: false },
-  // 게시판(/blog). 메뉴 이름 "칼럼"(2026-10-08)을 "블로그"로 바꿈 (2026-10-26 대표 요청).
-  { label: "블로그", href: "/blog", external: false },
+  // 게시판(/blog). 메뉴 이름 "칼럼"(2026-10-08) → "블로그"(2026-10-26) → 다시 "칼럼" (2026-11-01 대표 요청). 주소는 /blog 그대로.
+  { label: "칼럼", href: "/blog", external: false },
   ...(links.newsletter ? [{ label: "프롬다니", href: "/letter", external: false }] : []),
   { label: "상담 신청", href: `/#${sectionIds.consult}`, external: false },
 ];
