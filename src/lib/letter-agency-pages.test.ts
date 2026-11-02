@@ -8,10 +8,11 @@ import { agencyPage, letterPage, links, offers } from "./site-content.ts";
 const 글자들 = (x: unknown): string[] =>
   typeof x === "string" ? [x] : Array.isArray(x) ? x.flatMap(글자들) : x && typeof x === "object" ? Object.values(x).flatMap(글자들) : [];
 
-test("다니레터: 스티비 공식 설치 코드의 주소로 보내고, 개인정보(필수)·광고성 정보(선택) 동의를 둘 다 받는다", () => {
+test("프롬다니: 스티비 공식 설치 코드의 주소로 보내고, 개인정보(필수)·광고성 정보(필수) 동의를 둘 다 받는다", () => {
   assert.match(letterPage.form.action, /^https:\/\/stibee\.com\/api\/v1\.0\/lists\/[^/]+\/public\/subscribers$/);
   assert.equal(letterPage.form.policy.required, true);
-  assert.equal(letterPage.form.ad.required, false, "광고성 정보 수신은 선택이어야 5일 뒤 진단 안내 메일 기준과 맞다");
+  // 2026-11-02 대표 결정으로 홈페이지 폼만 필수. 스티비 주소록 설정은 선택으로 둔다 - 필수로 바꾸면 3기 사전대기 폼의 자동 등록이 거절된다.
+  assert.equal(letterPage.form.ad.required, true);
   assert.ok(letterPage.form.submit.trim());
 });
 

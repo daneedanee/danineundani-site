@@ -54,8 +54,8 @@ export function StibeeForm() {
         </div>
         <div className="stb_form_policy">
           <label>
-            <input type="checkbox" id="stb_ad_agreement" value="stb_ad_agreement_true" />
-            <span>(선택)</span>
+            <input type="checkbox" id="stb_ad_agreement" value="stb_ad_agreement_true" required={form.ad.required} />
+            <span>{form.ad.required ? "(필수)" : "(선택)"}</span>
             <button id="stb_form_ad_modal_open" data-modal="stb_form_ad_agreemnet_modal" className="stb_form_modal_open_btn" type="button">
               {form.ad.label}
             </button>
