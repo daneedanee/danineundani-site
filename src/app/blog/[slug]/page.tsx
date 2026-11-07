@@ -16,8 +16,9 @@ import { pickRelated } from "@/lib/notes/related";
 import { decodeSlugParam } from "@/lib/notes/slug";
 import { BLOG_PATH } from "@/lib/notes/paths";
 import { hubPath, pillarName } from "@/lib/notes/topics";
-import { absoluteUrl, defaultOgImage, siteName } from "@/lib/seo";
-import { author, notes } from "@/lib/site-content";
+import { absoluteUrl, defaultOgImage, siteName, siteUrl } from "@/lib/seo";
+import { author, footer, notes } from "@/lib/site-content";
+import { organizationId, personId } from "@/lib/visibility/entity";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -89,10 +90,13 @@ export default async function NotePage({ params }: Props) {
     <NotesShell>
       <JsonLd
         data={blogPostingJsonLd(post, url, {
-          siteName,
           siteUrl: absoluteUrl("/"),
           authorName: author.name,
           authorSameAs: [...author.sameAs],
+          authorId: personId(siteUrl),
+          authorUrl: absoluteUrl("/about"),
+          publisherId: organizationId(siteUrl),
+          publisherName: footer.businessInfo[0].value,
         })}
       />
       <JsonLd

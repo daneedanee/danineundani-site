@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { AboutView } from "@/components/about/about-view";
 import { serializeJsonLd } from "@/lib/notes/jsonld";
 import { absoluteUrl, siteName, siteUrl } from "@/lib/seo";
-import { aboutPage, author, links } from "@/lib/site-content";
+import { aboutPage, author } from "@/lib/site-content";
 import { aboutGraph } from "@/lib/visibility/about";
 
 export const metadata: Metadata = {
@@ -18,7 +18,7 @@ const aboutJsonLd = serializeJsonLd(
     ...aboutPage.jsonLd,
     description: aboutPage.metaDescription,
     image: aboutPage.hero.photo.src,
-    sameAs: [...author.sameAs, links.cafe],
+    sameAs: [...author.sameAs],
   }),
 );
 

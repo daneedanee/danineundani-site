@@ -2,10 +2,11 @@ import type { Metadata } from "next";
 
 import { LetterView } from "@/components/letter/letter-view";
 import { absoluteUrl, siteName } from "@/lib/seo";
-import { embeds } from "@/lib/site-content";
+import { embeds, letterPage } from "@/lib/site-content";
 
 export const metadata: Metadata = {
   title: `${embeds.letter.title} · ${siteName}`,
+  description: letterPage.metaDescription,
   alternates: { canonical: absoluteUrl("/letter") },
 };
 

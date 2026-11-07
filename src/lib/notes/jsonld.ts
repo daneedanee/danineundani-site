@@ -2,10 +2,14 @@
 import type { Post } from "./types";
 
 export type JsonLdSite = {
-  siteName: string;
   siteUrl: string;
   authorName: string;
   authorSameAs: string[];
+  // 소개 페이지의 사람·홈의 운영 사업자와 같은 @id (visibility/entity.ts). 같아야 한 사람·한 사업자로 묶여 읽힌다.
+  authorId: string;
+  authorUrl: string;
+  publisherId: string;
+  publisherName: string;
 };
 
 type PostForJsonLd = Pick<Post, "title" | "description" | "cover_image_url" | "published_at" | "updated_at">;
@@ -21,8 +25,8 @@ export function blogPostingJsonLd(post: PostForJsonLd, url: string, site: JsonLd
     dateModified: post.updated_at,
     mainEntityOfPage: { "@type": "WebPage", "@id": url },
     // 글쓴이는 사람으로 적는다. 퍼스널 브랜드 채널이라 사람과 그 채널들을 잇는 편이 신뢰 평가에 맞다.
-    author: { "@type": "Person", name: site.authorName, sameAs: site.authorSameAs },
-    publisher: { "@type": "Organization", name: site.siteName, url: site.siteUrl },
+    author: { "@type": "Person", "@id": site.authorId, name: site.authorName, url: site.authorUrl, sameAs: site.authorSameAs },
+    publisher: { "@type": "Organization", "@id": site.publisherId, name: site.publisherName, url: site.siteUrl },
   };
 }
 

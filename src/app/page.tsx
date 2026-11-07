@@ -10,17 +10,26 @@ import { TopBanner } from "@/components/danineundani-home/top-banner";
 import { WorkbookBand } from "@/components/danineundani-home/workbook-band";
 import { YoutubeBand } from "@/components/danineundani-home/youtube-band";
 import { serializeJsonLd } from "@/lib/notes/jsonld";
-import { siteName, siteUrl } from "@/lib/seo";
+import { defaultOgImage, homeTitle, siteName, siteUrl } from "@/lib/seo";
 import { footer, hero, links } from "@/lib/site-content";
 import { brandGraph } from "@/lib/visibility/brand";
 
 // 검색엔진에 알려 주는 사이트·운영 사업자 정보(WebSite·Organization). 새 사실을 만들지 않고 이미 공개된 정보만 쓴다.
 const brandJsonLd = serializeJsonLd(
-  brandGraph(siteUrl, { name: siteName, business: footer.businessInfo[0].value, email: footer.email, description: hero.description, blog: links.blog }),
+  brandGraph(siteUrl, {
+    name: siteName,
+    business: footer.businessInfo[0].value,
+    email: footer.email,
+    description: hero.description,
+    logo: defaultOgImage.url,
+    sameAs: [links.youtubeChannel, links.threads, links.blog, links.cafe, links.kakaoChannel],
+  }),
 );
 
 // 홈의 대표 주소. metadataBase(layout.tsx)와 합쳐져 https://www.daneedanee.com/ 이 된다.
 export const metadata: Metadata = {
+  // 브라우저 탭·검색 결과 제목. 이름만 있으면 무엇을 하는 곳인지 알 수 없어 하는 일을 붙였다 (2026-11-07).
+  title: homeTitle,
   alternates: { canonical: "/" },
 };
 

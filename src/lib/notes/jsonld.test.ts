@@ -4,10 +4,13 @@ import { test } from "node:test";
 import { blogPostingJsonLd, breadcrumbJsonLd, serializeJsonLd } from "./jsonld.ts";
 
 const site = {
-  siteName: "다니는다니",
   siteUrl: "https://www.daneedanee.com/",
   authorName: "다니",
   authorSameAs: ["https://www.youtube.com/@x"],
+  authorId: "https://www.daneedanee.com/about#dani",
+  authorUrl: "https://www.daneedanee.com/about",
+  publisherId: "https://www.daneedanee.com/#organization",
+  publisherName: "마켓티브",
 };
 
 const post = {
@@ -28,8 +31,20 @@ test("BlogPosting: 필수 항목과 글쓴이(사람)·발행처(조직)", () =>
   assert.equal(data.dateModified, "2026-10-08T02:00:00Z");
   assert.deepEqual(data.image, ["https://img.example/a.png"]);
   assert.deepEqual(data.mainEntityOfPage, { "@type": "WebPage", "@id": "https://www.daneedanee.com/blog/a" });
-  assert.deepEqual(data.author, { "@type": "Person", name: "다니", sameAs: ["https://www.youtube.com/@x"] });
-  assert.deepEqual(data.publisher, { "@type": "Organization", name: "다니는다니", url: "https://www.daneedanee.com/" });
+  // 소개 페이지의 사람·홈의 사업자와 같은 @id 로 이어야 한 사람·한 사업자로 읽힌다.
+  assert.deepEqual(data.author, {
+    "@type": "Person",
+    "@id": "https://www.daneedanee.com/about#dani",
+    name: "다니",
+    url: "https://www.daneedanee.com/about",
+    sameAs: ["https://www.youtube.com/@x"],
+  });
+  assert.deepEqual(data.publisher, {
+    "@type": "Organization",
+    "@id": "https://www.daneedanee.com/#organization",
+    name: "마켓티브",
+    url: "https://www.daneedanee.com/",
+  });
 });
 
 test("BlogPosting: 대표 이미지가 없으면 image 를 넣지 않는다", () => {
