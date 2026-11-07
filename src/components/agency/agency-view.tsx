@@ -1,4 +1,4 @@
-import { Check, MessageCircle } from "lucide-react";
+import { Check, MessageCircle, Minus } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -20,7 +20,8 @@ function Kakao({ className }: { className: string }) {
 }
 
 // 블로그 관리 대행 설명 페이지 (2026-10-26). 대표 블로그 글 두 편(5가지 원칙, 대행 진행 과정)으로 짰다.
-// 흐름: 누구의 어떤 고민 → 다섯 가지 원칙 → 맡기면 보는 것 → 진행 → 정말 대행이 필요한지 → 신청. 상담 신청서(네이버 폼)는 새 탭으로 연다.
+// 흐름: 누구의 어떤 고민 → 다섯 가지 원칙 → 포함/미포함 → 미리 말씀드리는 것 → 진행 → 자주 묻는 질문 → 상담 전 준비 → 정말 대행이 필요한지 → 신청.
+// 상담 신청서(네이버 폼)는 새 탭으로 연다. 2026-11-07 포함 범위·약속하지 않는 것·질문·준비 구역 추가.
 export function AgencyView() {
   return (
     <div className="text-[14px] leading-5 text-[#333]">
@@ -107,23 +108,58 @@ export function AgencyView() {
           </Container>
         </section>
 
+        {/* 맡기면 하는 것과 하지 않는 것 */}
         <section className={`${sectionClass} bg-[#fbf7f2]`}>
-          <Container className="flex max-w-[760px] flex-col items-center gap-5 text-center">
+          <Container className="flex max-w-[760px] flex-col gap-6">
             <SectionTitle title={copy.scope.title} subtitle={copy.scope.text} />
-            <ul className="flex flex-wrap justify-center gap-2">
-              {copy.scope.chips.map((chip) => (
-                <li key={chip} className="rounded-full bg-[#2b2421] px-4 py-2 text-[14px] font-semibold text-[#fffdf9]">
-                  {chip}
-                </li>
-              ))}
-            </ul>
-            <p className="max-w-[600px] text-[14px] leading-[22px] text-[#8a8178] break-keep">
+            <div className="grid gap-3 min-[992px]:grid-cols-2">
+              <div className={`${cardClass} flex flex-col gap-3 p-5`}>
+                <h3 className="text-[16px] leading-[24px] font-bold text-[#191919]">{copy.scope.includedTitle}</h3>
+                <ul className="flex flex-col gap-2">
+                  {copy.scope.included.map((item) => (
+                    <li key={item} className="flex gap-2.5 text-[15px] leading-[24px] text-[#2b2421] break-keep">
+                      <Check aria-hidden className="mt-0.5 size-5 shrink-0 text-[#fd715b]" />
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div className={`${cardClass} flex flex-col gap-3 p-5`}>
+                <h3 className="text-[16px] leading-[24px] font-bold text-[#191919]">{copy.scope.excludedTitle}</h3>
+                <ul className="flex flex-col gap-2">
+                  {copy.scope.excluded.map((item) => (
+                    <li key={item} className="flex gap-2.5 text-[15px] leading-[24px] text-[#5f6368] break-keep">
+                      <Minus aria-hidden className="mt-0.5 size-5 shrink-0 text-[#8a8178]" />
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+            <p className="text-center text-[14px] leading-[22px] text-[#8a8178] break-keep">
               <Sentences text={copy.scope.industries} />
             </p>
           </Container>
         </section>
 
+        {/* 미리 말씀드리는 것 */}
         <section className={`${sectionClass} bg-[#fff4ea]`}>
+          <Container className="flex max-w-[760px] flex-col gap-6">
+            <SectionTitle title={copy.promise.title} />
+            <ul className="grid gap-3 min-[992px]:grid-cols-3">
+              {copy.promise.items.map((item) => (
+                <li key={item.title} className={`${cardClass} flex flex-col gap-2 p-5 break-keep`}>
+                  <h3 className="text-[16px] leading-[24px] font-bold text-[#191919]">{item.title}</h3>
+                  <p className="text-[14px] leading-[23px] text-[#5f6368]">
+                    <Sentences text={item.text} />
+                  </p>
+                </li>
+              ))}
+            </ul>
+          </Container>
+        </section>
+
+        <section className={`${sectionClass} bg-[#fbf7f2]`}>
           <Container className="flex max-w-[760px] flex-col gap-6">
             <SectionTitle title={copy.process.title} />
             <ol className="flex flex-col gap-3">
@@ -152,8 +188,46 @@ export function AgencyView() {
           </Container>
         </section>
 
-        {/* 직접 하실 분 */}
+        {/* 자주 묻는 질문 */}
+        <section className={`${sectionClass} bg-[#fff4ea]`}>
+          <Container className="flex max-w-[760px] flex-col gap-6">
+            <SectionTitle title={copy.faq.title} />
+            <dl className="flex flex-col gap-3">
+              {copy.faq.items.map((item) => (
+                <div key={item.q} className={`${cardClass} p-5 break-keep`}>
+                  <dt className="text-[16px] leading-[24px] font-bold text-[#191919]">{item.q}</dt>
+                  <dd className="mt-1.5 text-[14px] leading-[23px] text-[#5f6368]">
+                    <Sentences text={item.a} />
+                  </dd>
+                </div>
+              ))}
+            </dl>
+          </Container>
+        </section>
+
+        {/* 상담 전에 알려 주시면 좋은 것 */}
         <section className={`${sectionClass} bg-[#fbf7f2]`}>
+          <Container className="flex max-w-[760px] flex-col gap-5">
+            <SectionTitle title={copy.prepare.title} />
+            <ul className="grid gap-2.5 min-[992px]:grid-cols-2">
+              {copy.prepare.items.map((item) => (
+                <li key={item} className={`${cardClass} flex gap-3 p-4`}>
+                  <Check aria-hidden className="mt-0.5 size-5 shrink-0 text-[#fd715b]" />
+                  <span className="text-[15px] leading-[24px] text-[#2b2421] break-keep">{item}</span>
+                </li>
+              ))}
+            </ul>
+            <div className="flex flex-col items-center gap-3 text-center">
+              <ExternalButton href={copy.hero.ctaHref} className="rounded-[5px] px-6 py-3 text-[16px]">
+                {copy.hero.cta}
+              </ExternalButton>
+              <p className="text-[14px] leading-[22px] text-[#8a8178] break-keep">{copy.prepare.note}</p>
+            </div>
+          </Container>
+        </section>
+
+        {/* 직접 하실 분 */}
+        <section className={`${sectionClass} bg-[#fff4ea]`}>
           <Container className="max-w-[760px]">
             <div className={`${cardClass} flex flex-col items-start gap-3 p-6`}>
               <h2 className="text-[18px] leading-[27px] font-bold text-[#191919] break-keep">{copy.selfCheck.title}</h2>

@@ -37,3 +37,16 @@ export function serviceGraph(
       : {}),
   };
 }
+
+// 화면에 보이는 "자주 묻는 질문"을 그대로 옮긴 FAQPage. 화면에 없는 질문은 넣지 않는다.
+export function faqGraph(items: readonly { q: string; a: string }[]) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: items.map((item) => ({
+      '@type': 'Question',
+      name: item.q,
+      acceptedAnswer: { '@type': 'Answer', text: item.a },
+    })),
+  };
+}

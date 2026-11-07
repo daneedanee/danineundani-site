@@ -4,7 +4,7 @@ import { AgencyView } from "@/components/agency/agency-view";
 import { serializeJsonLd } from "@/lib/notes/jsonld";
 import { absoluteUrl, siteName, siteUrl } from "@/lib/seo";
 import { agencyPage, embeds } from "@/lib/site-content";
-import { serviceGraph } from "@/lib/visibility/service";
+import { faqGraph, serviceGraph } from "@/lib/visibility/service";
 
 export const metadata: Metadata = {
   title: `${embeds.agency.title} · ${siteName}`,
@@ -22,11 +22,14 @@ const agencyJsonLd = serializeJsonLd(
     serviceType: "블로그 관리 대행",
   }),
 );
+// 화면의 자주 묻는 질문과 같은 내용 (2026-11-07).
+const agencyFaqJsonLd = serializeJsonLd(faqGraph(agencyPage.faq.items));
 
 export default function AgencyPage() {
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: agencyJsonLd }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: agencyFaqJsonLd }} />
       <AgencyView />
     </>
   );

@@ -57,5 +57,14 @@ test("블로그 대행: 외주 작가·알바 문장은 쓰지 않는다 (2026-1
 });
 
 test("블로그 대행: 맡기시면 보는 것에 월간 성과 리포트는 넣지 않는다 (2026-10-26 대표 「삭제」)", () => {
-  assert.ok(!agencyPage.scope.chips.some((x) => x.includes("월간 성과 리포트")));
+  assert.ok(!agencyPage.scope.included.some((x: string) => /리포트/.test(x)));
+});
+
+test("블로그 대행: 미포함 4가지와 노출·문의 비보장을 밝힌다 (2026-11-07 대표 답변)", () => {
+  assert.equal(agencyPage.scope.excluded.length, 4);
+  assert.ok(agencyPage.scope.excluded.some((x: string) => x.includes("플레이스")));
+  assert.match(agencyPage.promise.items[0].title, /보장하지 않습니다/);
+  assert.ok(agencyPage.faq.items.some((x) => /월 12편부터/.test(x.a)));
+  // 가격 숫자는 공개하지 않는다 (2026-10-24 대표 결정).
+  for (const 말 of 글자들(agencyPage)) assert.ok(!/\d+\s*만\s*원|\d{2,},\d{3}원/.test(말), 말);
 });

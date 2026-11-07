@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { serviceGraph } from './service.ts';
+import { faqGraph, serviceGraph } from './service.ts';
 
 const base = 'https://www.daneedanee.com';
 
@@ -22,4 +22,10 @@ test('서비스는 홈의 운영 사업자가 제공하고, 가격이 있으면 
 test('가격이 정해지지 않은 서비스(문의)는 offers 를 넣지 않는다', () => {
   const g = serviceGraph(base, { path: '/agency', name: '블로그 관리 대행', description: '설명', serviceType: '블로그 대행' });
   assert.equal('offers' in g, false);
+});
+
+test('자주 묻는 질문은 화면의 질문·답을 그대로 FAQPage 로 옮긴다', () => {
+  const g = faqGraph([{ q: '계약 기간은?', a: '4주 단위입니다.' }]);
+  assert.equal(g['@type'], 'FAQPage');
+  assert.deepEqual(g.mainEntity[0], { '@type': 'Question', name: '계약 기간은?', acceptedAnswer: { '@type': 'Answer', text: '4주 단위입니다.' } });
 });
