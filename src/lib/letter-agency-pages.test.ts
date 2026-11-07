@@ -64,7 +64,7 @@ test("블로그 대행: 미포함 4가지와 노출·문의 비보장을 밝힌�
   assert.equal(agencyPage.scope.excluded.length, 4);
   assert.ok(agencyPage.scope.excluded.some((x: string) => x.includes("플레이스")));
   assert.match(agencyPage.promise.items[0].title, /보장하지 않습니다/);
-  assert.ok(agencyPage.faq.items.some((x) => /월 12편부터/.test(x.a)));
+  assert.ok(agencyPage.faq.items.some((x) => /월 8편부터/.test(x.a) && /월 12편을 권장/.test(x.a)));
   // 가격 숫자는 공개하지 않는다 (2026-10-24 대표 결정).
   for (const 말 of 글자들(agencyPage)) assert.ok(!/\d+\s*만\s*원|\d{2,},\d{3}원/.test(말), 말);
 });
