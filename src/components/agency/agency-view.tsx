@@ -134,6 +134,7 @@ export function AgencyView() {
                     </li>
                   ))}
                 </ul>
+                <p className="text-[14px] leading-[22px] font-semibold text-[#2b2421] break-keep">{copy.scope.excludedNote}</p>
               </div>
             </div>
             <p className="text-center text-[14px] leading-[22px] text-[#8a8178] break-keep">
